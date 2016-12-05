@@ -1,0 +1,1 @@
+fopen("test.ma", "r");
