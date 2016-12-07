@@ -29,7 +29,7 @@ static void real_read() {
     }
     ptr = 0;
     limit = fread(buffer, 1, BUFSIZE, yyin);
-    printf("limit = %d\n", limit);
+    printf("limit = %d\n", (int)limit);
 }
 
 
@@ -56,11 +56,21 @@ static void addtext(char c) {
     yytext[ytp] = 0;
 }
 
+static void error() {
+    fprintf(stderr, "cannot understand character: %s\n", yytext);
+    exit(1);
+}
 
 int yylex() {
     char c; 
     ytp = 0;
+    
+retry:
     switch(c = read()) {
+        case ' ':
+        case '\t': { // skip space
+            goto retry;
+        }
         case EOF: {
             printf("eof\n");
             return EOF;
@@ -73,9 +83,104 @@ int yylex() {
             addtext(c);
             return RP;
         }
+        case '{': {
+            addtext(c);
+            return LC;
+        }
+        case '}': {
+            addtext(c);
+            return RC;
+        }
+        case ';': {
+            addtext(c);
+            return SEMICOLON;
+        }
+        case ',': {
+            addtext(c);
+            return COMMA;
+        }
+        case '&': {
+            addtext(c);
+            c = read();
+            if (c == '&') {
+                addtext(c);
+                return LOGICAL_AND;
+            } else {
+                error();
+            }            
+        }
+        case '|': {
+            addtext(c);
+            c = read();
+            if (c == '|') {
+                addtext(c);
+                return LOGICAL_OR;
+            } else {
+                error();
+            }
+        }
+        case '=': {
+            addtext(c);
+            if ((c = read()) == '=') {
+                addtext(c);
+                return EQ;
+            } else {
+                pushback(c);
+                return ASSIGN;                
+            }
+        }
+        case '!': {
+            addtext(c);
+            if ((c = read()) == '=') {
+                addtext(c);
+                return NE;
+            } else {
+                error();
+            }
+        }
+        case '>': {
+            addtext(c);
+            if ((c = read()) == '=') {
+                addtext(c);
+                return GE;
+            } else {
+                pushback(c);
+                return GT;
+            }
+        }
+        case '<': {
+            addtext(c);
+            if ((c = read()) == '=') {
+                addtext(c);
+                return LE;
+            } else {
+                pushback(c);
+                return LT;
+            }
+        }
+        case '+': {
+            addtext(c);
+            return ADD;
+        }
+        case '-': {
+            addtext(c);
+            return SUB;
+        }
+        case '*': {
+            addtext(c);
+            return MUL;
+        }
+        case '/': {
+            addtext(c);
+            return DIV;
+        }
+        case '%': {
+            addtext(c);
+            return MOD;
+        }
         default: {
-            fprintf(stderr, "cannot understand character: %c\n", c);
-            exit(1);
+            addtext(c);
+            error();
             break;
         }
     }
