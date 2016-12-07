@@ -9,6 +9,8 @@
 #define SIGN_EXTEND_CHAR(c) ((signed char)(c))
 #define is_identchar(c) (SIGN_EXTEND_CHAR(c)!=-1&&(ISALNUM(c) || (c) == '_'))
 
+#define FALSE 0
+#define TRUE  1
 #define BUFSIZE 1024
 FILE *yyin;
 uint8_t *yytext = NULL;
@@ -26,7 +28,7 @@ typedef enum {
 } LexerStatus;
 
 static void real_read() {
-    printf("real read\n");
+//    printf("real read\n");
     if (buffer == NULL) {
         buffer = (uint8_t*)malloc(BUFSIZE);
     }
@@ -35,7 +37,7 @@ static void real_read() {
     }
     ptr = 0;
     limit = fread(buffer, 1, BUFSIZE, yyin);
-    printf("limit = %d\n", (int)limit);
+//    printf("limit = %d\n", (int)limit);
 }
 
 
@@ -70,6 +72,7 @@ static void error() {
 int yylex() {
     char c; 
     ytp = 0;
+//    char *v = "ab\"c";
     
 retry:
     switch(c = read()) {
@@ -81,7 +84,7 @@ retry:
             goto retry;
         }
         case EOF: {
-            printf("eof\n");
+//            printf("eof\n");
             return EOF;
         }
         case '0': case '1': case '2': case '3': case '4':
@@ -220,8 +223,62 @@ retry:
             addtext(c);
             return MOD;
         }
+        case '"': {
+            int flg = FALSE;            
+            while(1) {
+                c = read();
+                switch (c) {
+                    case 'n': {
+                        if (yytext[ytp - 1] == '\\') {
+                            if (flg == TRUE) {
+                                addtext(c);
+                                flg = FALSE;
+                            } else {
+                                --ytp;                                
+                                addtext('\n');                                
+                            }
+                            continue;
+                        }
+                    }
+                    case 't': {
+                        if (yytext[ytp - 1] == '\\') {
+                            if (flg == TRUE) {
+                                addtext(c);
+                                flg = FALSE;
+                            } else {
+                                --ytp;
+                                addtext('\t');
+                            }
+                            continue;
+                        }
+                    }
+                    case '"': {
+                        if (yytext[ytp - 1] == '\\') {
+                            --ytp;
+                            addtext('"');
+                            continue;
+                        }
+                    }
+                    case '\\': {
+                        if (yytext[ytp - 1] == '\\') {
+                            --ytp;
+                            addtext('\\');
+                            flg = TRUE;
+                            continue;
+                        }
+                    }                 
+                }                                
+                
+                if (c == '"') {
+                    yylval.identifier = (char*)yytext;
+                    return STRING_LITERAL;
+                }
+                addtext(c);
+            }
+            error();
+        }
         default: {
-            printf("end of switch: %c\n", c);
+//            printf("end of switch: %c\n", c);
             break;
         }
     }
@@ -232,7 +289,7 @@ retry:
     
     pushback(c);
     yylval.identifier = (char*)yytext;
-    printf("%s\n", yytext);
+//    printf("%s\n", yytext);
     return IDENTIFIER;
 //    exit(1);
     

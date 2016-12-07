@@ -7,7 +7,7 @@ int main(void) {
     int i;
     int t_type;
 
-    yyin = fopen("rtest.ma", "r");
+    yyin = fopen("test.ma", "r");
     if (yyin == NULL) {
         fprintf(stderr, "cannot open file\n");
     }
