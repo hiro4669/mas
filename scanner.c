@@ -84,6 +84,39 @@ retry:
             printf("eof\n");
             return EOF;
         }
+        case '0': case '1': case '2': case '3': case '4':
+        case '5': case '6': case '7': case '8': case '9': {
+            addtext(c);            
+            if (c == '0') { // can be double
+                c = read();
+                if (c != '.') error();
+                addtext(c);
+                while(isdigit(c = read())) {
+                    addtext(c);
+                }
+                pushback(c);
+                sscanf((char*)yytext, "%lf", &yylval.double_value);
+                return DOUBLE_LITERAL;                
+            } else { // int
+                while(isdigit(c = read())) {
+                    addtext(c);
+                }
+                if (c == '.') {
+                    addtext(c);
+                    while(isdigit(c = read())) {
+                        addtext(c);
+                    }
+                    pushback(c);
+                    sscanf((char*)yytext, "%lf", &yylval.double_value);
+                    return DOUBLE_LITERAL;                      
+                } else {
+                    pushback(c);
+                    sscanf((char*)yytext, "%d", &yylval.int_value);
+                    return INT_LITERAL;
+                }
+            }
+            break;
+        }            
         case '(': {
             addtext(c);
             return LP;
