@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include "y.tab.h"
 
-#define BUFSIZE 3
+#define BUFSIZE 1024
 FILE *yyin;
 uint8_t *yytext = NULL;
+int ytp = 0;
 
 static uint8_t *buffer = NULL;
 static uint32_t ptr;
@@ -44,11 +46,44 @@ void done() {
     free(yytext);
 }
 
-void pushback(int c) {
+static void pushback(int c) {
     if (c == -1) return;
     if (ptr > 0) --ptr;
 }
 
+static void addtext(char c) {
+    yytext[ytp++] = c;
+    yytext[ytp] = 0;
+}
+
+
+int yylex() {
+    char c; 
+    ytp = 0;
+    switch(c = read()) {
+        case EOF: {
+            printf("eof\n");
+            return EOF;
+        }
+        case '(': {
+            addtext(c);
+            return LP;
+        }
+        case ')': {
+            addtext(c);
+            return RP;
+        }
+        default: {
+            fprintf(stderr, "cannot understand character: %c\n", c);
+            exit(1);
+            break;
+        }
+    }
+
+    return EOF;
+}
+
+/*
 int main(void) {
     int i;
     char c;    
@@ -78,3 +113,4 @@ int main(void) {
     printf("EOF = %d\n", EOF);
     return 0;
 }
+*/
