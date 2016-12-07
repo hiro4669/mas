@@ -1,7 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <ctype.h>
 #include "y.tab.h"
+
+#define ISASCII(c) isascii((unsigned char)(c))
+#define ISALNUM(c) (ISASCII(c) && isalnum((unsigned char)(c)))
+#define SIGN_EXTEND_CHAR(c) ((signed char)(c))
+#define is_identchar(c) (SIGN_EXTEND_CHAR(c)!=-1&&(ISALNUM(c) || (c) == '_'))
 
 #define BUFSIZE 1024
 FILE *yyin;
@@ -69,6 +75,9 @@ retry:
     switch(c = read()) {
         case ' ':
         case '\t': { // skip space
+            goto retry;
+        }
+        case '\n': {
             goto retry;
         }
         case EOF: {
@@ -179,13 +188,23 @@ retry:
             return MOD;
         }
         default: {
-            addtext(c);
-            error();
+            printf("end of switch: %c\n", c);
             break;
         }
     }
+    while (is_identchar(c)) {
+        addtext(c);
+        c = read();
+    }
+    
+    pushback(c);
+    yylval.identifier = (char*)yytext;
+    printf("%s\n", yytext);
+    return IDENTIFIER;
+//    exit(1);
+    
 
-    return EOF;
+//    return EOF;
 }
 
 /*
