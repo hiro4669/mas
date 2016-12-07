@@ -4,6 +4,9 @@ CC = /usr/bin/gcc
 
 OBJS = y.tab.o lex.yy.o lextest.o
 
+all2: scanner.c
+	gcc -o scanner scanner.c
+
 all: $(OBJS)
 	$(CC) -o $(TARGET) $(OBJS)
 
