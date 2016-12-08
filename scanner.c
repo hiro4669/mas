@@ -1,13 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 #include <ctype.h>
 #include "y.tab.h"
+#include "keyword.h"
 
 #define ISASCII(c) isascii((unsigned char)(c))
 #define ISALNUM(c) (ISASCII(c) && isalnum((unsigned char)(c)))
 #define SIGN_EXTEND_CHAR(c) ((signed char)(c))
 #define is_identchar(c) (SIGN_EXTEND_CHAR(c)!=-1&&(ISALNUM(c) || (c) == '_'))
+
+extern struct OPE *in_word_set(char*, unsigned int);
+
+
 
 #define FALSE 0
 #define TRUE  1
@@ -288,6 +294,10 @@ retry:
     }
     
     pushback(c);
+    struct OPE *op = in_word_set((char*)yytext, strlen((char*)yytext));
+    if (op != NULL) {
+        return op->type;
+    }
     yylval.identifier = (char*)yytext;
 //    printf("%s\n", yytext);
     return IDENTIFIER;
