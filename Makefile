@@ -3,7 +3,8 @@ TARGET = test
 CC = /usr/bin/gcc
 
 #OBJS = y.tab.o lex.yy.o lextest.o keyword.o
-OBJS = y.tab.o scanner.o lextest.o keyword.o
+#OBJS = y.tab.o scanner.o lextest.o keyword.o
+OBJS = y.tab.o scanner.o keyword.o yacctest.o
 
 #all2: scanner.c
 #	gcc -o scanner scanner.c

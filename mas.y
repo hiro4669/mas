@@ -48,11 +48,37 @@
 %token STRING_LITERAL
 
 
-
-
 %%
-translation_unit :
-				 ;
+translation_unit 
+			: expression { printf("good expression\n"); }
+			;
+expression              : logical_or_expression
+			;
+logical_or_expression
+			: logical_and_expression
+			;
+logical_and_expression
+			: equality_expression
+			;
+
+equality_expression
+			: relational_expression
+			;
+relational_expression
+			: additive_expression
+			;
+additive_expression
+			: multiplicative_expression
+			;
+multiplicative_expression
+			: unary_expression
+			;
+unary_expression
+			: primary_expression
+			;
+primary_expression
+			: INT_LITERAL
+			;
 
 
 %%
