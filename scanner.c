@@ -98,7 +98,15 @@ retry:
             addtext(c);            
             if (c == '0') { // can be double
                 c = read();
-                if (c != '.') error();
+                if (c != '.' && isdigit(c)) {
+                    error();
+                } else {
+                    pushback(c);
+                    sscanf((char*)yytext, "%d", &yylval.int_value);
+//                    printf("int value = %d\n", yylval.int_value);
+                    return INT_LITERAL;
+                    
+                }
                 addtext(c);
                 while(isdigit(c = read())) {
                     addtext(c);
