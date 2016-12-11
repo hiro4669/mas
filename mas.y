@@ -59,7 +59,15 @@ definision_or_statement
             : statement
             ;
 statement   : expression SEMICOLON
-                        
+			| global_statement
+			;
+global_statement
+			: GLOBAL_T identifier_list SEMICOLON 
+			;
+identifier_list
+			: IDENTIFIER
+			| identifier_list COMMA IDENTIFIER
+			;
 expression  : logical_or_expression
 			| IDENTIFIER ASSIGN expression
 			;
