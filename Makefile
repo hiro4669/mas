@@ -4,18 +4,35 @@ CC = /usr/bin/gcc
 
 #OBJS = y.tab.o lex.yy.o lextest.o keyword.o
 #OBJS = y.tab.o scanner.o lextest.o keyword.o
-OBJS = y.tab.o scanner.o keyword.o yacctest.o
+#OBJS = y.tab.o scanner.o keyword.o yacctest.o
+COMMON = y.tab.o keyword.o
+OBJS = $(COMMON) scanner.o
+YTEST = yacctest.o
+LTEST = lextest.o
+
+YACC = mas.y
 
 #all2: scanner.c
 #	gcc -o scanner scanner.c
 
-all: $(OBJS)
-	$(CC) -o $(TARGET) $(OBJS)
+all: $(OBJS) $(YTEST)
+	$(CC) -o $(TARGET) $^
+
+scantest: stest ltest
+	./stest > output.s
+	./ltest > output.l
+	diff -Naru output.s output.l
+
+stest: $(COMMON) $(LTEST) scanner.o 
+	$(CC) -o $@ $^
+
+ltest: $(COMMON) $(LTEST) lex.yy.o
+	$(CC) -o $@ $^
 
 keyword.c: keyword.key
 	gperf -ptT $^ > $@
 
-y.tab.c: mas.y
+y.tab.c: $(YACC)
 	bison --yacc -dv $^
 
 lex.yy.c: mas.l
@@ -26,5 +43,5 @@ lex.yy.c: mas.l
 
 
 clean:
-	rm -rf *.o *~ y.tab.c lex.yy.c y.output y.tab.h keyword.c
+	rm -rf *.o *~ y.tab.c lex.yy.c y.output y.tab.h keyword.c ltest stest output.s output.l
 
