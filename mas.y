@@ -50,9 +50,16 @@
 
 %%
 translation_unit 
-			: expression { printf("good expression\n"); }
+/*			: expression { printf("good expression\n"); } */
+            : definision_or_statement {printf("accept\n");}
 			;
-expression              : logical_or_expression
+
+definision_or_statement 
+            : statement
+            ;
+statement   : expression SEMICOLON
+                        
+expression  : logical_or_expression
 			;
 logical_or_expression
 			: logical_and_expression
