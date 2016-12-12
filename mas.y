@@ -60,6 +60,7 @@ definision_or_statement
             ;
 statement   : expression SEMICOLON
 			| global_statement
+			| while_statement 
 			;
 global_statement
 			: GLOBAL_T identifier_list SEMICOLON 
@@ -125,6 +126,11 @@ primary_expression
 			| NULL_T
 			;
 
+while_statement
+			: WHILE LP expression RP block
+
+block : LC RC
+	  ;
 
 %%
 int
