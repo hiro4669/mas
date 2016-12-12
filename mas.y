@@ -61,6 +61,9 @@ definision_or_statement
 statement   : expression SEMICOLON
 			| global_statement
 			| while_statement 
+			| return_statement
+			| break_statement
+			| continue_statement
 			;
 global_statement
 			: GLOBAL_T identifier_list SEMICOLON 
@@ -131,6 +134,19 @@ while_statement
 
 block : LC RC
 	  ;
+expression_opt
+			: /* empty */ 
+			| expression
+			;
+return_statement
+			: RETURN_T expression_opt SEMICOLON
+			;
+break_statement
+			: BREAK SEMICOLON
+			;
+continue_statement
+			: CONTINUE SEMICOLON
+			;
 
 %%
 int
