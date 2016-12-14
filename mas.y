@@ -64,6 +64,8 @@ statement   : expression SEMICOLON
 			| return_statement
 			| break_statement
 			| continue_statement
+			| for_statement /*{ printf("accept for "); } */
+			| if_statement
 			;
 global_statement
 			: GLOBAL_T identifier_list SEMICOLON 
@@ -147,6 +149,24 @@ break_statement
 continue_statement
 			: CONTINUE SEMICOLON
 			;
+
+for_statement
+			: FOR LP expression_opt SEMICOLON expression_opt SEMICOLON expression_opt RP block
+			;
+
+if_statement
+			: IF LP expression RP block { printf("if match "); }
+			| IF LP expression RP block ELSE block { printf("if match 2 "); }
+			| IF LP expression RP block elsif_list { printf("if match 3 "); }
+			| IF LP expression RP block elsif_list ELSE block { printf("if match 4 "); }
+			;
+
+elsif_list : elsif
+		   | elsif_list elsif
+		   ;
+
+elsif	   : ELSIF LP expression RP block
+		   ;
 
 %%
 int
