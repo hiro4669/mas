@@ -1,6 +1,7 @@
 CFLAGS = -c -g -DDEBUG
 TARGET = test
 CC = /usr/bin/gcc
+MAKE = /usr/bin/make
 
 #OBJS = y.tab.o lex.yy.o lextest.o keyword.o
 #OBJS = y.tab.o scanner.o lextest.o keyword.o
@@ -16,6 +17,7 @@ YACC = mas.y
 #	gcc -o scanner scanner.c
 
 all: $(OBJS) $(YTEST)
+	$(MAKE) $@ -C memory
 	$(CC) -o $(TARGET) $^
 
 scantest: stest ltest
@@ -43,5 +45,6 @@ lex.yy.c: mas.l
 
 
 clean:
+	$(MAKE) $@ -C memory
 	rm -rf *.o *~ y.tab.c lex.yy.c y.output y.tab.h keyword.c ltest stest output.s output.l
 
