@@ -40,8 +40,27 @@ union Header_tag {
 };
 
 void test() {
-    printf("test\n");
-    printf("ALIGN_SIZE = %d\n", (int)ALIGN_SIZE);
+    int val;
+    void *p;
     
+    printf("test\n");
+    printf("ALIGN_SIZE = %d\n", (int)ALIGN_SIZE); // 8
+    printf("HeaderStruct size = %d\n", (int)sizeof(HeaderStruct)); // 48
+    printf("HEADER_ALIGN_SIZE = %d\n", (int)HEADER_ALIGN_SIZE);  // 6
+    printf("u size = %d\n", (int)(sizeof(Align) * HEADER_ALIGN_SIZE));
+    printf("long size = %d\n", (int)sizeof(long));
+    printf("double size = %d\n", (int)sizeof(double));
+    printf("void*  size = %d\n", (int)sizeof(p));
+    printf("int    size = %d\n", (int)sizeof(int));    
+    
+    val = sizeof(HeaderStruct);
+    val = 0;
+    if (val) {
+        printf("val = %d\n", val);
+        printf("val2= %d\n", (val - 1) / 8 );
+        
+    } else {
+        printf("boooo\n");
+    }
     
 }
