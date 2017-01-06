@@ -6,7 +6,13 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 #include "memory.h"
+
+static struct MEM_Controller_tag st_default_controller;
+
+MEM_Controller mem_default_controller = &st_default_controller;
 
 
 typedef union {
@@ -38,6 +44,49 @@ union Header_tag {
     HeaderStruct s;
     Align u[HEADER_ALIGN_SIZE];
 };
+
+
+void MEM_malloc_func(MEM_Controller controller, char* filename, int line, size_t size) {
+    uint8_t *ptr;
+    uint32_t i;
+    printf("call mem_malloc_func\n");
+    uint32_t hsize = sizeof(Header);
+    
+    uint32_t alloc_size = sizeof(Header) + size;
+    
+    Header *header = (Header*)malloc(alloc_size);
+    if (header == NULL) {
+        printf("error");
+        exit(1);
+    }    
+    
+    memset((void*)header, 0xcc, alloc_size);
+    
+    ptr = (uint8_t*)header;
+    for (i = 0; i < alloc_size; ++i, ++ptr) {
+        if (i % 16 == 0) printf("\n");        
+        printf("%02x ", *ptr);
+
+    }
+    printf("\n");
+    
+    header->s.size = size;
+    header->s.filename = filename;
+    header->s.line = line;
+    
+//    memset(header->s.mark, MARK, MARK_SIZE);
+    memset(header->s.mark, MARK, (char*)&header[1] - (char*)header->s.mark);
+    
+    ptr = (uint8_t*)header;
+    for (i = 0; i < alloc_size; ++i, ++ptr) {
+        if (i % 16 == 0) printf("\n");        
+        printf("%02x ", *ptr);
+
+    }
+    printf("\n");
+    
+    
+}
 
 void test() {
     int val;

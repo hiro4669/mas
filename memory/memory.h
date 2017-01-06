@@ -7,8 +7,13 @@
 
 #ifndef _MEMORY_H_
 #define _MEMORY_H_
+#include "MEM.h"
 
 typedef union Header_tag Header;
+
+struct MEM_Controller_tag {
+    Header *block_header;
+};
 
 void test();
 
