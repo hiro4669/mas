@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include "mem.h"
+#include "memory.h"
 
 
 typedef union {

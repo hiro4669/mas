@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "mem.h"
+#include "memory.h"
 
 int main(void) {
     printf("memtest\n");
