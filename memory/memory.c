@@ -10,7 +10,9 @@
 #include <string.h>
 #include "memory.h"
 
-static struct MEM_Controller_tag st_default_controller;
+static struct MEM_Controller_tag st_default_controller = {
+    NULL // Header
+};
 
 MEM_Controller mem_default_controller = &st_default_controller;
 
@@ -45,6 +47,47 @@ union Header_tag {
     Align u[HEADER_ALIGN_SIZE];
 };
 
+static void set_header(Header* header, size_t size, char* filename, int line) {
+    header->s.size = size;
+    header->s.filename = filename;
+    header->s.line = line;
+    header->s.next = header->s.prev = NULL;
+    memset(header->s.mark, MARK, (char*)&header[1] - (char*)header->s.mark);    
+}
+
+static void chain_header(MEM_Controller controller, Header* new_header) {
+    if (controller->block_header == NULL) {
+        printf("chain first\n");
+        controller->block_header = new_header;
+        return;
+    }    
+}
+
+void MEM_dump_memory_func(MEM_Controller controller) {
+    Header *current_header = NULL;
+    if ((current_header = controller->block_header) == NULL) {
+        printf("no allocated memory\n");
+        return;
+    }
+    int i;
+    uint8_t *ptr;
+    while(current_header) {
+        uint32_t alloc_size = current_header->s.size + sizeof(Header);
+        printf("-----------------------------------\n");
+        printf("-- size:%d, file:%s, line:%d -- \n", current_header->s.size, current_header->s.filename, current_header->s.line);
+        printf("-----------------------------------\n");
+        ptr = (uint8_t*)current_header;
+        for (i = 0; i < alloc_size; ++i, ++ptr) {
+            if (i % 16 == 0) printf("\n");
+            printf("%02x ", *ptr);
+        }
+        printf("\n");                
+        current_header = current_header->s.next;
+    }
+    
+
+}
+
 
 void MEM_malloc_func(MEM_Controller controller, char* filename, int line, size_t size) {
     uint8_t *ptr;
@@ -62,6 +105,7 @@ void MEM_malloc_func(MEM_Controller controller, char* filename, int line, size_t
     
     memset((void*)header, 0xcc, alloc_size);
     
+    /*
     ptr = (uint8_t*)header;
     for (i = 0; i < alloc_size; ++i, ++ptr) {
         if (i % 16 == 0) printf("\n");        
@@ -69,14 +113,11 @@ void MEM_malloc_func(MEM_Controller controller, char* filename, int line, size_t
 
     }
     printf("\n");
+     */
+    set_header(header, size, filename, line);
+    chain_header(controller, header);
     
-    header->s.size = size;
-    header->s.filename = filename;
-    header->s.line = line;
-    
-//    memset(header->s.mark, MARK, MARK_SIZE);
-    memset(header->s.mark, MARK, (char*)&header[1] - (char*)header->s.mark);
-    
+    /*
     ptr = (uint8_t*)header;
     for (i = 0; i < alloc_size; ++i, ++ptr) {
         if (i % 16 == 0) printf("\n");        
@@ -84,7 +125,7 @@ void MEM_malloc_func(MEM_Controller controller, char* filename, int line, size_t
 
     }
     printf("\n");
-    
+    */
     
 }
 
