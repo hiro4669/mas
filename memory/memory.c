@@ -89,6 +89,7 @@ void MEM_dump_memory_func(MEM_Controller controller) {
         uint32_t alloc_size = current_header->s.size + sizeof(Header) + MARK_SIZE;
         printf("-----------------------------------\n");
         printf("-- size:%d, file:%s, line:%d -- \n", current_header->s.size, current_header->s.filename, current_header->s.line);
+        printf("-- head:%p, begin:%p --\n", current_header, &current_header[1]);
         printf("-----------------------------------\n");
         ptr = (uint8_t*)current_header;
         for (i = 0; i < alloc_size; ++i, ++ptr) {
@@ -102,8 +103,12 @@ void MEM_dump_memory_func(MEM_Controller controller) {
 
 }
 
+void MEM_free_func(MEM_Controller controller, void* bptr) {
+    uint8_t *ptr = (uint8_t*)bptr - sizeof(Header);
+    printf("free ptr = %p\n", ptr);
+}
 
-void MEM_malloc_func(MEM_Controller controller, char* filename, int line, size_t size) {
+void *MEM_malloc_func(MEM_Controller controller, char* filename, int line, size_t size) {
     uint8_t *ptr;
     uint32_t i;
     printf("call mem_malloc_func\n");
@@ -140,6 +145,8 @@ void MEM_malloc_func(MEM_Controller controller, char* filename, int line, size_t
     }
     printf("\n");
     */
+    
+    return (void*)&header[1];
     
 }
 
