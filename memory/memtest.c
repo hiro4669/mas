@@ -6,6 +6,7 @@ int main(void) {
     printf("memtest\n");
     test();
     MEM_malloc(10);
+    MEM_malloc(11);
     MEM_dump_memory();
     return 0;
 }
