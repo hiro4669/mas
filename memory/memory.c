@@ -106,6 +106,11 @@ void MEM_dump_memory_func(MEM_Controller controller) {
 void MEM_free_func(MEM_Controller controller, void* bptr) {
     uint8_t *ptr = (uint8_t*)bptr - sizeof(Header);
     printf("free ptr = %p\n", ptr);
+    Header *current_head = (Header*)ptr;
+    
+    
+    
+    
 }
 
 void *MEM_malloc_func(MEM_Controller controller, char* filename, int line, size_t size) {
