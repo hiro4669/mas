@@ -3,7 +3,7 @@ CC = /usr/bin/gcc
 TARGET = memtest
 CFLAGS = -c -g -DDEBUG
 
-OBJS = memtest.o memory.o
+OBJS = memtest.o memory.o storage.o
 
 all: $(TARGET)
 
