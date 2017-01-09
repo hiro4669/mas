@@ -71,10 +71,23 @@ static void chain_header(MEM_Controller controller, Header* new_header) {
     printf("chain from second\n");
     new_header->s.next = controller->block_header;
     controller->block_header->s.prev = new_header;
-    controller->block_header = new_header;
-    
-    
-    
+    controller->block_header = new_header;    
+}
+
+static void unchain_header(MEM_Controller controller, Header* current_header) {
+    if (current_header->s.prev == NULL) { // controller->block_header points to it
+        controller->block_header = current_header->s.next;
+        if (current_header->s.next) {
+            current_header->s.next->s.prev = NULL;
+        }
+        return;
+    } 
+    // otherwise
+    Header* prev_header = current_header->s.prev;
+    prev_header->s.next = current_header->s.next;
+    if (current_header->s.next) {
+        current_header->s.next->s.prev = prev_header;
+    }
 }
 
 void MEM_dump_memory_func(MEM_Controller controller) {
@@ -106,11 +119,11 @@ void MEM_dump_memory_func(MEM_Controller controller) {
 void MEM_free_func(MEM_Controller controller, void* bptr) {
     uint8_t *ptr = (uint8_t*)bptr - sizeof(Header);
     printf("free ptr = %p\n", ptr);
-    Header *current_head = (Header*)ptr;
-    
-    
-    
-    
+    Header *current_header = (Header*)ptr;
+    unchain_header(controller, current_header); // remove from chain
+//    printf("size = %d\n", current_header->s.size);
+    memset(current_header, 0xcc, sizeof(Header) + current_header->s.size + MARK_SIZE);
+    free((void*)current_header);    
 }
 
 void *MEM_malloc_func(MEM_Controller controller, char* filename, int line, size_t size) {

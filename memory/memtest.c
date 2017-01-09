@@ -17,5 +17,6 @@ int main(void) {
     
     MEM_dump_memory();
     MEM_free(ptr);
+    MEM_dump_memory();
     return 0;
 }
