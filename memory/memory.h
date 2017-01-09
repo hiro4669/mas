@@ -15,7 +15,7 @@ struct MEM_Controller_tag {
     Header *block_header;
 };
 
-void test();
+
 
 #endif /* MEMORY_H */
 
