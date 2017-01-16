@@ -15,6 +15,7 @@ extern MEM_Controller mem_default_controller;
 /* Storage */
 #define MEM_open_storage(page_size) MEM_open_storage_func(mem_default_controller, __FILE__, __LINE__, page_size)
 #define MEM_storage_malloc(storage, size) MEM_storage_malloc_func(mem_default_controller, __FILE__, __LINE__, storage, size)
+#define MEM_dispose(storage) MEM_dispose_func(mem_default_controller, storage)
 
 void test();
 /* Malloc */
@@ -27,5 +28,7 @@ MEM_Storage MEM_open_storage_func(MEM_Controller controller,
         char* filename, int line, int page_size);
 void* MEM_storage_malloc_func(MEM_Controller controller, char* filename, 
         int line, MEM_Storage storage, size_t size);
+
+void MEM_dispose_func(MEM_Controller controller, MEM_Storage storage);
 
 #endif
