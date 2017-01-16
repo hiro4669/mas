@@ -8,7 +8,8 @@ OBJS = memtest.o memory.o storage.o
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) -o $@ ./memtest.c ./memory.c
+#	$(CC) -o $@ ./memtest.c ./memory.c
+	$(CC) -o $@ $(OBJS)
 
 .c.o:
 	$(CC) $(CFLAGS) $*.c

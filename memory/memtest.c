@@ -12,11 +12,19 @@ int main(void) {
 //        *ptr++ = 0xaa;
         ptr[i] = 0xaa;
     }
-    MEM_malloc(11);
-    
-    
-    MEM_dump_memory();
+//    MEM_malloc(11);
+//    MEM_dump_memory();
     MEM_free(ptr);
     MEM_dump_memory();
+    
+    MEM_Storage storage = MEM_open_storage(0);
+    ptr = MEM_storage_malloc(storage, 10);
+    for (i = 0; i < 10; ++i) {
+        ptr[i] = 0xaa;
+    }
+    MEM_dump_memory();
+
+    
+    
     return 0;
 }

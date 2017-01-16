@@ -13,7 +13,8 @@ extern MEM_Controller mem_default_controller;
 #define MEM_free(ptr) MEM_free_func(mem_default_controller, ptr)
 
 /* Storage */
-#define MEM_open_strage(page_size) MEM_open_storage_func(mem_default_controller, __FILE__, __LINE__, page_size)
+#define MEM_open_storage(page_size) MEM_open_storage_func(mem_default_controller, __FILE__, __LINE__, page_size)
+#define MEM_storage_malloc(storage, size) MEM_storage_malloc_func(mem_default_controller, __FILE__, __LINE__, storage, size)
 
 void test();
 /* Malloc */
@@ -24,5 +25,7 @@ void MEM_free_func(MEM_Controller controller, void* bptr);
 /* Storage */
 MEM_Storage MEM_open_storage_func(MEM_Controller controller,
         char* filename, int line, int page_size);
+void* MEM_storage_malloc_func(MEM_Controller controller, char* filename, 
+        int line, MEM_Storage storage, size_t size);
 
 #endif
