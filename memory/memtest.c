@@ -18,7 +18,7 @@ int main(void) {
     MEM_dump_memory();
     
 
-    MEM_Storage storage = MEM_open_storage(3);
+    MEM_Storage storage = MEM_open_storage(0);
     ptr = MEM_storage_malloc(storage, 10);
     for (i = 0; i < 10; ++i) {
         ptr[i] = 0xaa;

@@ -52,7 +52,7 @@ void* MEM_storage_malloc_func(MEM_Controller controller, char* filename, int lin
         printf("MemoryPage size: %d, alloc_num: %d, cellsize: %d\n", (int)sizeof(MemoryPage), (int)alloc_num, (int)CELL_SIZE);
         printf("storage_malloc_size = %d\n", (int)(sizeof(MemoryPage) + (alloc_num-1) * CELL_SIZE));
         page_list->cell_num = alloc_num;
-        page_list->use_cell_num = alloc_num;
+        page_list->use_cell_num = cellnum;
         page_list->next = NULL;
         storage->page_list = page_list;
         return &page_list->cell[0];        
