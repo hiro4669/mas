@@ -58,6 +58,12 @@ translation_unit
 definision_or_statement 
             : statement
             ;
+
+statement_list
+			: statement
+			| statement_list statement
+			;
+
 statement   : expression SEMICOLON
 			| global_statement
 			| while_statement 
@@ -74,6 +80,7 @@ identifier_list
 			: IDENTIFIER
 			| identifier_list COMMA IDENTIFIER
 			;
+
 expression  : logical_or_expression
 			| IDENTIFIER ASSIGN expression
 			;
@@ -134,7 +141,8 @@ primary_expression
 while_statement
 			: WHILE LP expression RP block
 
-block : LC RC
+block : LC statement_list RC
+	  | LC RC
 	  ;
 expression_opt
 			: /* empty */ 

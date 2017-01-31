@@ -38,7 +38,11 @@ b = 123;
 global id;
 global abc, def, ghi;
 
-while (t = 1) {}
+while (t = 1) {
+ i = 10;
+ test(1, 2, 3);
+ j = "abc";
+}
 
 return 10;
 
