@@ -57,7 +57,18 @@ translation_unit
 
 definision_or_statement 
             : statement
+			| function_definition
             ;
+
+function_definition
+			: FUNCTION IDENTIFIER LP parameter_list RP block
+			| FUNCTION IDENTIFIER LP                RP block
+			;
+
+parameter_list
+			: IDENTIFIER
+			| parameter_list COMMA IDENTIFIER
+			;
 
 statement_list
 			: statement
@@ -125,12 +136,11 @@ argument_list
 			| argument_list COMMA expression
 			;
 primary_expression
-			: INT_LITERAL
-			| IDENTIFIER LP RP
+			: IDENTIFIER LP RP
 			| IDENTIFIER LP argument_list RP
 			| LP expression RP
 			| IDENTIFIER
-			/*| INT_LITERAL*/
+			| INT_LITERAL
 			| DOUBLE_LITERAL
 			| STRING_LITERAL
 			| TRUE_T

@@ -71,3 +71,10 @@ if (i < 10) {
 } else {
 }
 
+function test() {
+   i = 10;
+}
+
+function test(i, j, k) {
+  print(10);
+}
