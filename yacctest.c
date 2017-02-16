@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "mas.h"
 
 #include "info.h"
 #include "./memory/MEM.h"
