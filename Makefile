@@ -6,8 +6,9 @@ MAKE = /usr/bin/make
 #OBJS = y.tab.o lex.yy.o lextest.o keyword.o
 #OBJS = y.tab.o scanner.o lextest.o keyword.o
 #OBJS = y.tab.o scanner.o keyword.o yacctest.o
-COMMON = y.tab.o keyword.o
-OBJS = $(COMMON) scanner.o
+COMMON = y.tab.o keyword.o util.o
+MEMORY = ./memory/memory.o ./memory/storage.o
+OBJS = $(COMMON) $(MEMORY) scanner.o
 YTEST = yacctest.o
 LTEST = lextest.o
 

@@ -13,10 +13,11 @@ int main(void) {
         ptr[i] = 0xaa;
     }
 //    MEM_malloc(11);
-//    MEM_dump_memory();
+    MEM_dump_memory();
     MEM_free(ptr);
     MEM_dump_memory();
     
+    printf("--------------------\n");
 
     MEM_Storage storage = MEM_open_storage(0);
     ptr = MEM_storage_malloc(storage, 10);
