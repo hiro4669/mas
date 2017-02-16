@@ -1,6 +1,7 @@
 #ifndef _MEM_H_
 #define _MEM_H_
 
+#include <stddef.h>
 
 typedef struct MEM_Controller_tag *MEM_Controller;
 typedef struct MEM_Storage_tag    *MEM_Storage;

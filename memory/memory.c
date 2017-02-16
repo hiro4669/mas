@@ -57,18 +57,18 @@ static void set_header(Header* header, size_t size, char* filename, int line) {
 
 static void set_footer(Header* header, size_t size) {
     uint8_t *ptr = (uint8_t*)&header[1] + size;
-    printf("header: %p, size = %zu, ptr = %p\n", header, size, ptr);
+    fprintf(stderr, "header: %p, size = %zu, ptr = %p\n", header, size, ptr);
     memset((void*)ptr, MARK, MARK_SIZE);
     
 }
 
 static void chain_header(MEM_Controller controller, Header* new_header) {
     if (controller->block_header == NULL) {
-        printf("chain first\n");
+        fprintf(stderr, "chain first\n");
         controller->block_header = new_header;
         return;
     }
-    printf("chain from second\n");
+    fprintf(stderr, "chain from second\n");
     new_header->s.next = controller->block_header;
     controller->block_header->s.prev = new_header;
     controller->block_header = new_header;    
@@ -93,23 +93,23 @@ static void unchain_header(MEM_Controller controller, Header* current_header) {
 void MEM_dump_memory_func(MEM_Controller controller) {
     Header *current_header = NULL;
     if ((current_header = controller->block_header) == NULL) {
-        printf("no allocated memory\n");
+        fprintf(stderr, "no allocated memory\n");
         return;
     }
     int i;
     uint8_t *ptr;
     while(current_header) {
         uint32_t alloc_size = current_header->s.size + sizeof(Header) + MARK_SIZE;
-        printf("-----------------------------------\n");
-        printf("-- size:%d, file:%s, line:%d -- \n", current_header->s.size, current_header->s.filename, current_header->s.line);
-        printf("-- head:%p, begin:%p --\n", current_header, &current_header[1]);
-        printf("-----------------------------------\n");
+        fprintf(stderr, "-----------------------------------\n");
+        fprintf(stderr, "-- size:%d, file:%s, line:%d -- \n", current_header->s.size, current_header->s.filename, current_header->s.line);
+        fprintf(stderr, "-- head:%p, begin:%p --\n", current_header, &current_header[1]);
+        fprintf(stderr, "-----------------------------------\n");
         ptr = (uint8_t*)current_header;
         for (i = 0; i < alloc_size; ++i, ++ptr) {
             if (i % 16 == 0) printf("\n");
-            printf("%02x ", *ptr);
+            fprintf(stderr, "%02x ", *ptr);
         }
-        printf("\n\n");                
+        fprintf(stderr, "\n\n");                
         current_header = current_header->s.next;
     }
     
@@ -118,10 +118,9 @@ void MEM_dump_memory_func(MEM_Controller controller) {
 
 void MEM_free_func(MEM_Controller controller, void* bptr) {
     uint8_t *ptr = (uint8_t*)bptr - sizeof(Header);
-    printf("free ptr = %p\n", ptr);
+    fprintf(stderr, "free ptr = %p\n", ptr);
     Header *current_header = (Header*)ptr;
     unchain_header(controller, current_header); // remove from chain
-//    printf("size = %d\n", current_header->s.size);
     memset(current_header, 0xcc, sizeof(Header) + current_header->s.size + MARK_SIZE);
     free((void*)current_header);    
 }
@@ -129,41 +128,22 @@ void MEM_free_func(MEM_Controller controller, void* bptr) {
 void *MEM_malloc_func(MEM_Controller controller, char* filename, int line, size_t size) {
     uint8_t *ptr;
     uint32_t i;
-    printf("call mem_malloc_func\n");
+    fprintf(stderr, "call mem_malloc_func\n");
     uint32_t hsize = sizeof(Header);
     
     uint32_t alloc_size = sizeof(Header) + size + MARK_SIZE;
     
     Header *header = (Header*)malloc(alloc_size);
     if (header == NULL) {
-        printf("error");
+        fprintf(stderr, "error");
         exit(1);
     }    
     
     memset((void*)header, 0xcc, alloc_size);
     
-    /*
-    ptr = (uint8_t*)header;
-    for (i = 0; i < alloc_size; ++i, ++ptr) {
-        if (i % 16 == 0) printf("\n");        
-        printf("%02x ", *ptr);
-
-    }
-    printf("\n");
-     */
     set_header(header, size, filename, line);
     chain_header(controller, header);
     set_footer(header ,size);
-    /*
-    ptr = (uint8_t*)header;
-    for (i = 0; i < alloc_size; ++i, ++ptr) {
-        if (i % 16 == 0) printf("\n");        
-        printf("%02x ", *ptr);
-
-    }
-    printf("\n");
-    */
-    
     return (void*)&header[1];
     
 }
@@ -172,24 +152,24 @@ void test() {
     int val;
     void *p;
     
-    printf("test\n");
-    printf("ALIGN_SIZE = %d\n", (int)ALIGN_SIZE); // 8
-    printf("HeaderStruct size = %d\n", (int)sizeof(HeaderStruct)); // 48
-    printf("HEADER_ALIGN_SIZE = %d\n", (int)HEADER_ALIGN_SIZE);  // 6
-    printf("u size = %d\n", (int)(sizeof(Align) * HEADER_ALIGN_SIZE));
-    printf("long size = %d\n", (int)sizeof(long));
-    printf("double size = %d\n", (int)sizeof(double));
-    printf("void*  size = %d\n", (int)sizeof(p));
-    printf("int    size = %d\n", (int)sizeof(int));    
+    fprintf(stderr, "test\n");
+    fprintf(stderr, "ALIGN_SIZE = %d\n", (int)ALIGN_SIZE); // 8
+    fprintf(stderr, "HeaderStruct size = %d\n", (int)sizeof(HeaderStruct)); // 48
+    fprintf(stderr, "HEADER_ALIGN_SIZE = %d\n", (int)HEADER_ALIGN_SIZE);  // 6
+    fprintf(stderr, "u size = %d\n", (int)(sizeof(Align) * HEADER_ALIGN_SIZE));
+    fprintf(stderr, "long size = %d\n", (int)sizeof(long));
+    fprintf(stderr, "double size = %d\n", (int)sizeof(double));
+    fprintf(stderr, "void*  size = %d\n", (int)sizeof(p));
+    fprintf(stderr, "int    size = %d\n", (int)sizeof(int));    
     
     val = sizeof(HeaderStruct);
     val = 0;
     if (val) {
-        printf("val = %d\n", val);
-        printf("val2= %d\n", (val - 1) / 8 );
+        fprintf(stderr, "val = %d\n", val);
+        fprintf(stderr, "val2= %d\n", (val - 1) / 8 );
         
     } else {
-        printf("boooo\n");
+        fprintf(stderr, "boooo\n");
     }
     
 }

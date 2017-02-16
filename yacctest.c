@@ -10,17 +10,14 @@ int main(void) {
     extern int yyparse(void);
     extern FILE *yyin;
     
-
-    LocalInfo *l_info = (LocalInfo*)MEM_malloc(sizeof(LocalInfo));
-    l_info->line_number = 10;
-    printf("line = %d\n", l_info->line_number);
-    
-    
+    mas_init_localinfo();
     yyin = fopen("yacctest.ma", "r");
     if (yyparse()) {
-        fprintf(stderr, "Error Error Error\n");
+        fprintf(stderr, "Error Error Error :line %d\n", mas_get_localinfo()->line_number);
         exit(1);
     }
     fclose(yyin);
+    mas_delete_localinfo();
+    
     return 0;
 }

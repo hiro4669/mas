@@ -26,10 +26,10 @@ scantest: stest ltest
 	./ltest > output.l
 	diff -Naru output.s output.l
 
-stest: $(COMMON) $(LTEST) scanner.o 
+stest: $(COMMON) $(MEMORY) $(LTEST) scanner.o 
 	$(CC) -o $@ $^
 
-ltest: $(COMMON) $(LTEST) lex.yy.o
+ltest: $(COMMON) $(MEMORY) $(LTEST) lex.yy.o
 	$(CC) -o $@ $^
 
 keyword.c: keyword.key

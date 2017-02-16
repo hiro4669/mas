@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "y.tab.h"
+#include "mas.h"
 
 int main(void) {
     extern FILE *yyin;
@@ -7,7 +8,9 @@ int main(void) {
     int i;
     int t_type;
 
+    mas_init_localinfo();
     yyin = fopen("yacctest.ma", "r");
+//    yyin = fopen("rtest.ma", "r");
     if (yyin == NULL) {
         fprintf(stderr, "cannot open file\n");
     }
@@ -174,6 +177,9 @@ int main(void) {
         }
     }
 end:
+                
+
+    mas_delete_localinfo();                
     return 0;
 
 }

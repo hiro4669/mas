@@ -12,10 +12,6 @@
 typedef struct LocalInfo_tag LocalInfo;
 
 
-/*  util.c */
-void mas_set_localinfo(LocalInfo *l_info);
-LocalInfo *mas_get_localinfo();
-
 typedef struct Expression_tag Expression;
 
 
@@ -81,6 +77,12 @@ struct Expression_tag {
         FunctionCallExpression *function_call_expression;
     } u;    
 };
+
+/*  util.c */
+void mas_set_localinfo(LocalInfo *l_info);
+LocalInfo *mas_get_localinfo();
+void mas_init_localinfo();
+void mas_delete_localinfo();
 
 #endif /* MAS_H */
 

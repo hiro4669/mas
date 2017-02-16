@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include "y.tab.h"
 #include "keyword.h"
+#include "info.h"
 
 #define ISASCII(c) isascii((unsigned char)(c))
 #define ISALNUM(c) (ISASCII(c) && isalnum((unsigned char)(c)))
@@ -87,6 +88,8 @@ retry:
             goto retry;
         }
         case '\n': {
+//            mas_get_localinfo()->line_number++;
+            mas_get_localinfo()->line_number++;
             goto retry;
         }
         case EOF: {
