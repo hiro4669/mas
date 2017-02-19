@@ -131,7 +131,7 @@ void *MEM_malloc_func(MEM_Controller controller, char* filename, int line, size_
     fprintf(stderr, "call mem_malloc_func\n");
     uint32_t hsize = sizeof(Header);
     
-    uint32_t alloc_size = sizeof(Header) + size + MARK_SIZE;
+    size_t alloc_size = sizeof(Header) + size + MARK_SIZE;
     
     Header *header = (Header*)malloc(alloc_size);
     if (header == NULL) {
@@ -147,6 +147,22 @@ void *MEM_malloc_func(MEM_Controller controller, char* filename, int line, size_
     return (void*)&header[1];
     
 }
+
+void* MEM_realloc_func(MEM_Controller controller, char* filename, int line, void* ptr, size_t size) {
+    void *new_ptr;
+    void *real_ptr;
+    size_t alloc_size = sizeof(Header) + size + MARK_SIZE;
+    real_ptr = ptr - sizeof(Header);
+    
+    fprintf(stderr, "ptr:real_ptr = %p:%p\n", ptr, real_ptr);
+    unchain_header(controller, real_ptr);
+    
+    
+    
+
+    return NULL;    
+}
+
 
 void test() {
     int val;
