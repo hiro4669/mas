@@ -8,11 +8,12 @@
 #ifndef _MAS_H_
 #define _MAS_H_
 
+#include "./memory/MEM.h"
+
 
 typedef struct LocalInfo_tag LocalInfo;
-
-
 typedef struct Expression_tag Expression;
+typedef struct MAS_Interpreter_tag MAS_Interpreter;
 
 
 typedef enum {
@@ -78,11 +79,28 @@ struct Expression_tag {
     } u;    
 };
 
+struct MAS_Interpreter_tag {
+    int line_number;
+    Expression *expression;
+    MEM_Storage ast_storage;    
+};
+
 /*  util.c */
 void mas_set_localinfo(LocalInfo *l_info);
 LocalInfo *mas_get_localinfo();
 void mas_init_localinfo();
 void mas_delete_localinfo();
+void* mas_malloc(MEM_Storage storage, size_t size);
+
+/* interface.c */
+MAS_Interpreter* mas_create_interpreter();
+MAS_Interpreter* mas_get_interpreter();
+void mas_delete_interpreter();
+
+/* ast.c */
+Expression* mas_create_binary_expression(ExpressionType type, Expression* left, Expression* right);
+Expression* mas_create_int_expression(int i);
+Expression* mas_create_double_expression(double i);
 
 #endif /* MAS_H */
 
