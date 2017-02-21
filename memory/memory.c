@@ -165,29 +165,46 @@ void* MEM_realloc_func(MEM_Controller controller, char* filename, int line, void
     Header old_header;
     int old_size;
     size_t alloc_size = sizeof(Header) + size + MARK_SIZE;
-    real_ptr = ptr - sizeof(Header);
-    
-    fprintf(stderr, "ptr:real_ptr = %p:%p\n", ptr, real_ptr);
-    unchain_header(controller, real_ptr);
-    
-    fprintf(stderr, "next1 = %p\n", ((Header*)real_ptr)->s.next);
-    
-    old_header = *((Header*)real_ptr);
-    old_size = old_header.s.size;
-    fprintf(stderr, "next2 = %p\n", old_header.s.next);
-    
+
+
+    if (ptr) {
+        real_ptr = ptr - sizeof(Header);
+        fprintf(stderr, "ptr:real_ptr = %p:%p\n", ptr, real_ptr);        
+        unchain_header(controller, real_ptr);
+        old_header = *((Header*)real_ptr);
+        old_size = old_header.s.size;
+    } else {
+        real_ptr = NULL;
+        old_size = 0;
+    }
+           
     new_ptr = realloc(real_ptr, alloc_size);
+    if (new_ptr == NULL) {
+        fprintf(stderr, "realloc error");
+        if (ptr) {
+            free(real_ptr);
+        }
+        exit(1);
+    }
     
     fprintf(stderr, "new_ptr = %p\n", new_ptr);
     
-    *((Header*)new_ptr) = old_header;
-    ((Header*)new_ptr)->s.size = size;
-    ((Header*)new_ptr)->s.line = line;
-    ((Header*)new_ptr)->s.filename = filename;
+    if (ptr) {        
+        *((Header*)new_ptr) = old_header;
+        ((Header*)new_ptr)->s.size = size;
+        ((Header*)new_ptr)->s.line = line;
+        ((Header*)new_ptr)->s.filename = filename;
+        rechain_header(controller, new_ptr);
+        set_footer(new_ptr, size);
+    } else {
+//        memset(new_ptr, 0xcc, alloc_size);
+        set_header(new_ptr, size, filename, line);
+        chain_header(controller, new_ptr);
+        set_footer(new_ptr, size);
+    }
     
     fprintf(stderr, "new next = %p\n", ((Header*)new_ptr)->s.next);
-    rechain_header(controller, new_ptr);
-    set_footer(new_ptr, size);
+
     if (size > old_size) {
         memset((char*)new_ptr + old_size + sizeof(Header), 0xcc, size - old_size);
     }

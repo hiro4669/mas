@@ -14,12 +14,13 @@ int main(void) {
         ptr[i] = 0xaa;
     }
     */
-    ptr2 = (char*)MEM_malloc(20);
+//    ptr2 = (char*)MEM_malloc(20);
+    ptr2 = NULL;
 
     MEM_dump_memory();
     fprintf(stderr, "do realloc\n");
     ptr2 = MEM_realloc(30, ptr2);
-    for (i = 0; i < 30; ++i) {
+    for (i = 0; i < 20; ++i) {
         ptr2[i] = 0xab;
     }
     MEM_dump_memory();
