@@ -8,15 +8,27 @@ int main(void) {
     LocalInfo *l_info;
     int i;
     test();    
+    /*
     ptr = (char*)MEM_malloc(10);
     for (i = 0; i < 10; ++i) {
         ptr[i] = 0xaa;
     }
+    */
+    ptr2 = (char*)MEM_malloc(20);
 
     MEM_dump_memory();
-    MEM_realloc(20, ptr);
+    fprintf(stderr, "do realloc\n");
+    ptr2 = MEM_realloc(30, ptr2);
+    for (i = 0; i < 30; ++i) {
+        ptr2[i] = 0xab;
+    }
+    MEM_dump_memory();
 //    MEM_free(ptr);
+//    fprintf(stderr, "--dump--\n");
 //    MEM_dump_memory();
+    MEM_free(ptr2);
+    fprintf(stderr, "--dump--\n");
+    MEM_dump_memory();
     /*
     l_info = (LocalInfo*)MEM_malloc(sizeof(LocalInfo));
     l_info->line_number = 0xff;

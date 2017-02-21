@@ -74,6 +74,17 @@ static void chain_header(MEM_Controller controller, Header* new_header) {
     controller->block_header = new_header;    
 }
 
+static void rechain_header(MEM_Controller controller, Header* header) {
+    if (header->s.prev) {
+        header->s.prev->s.next = header;
+    } else {
+        controller->block_header = header;
+    }
+    if (header->s.next) {
+        header->s.next->s.prev = header;
+    }
+}
+
 static void unchain_header(MEM_Controller controller, Header* current_header) {
     if (current_header->s.prev == NULL) { // controller->block_header points to it
         controller->block_header = current_header->s.next;
@@ -106,7 +117,7 @@ void MEM_dump_memory_func(MEM_Controller controller) {
         fprintf(stderr, "-----------------------------------\n");
         ptr = (uint8_t*)current_header;
         for (i = 0; i < alloc_size; ++i, ++ptr) {
-            if (i % 16 == 0) printf("\n");
+            if (i % 16 == 0) fprintf(stderr, "\n");
             fprintf(stderr, "%02x ", *ptr);
         }
         fprintf(stderr, "\n\n");                
@@ -151,16 +162,38 @@ void *MEM_malloc_func(MEM_Controller controller, char* filename, int line, size_
 void* MEM_realloc_func(MEM_Controller controller, char* filename, int line, void* ptr, size_t size) {
     void *new_ptr;
     void *real_ptr;
+    Header old_header;
+    int old_size;
     size_t alloc_size = sizeof(Header) + size + MARK_SIZE;
     real_ptr = ptr - sizeof(Header);
     
     fprintf(stderr, "ptr:real_ptr = %p:%p\n", ptr, real_ptr);
     unchain_header(controller, real_ptr);
     
+    fprintf(stderr, "next1 = %p\n", ((Header*)real_ptr)->s.next);
     
+    old_header = *((Header*)real_ptr);
+    old_size = old_header.s.size;
+    fprintf(stderr, "next2 = %p\n", old_header.s.next);
+    
+    new_ptr = realloc(real_ptr, alloc_size);
+    
+    fprintf(stderr, "new_ptr = %p\n", new_ptr);
+    
+    *((Header*)new_ptr) = old_header;
+    ((Header*)new_ptr)->s.size = size;
+    ((Header*)new_ptr)->s.line = line;
+    ((Header*)new_ptr)->s.filename = filename;
+    
+    fprintf(stderr, "new next = %p\n", ((Header*)new_ptr)->s.next);
+    rechain_header(controller, new_ptr);
+    set_footer(new_ptr, size);
+    if (size > old_size) {
+        memset((char*)new_ptr + old_size + sizeof(Header), 0xcc, size - old_size);
+    }
     
 
-    return NULL;    
+    return (void*)&((Header*)new_ptr)[1];
 }
 
 
