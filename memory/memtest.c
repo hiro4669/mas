@@ -19,7 +19,7 @@ int main(void) {
 
     MEM_dump_memory();
     fprintf(stderr, "do realloc\n");
-    ptr2 = MEM_realloc(30, ptr2);
+    ptr2 = MEM_realloc(ptr2, 30);
     for (i = 0; i < 20; ++i) {
         ptr2[i] = 0xab;
     }

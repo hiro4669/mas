@@ -21,6 +21,10 @@ all: $(OBJS) $(YTEST)
 	$(MAKE) $@ -C memory
 	$(CC) -o $(TARGET) $^
 
+stringtest: $(MEMORY) string.o interface.o util.o
+	$(MAKE) all -C memory
+	$(CC) -o $@ $^
+
 asttest: $(OBJS) asttest.o
 	$(CC) -o $@ $^
 

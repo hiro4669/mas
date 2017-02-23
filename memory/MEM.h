@@ -12,7 +12,7 @@ extern MEM_Controller mem_default_controller;
 #define MEM_malloc(size) MEM_malloc_func(mem_default_controller, __FILE__, __LINE__, size)
 #define MEM_dump_memory() MEM_dump_memory_func(mem_default_controller)
 #define MEM_free(ptr) MEM_free_func(mem_default_controller, ptr)
-#define MEM_realloc(size, ptr) MEM_realloc_func(mem_default_controller, __FILE__, __LINE__, ptr, size)
+#define MEM_realloc(ptr, size) MEM_realloc_func(mem_default_controller, __FILE__, __LINE__, ptr, size)
 
 /* Storage */
 #define MEM_open_storage(page_size) MEM_open_storage_func(mem_default_controller, __FILE__, __LINE__, page_size)

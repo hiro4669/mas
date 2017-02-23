@@ -6,7 +6,7 @@
 
 #include "mas.h"
 
-void* ast_malloc(size_t size) {
+static void* ast_malloc(size_t size) {
     MAS_Interpreter *interp = mas_get_interpreter();
     return mas_malloc(interp->ast_storage, size);
 }
