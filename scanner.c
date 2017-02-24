@@ -22,6 +22,7 @@ extern struct OPE *in_word_set(char*, unsigned int);
 FILE *yyin;
 uint8_t *yytext = NULL;
 int ytp = 0;
+int yt_max = 0;
 
 static uint8_t *buffer = NULL;
 static uint32_t ptr;
@@ -41,6 +42,7 @@ static void real_read() {
     }
     if (yytext == NULL) {
         yytext = (uint8_t*)malloc(BUFSIZE);
+        yt_max += BUFSIZE;
     }
     ptr = 0;
     limit = fread(buffer, 1, BUFSIZE, yyin);
@@ -66,7 +68,12 @@ static void pushback(int c) {
     if (ptr > 0) --ptr;
 }
 
+/* Dynamically extend yytext */
 static void addtext(char c) {
+    if (ytp == (yt_max - 1)) {
+        yt_max += BUFSIZE;
+        yytext = (uint8_t*)realloc(yytext, yt_max);
+    }    
     yytext[ytp++] = c;
     yytext[ytp] = 0;
 }
@@ -76,7 +83,7 @@ static void error() {
     exit(1);
 }
 
-int yylex() {
+int yylex() {    
     char c; 
     ytp = 0;
 //    char *v = "ab\"c";

@@ -1,4 +1,4 @@
-10;
+123456710;
 test(1, 2);
 test();
 hoge;
@@ -78,3 +78,5 @@ function test() {
 function test(i, j, k) {
   print(10);
 }
+
+i++
