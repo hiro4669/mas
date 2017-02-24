@@ -23,9 +23,9 @@ void mas_open_string_literal(void) {
 }
 
 void mas_add_string_literal(int letter) {
-    fprintf(stderr, "letter = %c\n", (char)letter);
+//    fprintf(stderr, "letter = %c\n", (char)letter);
     if (max == str_index) {
-        fprintf(stderr, "extend memory\n");
+//        fprintf(stderr, "extend memory\n");
         max += STRING_ALLOC_SIZE;
         buffer = MEM_realloc(buffer, STRING_ALLOC_SIZE);
     }
@@ -33,8 +33,10 @@ void mas_add_string_literal(int letter) {
 }
 
 void mas_reset_string_literal() {
-    MEM_free(buffer);
-    buffer = NULL;
+    if (buffer) {
+        MEM_free(buffer);
+        buffer = NULL;
+    }
     str_index = max = 0;
 }
 

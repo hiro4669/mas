@@ -2,6 +2,8 @@
 #include "mas.h"
 
 int main(void) {
+    char *message = "Hello World";
+    char *copy = NULL;
     char* st1;
     char* st2;
     mas_open_string_literal();
@@ -18,6 +20,9 @@ int main(void) {
     st2 = mas_create_identifier(st1);
     
     fprintf(stderr, "st2 = %s(%p)\n", st2, st2);
+    
+    copy = mas_create_identifier(message);
+    fprintf(stderr, "copy = %s\n", copy);
     
     mas_reset_string_literal();
     return 0;

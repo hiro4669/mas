@@ -45,7 +45,7 @@
 %token <identifier>   IDENTIFIER
 %token <int_value>    INT_LITERAL
 %token <double_value> DOUBLE_LITERAL
-%token STRING_LITERAL
+%token <identifier>   STRING_LITERAL
 
 
 %%

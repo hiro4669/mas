@@ -248,18 +248,21 @@ retry:
             return MOD;
         }
         case '"': {
-            int flg = FALSE;            
+            mas_open_string_literal();
+            int flg = FALSE;
             while(1) {
                 c = read();
                 switch (c) {
                     case 'n': {
                         if (yytext[ytp - 1] == '\\') {
                             if (flg == TRUE) {
-                                addtext(c);
+                                mas_add_string_literal(c);
+//                                addtext(c);
                                 flg = FALSE;
                             } else {
-                                --ytp;                                
-                                addtext('\n');                                
+                                --ytp;
+                                mas_add_string_literal(c);
+  //                              addtext('\n');                    
                             }
                             continue;
                         }
@@ -267,11 +270,13 @@ retry:
                     case 't': {
                         if (yytext[ytp - 1] == '\\') {
                             if (flg == TRUE) {
-                                addtext(c);
+                                mas_add_string_literal(c);
+//                                addtext(c);
                                 flg = FALSE;
                             } else {
                                 --ytp;
-                                addtext('\t');
+                                mas_add_string_literal('\t');
+//                                addtext('\t');
                             }
                             continue;
                         }
@@ -279,14 +284,16 @@ retry:
                     case '"': {
                         if (yytext[ytp - 1] == '\\') {
                             --ytp;
-                            addtext('"');
+                            mas_add_string_literal('"');
+//                            addtext('"');
                             continue;
                         }
                     }
                     case '\\': {
                         if (yytext[ytp - 1] == '\\') {
                             --ytp;
-                            addtext('\\');
+//                            addtext('\\');
+                            mas_add_string_literal('\\');
                             flg = TRUE;
                             continue;
                         }
@@ -294,10 +301,14 @@ retry:
                 }                                
                 
                 if (c == '"') {
-                    yylval.identifier = (char*)yytext;
+//                    yylval.identifier = (char*)yytext;
+//                    yylval.identifier = mas_create_identifier((char*)yytext);
+                    yylval.identifier = mas_close_string_literal();
+                    
                     return STRING_LITERAL;
                 }
-                addtext(c);
+                mas_add_string_literal(c);
+  //              addtext(c);
             }
             error();
         }
@@ -316,7 +327,9 @@ retry:
     if (op != NULL) {
         return op->type;
     }
-    yylval.identifier = (char*)yytext;
+    //yylval.identifier = (char*)yytext;
+    yylval.identifier = mas_create_identifier((char*)yytext);
+    
 //    printf("%s\n", yytext);
     return IDENTIFIER;
 //    exit(1);

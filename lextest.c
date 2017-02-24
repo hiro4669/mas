@@ -163,7 +163,7 @@ int main(void) {
                 break;
             }
             case STRING_LITERAL: {
-                printf("STRING_LITERAL: \"%s \"\n", yylval.identifier);
+                printf("STRING_LITERAL: \"%s\"\n", yylval.identifier);
                 break;
             }
             case EOF: {
@@ -178,8 +178,9 @@ int main(void) {
     }
 end:
                 
-
-    mas_delete_localinfo();                
+    
+    mas_delete_localinfo();
+    mas_reset_string_literal();
     return 0;
 
 }

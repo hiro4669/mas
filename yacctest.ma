@@ -79,4 +79,3 @@ function test(i, j, k) {
   print(10);
 }
 
-i++
