@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 #include <stdio.h>
-#include "mas.h"
+#include "visitor.h"
 
 static void show(Expression* expr) {
     switch(expr->type) {
@@ -30,20 +30,24 @@ static void show(Expression* expr) {
     }
 }
 
-int main(void) {
-    
-    MAS_Interpreter *interp = mas_create_interpreter();
+int main(void) {    
+    MAS_Interpreter *interp = mas_create_interpreter();  // this is required to create ast_storage
+    Visitor* visitor = create_visitor();
+
     Expression* int_expr = mas_create_int_expression(10);
-    Expression* d_expr = mas_create_double_expression(3.5);
-//    Expression* bexpr = mas_create_binary_expression(ADD_EXPRESSION, int_expr, d_expr);
-    
+    Expression* d_expr = mas_create_double_expression(3.5);    
+
     Expression* int_expr2 = mas_create_int_expression(1);
     Expression* int_expr3 = mas_create_int_expression(2);
-    Expression* bexpr2 = mas_create_binary_expression(SUB_EXPRESSION, int_expr2, int_expr3);
-    
+
+    Expression* bexpr2 = mas_create_binary_expression(SUB_EXPRESSION, int_expr2, int_expr3);    
     Expression* bexpr = mas_create_binary_expression(ADD_EXPRESSION, bexpr2, d_expr);  
+
     
-    show(bexpr);
+    fprintf(stderr, "-- show ---\n");
+//    show(bexpr);
+    traverse_expr(bexpr, visitor);
+
     
     mas_delete_interpreter();
     return 0;

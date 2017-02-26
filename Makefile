@@ -6,7 +6,7 @@ MAKE = /usr/bin/make
 #OBJS = y.tab.o lex.yy.o lextest.o keyword.o
 #OBJS = y.tab.o scanner.o lextest.o keyword.o
 #OBJS = y.tab.o scanner.o keyword.o yacctest.o
-COMMON = y.tab.o keyword.o util.o interface.o ast.o string.o
+COMMON = y.tab.o keyword.o util.o interface.o ast.o string.o visitor.o traversor.o
 MEMORY = ./memory/memory.o ./memory/storage.o
 OBJS = $(COMMON) $(MEMORY) scanner.o
 YTEST = yacctest.o
@@ -25,7 +25,7 @@ stringtest: $(MEMORY) string.o interface.o util.o stringtest.o
 	$(MAKE) all -C memory
 	$(CC) -o $@ $^
 
-asttest: $(OBJS) asttest.o
+asttest: $(OBJS) asttest.o 
 	$(CC) -o $@ $^
 
 scantest: stest ltest

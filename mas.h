@@ -14,6 +14,7 @@
 typedef struct LocalInfo_tag LocalInfo;
 typedef struct Expression_tag Expression;
 typedef struct MAS_Interpreter_tag MAS_Interpreter;
+typedef struct Visitor_tag Visitor;
 
 
 typedef enum {
@@ -109,7 +110,11 @@ void mas_reset_string_literal();
 char* mas_close_string_literal();
 char* mas_create_identifier(char* str);
 
+/* visitor.c*/
+Visitor* create_visitor();
 
+/* traversor.c */
+void traverse_expr(Expression* expr, Visitor* visitor);
 
 
 #endif /* MAS_H */
