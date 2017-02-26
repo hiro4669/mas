@@ -2,9 +2,10 @@
 #include "info.h"
 //#include "./memory/MEM.h"
 
-static LocalInfo *l_info;
+static LocalInfo *l_info = NULL;
 
 void mas_init_localinfo() {
+    if (l_info) return;
     l_info = (LocalInfo*)MEM_malloc(sizeof(LocalInfo));
     l_info->line_number = 1;
 }
@@ -15,7 +16,7 @@ LocalInfo* mas_get_localinfo() {
     return l_info;
 }
 void mas_delete_localinfo() {
-    MEM_free(l_info);
+    if (l_info) MEM_free(l_info);
 }
 
 void* mas_malloc(MEM_Storage storage, size_t size) {
