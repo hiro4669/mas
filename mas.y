@@ -1,11 +1,15 @@
 %{
 #include <stdio.h>
+#include "mas.h"
 #define YYDEBUG 1
 %}
 %union {
+    /*
 	int int_value;
 	double double_value;
+     */
 	char *identifier;
+        Expression* expression;
 }
 
 %token FUNCTION
@@ -43,9 +47,9 @@
 %token MOD
 
 %token <identifier>   IDENTIFIER
-%token <int_value>    INT_LITERAL
-%token <double_value> DOUBLE_LITERAL
-%token <identifier>   STRING_LITERAL
+%token <expression>   INT_LITERAL
+%token <expression>   DOUBLE_LITERAL
+%token <expression>   STRING_LITERAL
 
 
 %%

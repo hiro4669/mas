@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <ctype.h>
+#include "mas.h"
 #include "y.tab.h"
 #include "keyword.h"
 #include "info.h"
@@ -112,7 +113,10 @@ retry:
                     error();
                 } else {
                     pushback(c);
-                    sscanf((char*)yytext, "%d", &yylval.int_value);
+                    int i_value;
+                    sscanf((char*)yytext, "%d", &i_value);
+                    Expression* expr = mas_create_int_expression(i_value);
+                    yylval.expression = expr;
 //                    printf("int value = %d\n", yylval.int_value);
                     return INT_LITERAL;
                     
@@ -122,7 +126,11 @@ retry:
                     addtext(c);
                 }
                 pushback(c);
-                sscanf((char*)yytext, "%lf", &yylval.double_value);
+                double d_value;
+//                sscanf((char*)yytext, "%lf", &yylval.double_value);
+                sscanf((char*)yytext, "%lf", &d_value);
+                Expression* expr = mas_create_double_expression(d_value);
+                yylval.expression = expr;
                 return DOUBLE_LITERAL;                
             } else { // int
                 while(isdigit(c = read())) {
@@ -133,12 +141,20 @@ retry:
                     while(isdigit(c = read())) {
                         addtext(c);
                     }
+                    double d_value;
                     pushback(c);
-                    sscanf((char*)yytext, "%lf", &yylval.double_value);
+//                    sscanf((char*)yytext, "%lf", &yylval.double_value);
+                    sscanf((char*)yytext, "%lf", &d_value);
+                    Expression* expr = mas_create_double_expression(d_value);
+                    yylval.expression = expr;
                     return DOUBLE_LITERAL;                      
                 } else {
                     pushback(c);
-                    sscanf((char*)yytext, "%d", &yylval.int_value);
+                    int i_value;
+                    sscanf((char*)yytext, "%d", &i_value);
+                    Expression* expr = mas_create_int_expression(i_value);
+//                    sscanf((char*)yytext, "%d", &yylval.int_value);
+                    yylval.expression = expr;
                     return INT_LITERAL;
                 }
             }
@@ -303,7 +319,10 @@ retry:
                 if (c == '"') {
 //                    yylval.identifier = (char*)yytext;
 //                    yylval.identifier = mas_create_identifier((char*)yytext);
-                    yylval.identifier = mas_close_string_literal();
+//                    yylval.identifier = mas_close_string_literal();
+                    Expression* expr = mas_create_string_expression(mas_close_string_literal());
+                    yylval.expression = expr;
+                    
                     
                     return STRING_LITERAL;
                 }

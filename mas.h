@@ -102,6 +102,7 @@ void mas_delete_interpreter();
 Expression* mas_create_binary_expression(ExpressionType type, Expression* left, Expression* right);
 Expression* mas_create_int_expression(int i);
 Expression* mas_create_double_expression(double i);
+Expression* mas_create_string_expression(char* str);
 
 /* string.c */
 void mas_open_string_literal(void);

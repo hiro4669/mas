@@ -1,6 +1,7 @@
 #include <stdio.h>
-#include "y.tab.h"
 #include "mas.h"
+#include "y.tab.h"
+
 
 int main(void) {
     extern FILE *yyin;
@@ -155,15 +156,18 @@ int main(void) {
                 break;
             }
             case INT_LITERAL: {
-                printf("INT_LITERAL: %d \n", yylval.int_value);
+                //printf("INT_LITERAL: %d \n", yylval.int_value);
+                printf("INT_LITERAL: %d \n", yylval.expression->u.int_value);                
                 break;
             }
             case DOUBLE_LITERAL: {
-                printf("DOUBLE_LITERAL: %lf \n", yylval.double_value);
+//                printf("DOUBLE_LITERAL: %lf \n", yylval.double_value);
+                printf("DOUBLE_LITERAL: %lf \n", yylval.expression->u.double_value);
                 break;
             }
             case STRING_LITERAL: {
-                printf("STRING_LITERAL: \"%s\"\n", yylval.identifier);
+//                printf("STRING_LITERAL: \"%s\"\n", yylval.identifier);
+                printf("STRING_LITERAL: \"%s\"\n", yylval.expression->u.string_value);
                 break;
             }
             case EOF: {

@@ -37,4 +37,10 @@ Expression* mas_create_double_expression(double d) {
     return dexpr;
 }
 
+Expression* mas_create_string_expression(char* str) {
+    Expression* expr= mas_alloc_expression(STRING_EXPRESSION);
+    expr->u.string_value = str;
+    return expr;
+}
+
 

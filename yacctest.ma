@@ -78,4 +78,3 @@ function test() {
 function test(i, j, k) {
   print(10);
 }
-

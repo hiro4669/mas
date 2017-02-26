@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include "mas.h"
 #include "y.tab.h"
 
 int yywrap(void)
@@ -64,12 +65,20 @@ void addchar(char c) {
 	return IDENTIFIER;
 }
 <INITIAL>([1-9][0-9]*)|"0" {
-    sscanf(yytext, "%d", &(yylval.int_value)); 
-	return INT_LITERAL;
+    int i_value;
+    sscanf(yytext, "%d", &i_value); 
+    Expression* expr = mas_create_int_expression(i_value);
+    yylval.expression = expr;
+//    sscanf(yytext, "%d", &(yylval.int_value));     
+    return INT_LITERAL;
 }
 <INITIAL>[0-9]+\.[0-9]+ {
-    sscanf(yytext, "%lf", &(yylval.double_value));
-	return DOUBLE_LITERAL;
+    double d_value;
+//    sscanf(yytext, "%lf", &(yylval.double_value));
+    sscanf(yytext, "%lf", &d_value);
+    Expression* expr = mas_create_double_expression(d_value);
+    yylval.expression = expr;
+    return DOUBLE_LITERAL;
 }
 <INITIAL>\" {
     pos = 0;
@@ -88,7 +97,10 @@ void addchar(char c) {
 <COMMENT>.  ;
 
 <STRING_LITERAL_STATE>\" {
-    yylval.identifier = buf;
+//    yylval.identifier = buf;
+        Expression* expr = mas_create_string_expression(buf);
+yylval.expression = expr;
+//    yylval.identifier = buf;
 	BEGIN INITIAL;
 	return STRING_LITERAL;
 }
