@@ -43,14 +43,14 @@ MEM_Storage MEM_open_storage_func(MEM_Controller controller,
 void* MEM_storage_malloc_func(MEM_Controller controller, char* filename, int line, MEM_Storage storage, size_t size) {
 
     int cellnum = ((size - 1) / CELL_SIZE) + 1;    
-    fprintf(stderr, "cellnum = %d\n", cellnum);
+//    fprintf(stderr, "cellnum = %d\n", cellnum);
     if (storage->page_list == NULL) { /* do not keep enough memory*/
-        fprintf(stderr, "new_page_list\n");
+//        fprintf(stderr, "new_page_list\n");
         int alloc_num = cellnum > storage->current_page_size ? cellnum : storage->current_page_size;
         MemoryPageList page_list = (MemoryPageList)MEM_malloc_func(controller, filename, line, sizeof(MemoryPage) 
                 + (alloc_num - 1) * CELL_SIZE);
-        fprintf(stderr, "MemoryPage size: %d, alloc_num: %d, cellsize: %d\n", (int)sizeof(MemoryPage), (int)alloc_num, (int)CELL_SIZE);
-        fprintf(stderr, "storage_malloc_size = %d\n", (int)(sizeof(MemoryPage) + (alloc_num-1) * CELL_SIZE));
+//        fprintf(stderr, "MemoryPage size: %d, alloc_num: %d, cellsize: %d\n", (int)sizeof(MemoryPage), (int)alloc_num, (int)CELL_SIZE);
+//        fprintf(stderr, "storage_malloc_size = %d\n", (int)(sizeof(MemoryPage) + (alloc_num-1) * CELL_SIZE));
         page_list->cell_num = alloc_num;
         page_list->use_cell_num = cellnum;
         page_list->next = NULL;
@@ -59,10 +59,10 @@ void* MEM_storage_malloc_func(MEM_Controller controller, char* filename, int lin
     } else {
 
         MemoryPageList current_page_list = storage->page_list;
-        fprintf(stderr, "current_size = %d, use_cell = %d, required_cell=%d\n", storage->current_page_size, current_page_list->use_cell_num, cellnum);
+//        fprintf(stderr, "current_size = %d, use_cell = %d, required_cell=%d\n", storage->current_page_size, current_page_list->use_cell_num, cellnum);
         while (current_page_list->next != NULL) current_page_list = current_page_list->next; // move to the last                        
         if (storage->current_page_size - (current_page_list->use_cell_num + cellnum) < 0) {
-            fprintf(stderr, "page is NOT enough\n");
+//            fprintf(stderr, "page is NOT enough\n");
             int alloc_num = cellnum > storage->current_page_size ? cellnum : storage->current_page_size;
             MemoryPageList page_list = (MemoryPageList)MEM_malloc_func(controller, filename, line, sizeof(MemoryPage) 
                 + (alloc_num - 1) * CELL_SIZE);
@@ -72,7 +72,7 @@ void* MEM_storage_malloc_func(MEM_Controller controller, char* filename, int lin
             current_page_list->next = page_list;
             return &page_list->cell[0];        
         } else {
-            fprintf(stderr, "page is enough\n");
+//            fprintf(stderr, "page is enough\n");
             int available_index = current_page_list->use_cell_num;
             current_page_list->use_cell_num += cellnum;
             return &current_page_list->cell[available_index];

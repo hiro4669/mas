@@ -57,18 +57,18 @@ static void set_header(Header* header, size_t size, char* filename, int line) {
 
 static void set_footer(Header* header, size_t size) {
     uint8_t *ptr = (uint8_t*)&header[1] + size;
-    fprintf(stderr, "header: %p, size = %zu, ptr = %p\n", header, size, ptr);
+//    fprintf(stderr, "header: %p, size = %zu, ptr = %p\n", header, size, ptr);
     memset((void*)ptr, MARK, MARK_SIZE);
     
 }
 
 static void chain_header(MEM_Controller controller, Header* new_header) {
     if (controller->block_header == NULL) {
-        fprintf(stderr, "chain first\n");
+//        fprintf(stderr, "chain first\n");
         controller->block_header = new_header;
         return;
     }
-    fprintf(stderr, "chain from second\n");
+//    fprintf(stderr, "chain from second\n");
     new_header->s.next = controller->block_header;
     controller->block_header->s.prev = new_header;
     controller->block_header = new_header;    
@@ -129,7 +129,7 @@ void MEM_dump_memory_func(MEM_Controller controller) {
 
 void MEM_free_func(MEM_Controller controller, void* bptr) {
     uint8_t *ptr = (uint8_t*)bptr - sizeof(Header);
-    fprintf(stderr, "free ptr = %p\n", ptr);
+//    fprintf(stderr, "free ptr = %p\n", ptr);
     Header *current_header = (Header*)ptr;
     unchain_header(controller, current_header); // remove from chain
     memset(current_header, 0xcc, sizeof(Header) + current_header->s.size + MARK_SIZE);
@@ -139,7 +139,7 @@ void MEM_free_func(MEM_Controller controller, void* bptr) {
 void *MEM_malloc_func(MEM_Controller controller, char* filename, int line, size_t size) {
     uint8_t *ptr;
     uint32_t i;
-    fprintf(stderr, "call mem_malloc_func\n");
+//    fprintf(stderr, "call mem_malloc_func\n");
     uint32_t hsize = sizeof(Header);
     
     size_t alloc_size = sizeof(Header) + size + MARK_SIZE;
@@ -169,7 +169,7 @@ void* MEM_realloc_func(MEM_Controller controller, char* filename, int line, void
 
     if (ptr) {
         real_ptr = ptr - sizeof(Header);
-        fprintf(stderr, "ptr:real_ptr = %p:%p\n", ptr, real_ptr);        
+//        fprintf(stderr, "ptr:real_ptr = %p:%p\n", ptr, real_ptr);        
         unchain_header(controller, real_ptr);
         old_header = *((Header*)real_ptr);
         old_size = old_header.s.size;
@@ -187,7 +187,7 @@ void* MEM_realloc_func(MEM_Controller controller, char* filename, int line, void
         exit(1);
     }
     
-    fprintf(stderr, "new_ptr = %p\n", new_ptr);
+//    fprintf(stderr, "new_ptr = %p\n", new_ptr);
     
     if (ptr) {        
         *((Header*)new_ptr) = old_header;
@@ -203,7 +203,7 @@ void* MEM_realloc_func(MEM_Controller controller, char* filename, int line, void
         set_footer(new_ptr, size);
     }
     
-    fprintf(stderr, "new next = %p\n", ((Header*)new_ptr)->s.next);
+//    fprintf(stderr, "new next = %p\n", ((Header*)new_ptr)->s.next);
 
     if (size > old_size) {
         memset((char*)new_ptr + old_size + sizeof(Header), 0xcc, size - old_size);

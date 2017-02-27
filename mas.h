@@ -86,6 +86,12 @@ struct MAS_Interpreter_tag {
     MEM_Storage ast_storage;    
 };
 
+/* scanner.c */
+int yylex();
+
+/* mas.y */
+int yyerror(char const *str);
+
 /*  util.c */
 void mas_set_localinfo(LocalInfo *l_info);
 LocalInfo *mas_get_localinfo();

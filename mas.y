@@ -9,7 +9,7 @@
 	double double_value;
      */
 	char *identifier;
-        Expression* expression;
+    Expression* expression;
 }
 
 %token FUNCTION
@@ -51,6 +51,13 @@
 %token <expression>   DOUBLE_LITERAL
 %token <expression>   STRING_LITERAL
 
+%type <expression> expression 
+		logical_and_expression logical_or_expression
+		equality_expression relational_expression
+		additive_expression multiplicative_expression
+		unary_expression primary_expression
+
+
 
 %%
 translation_unit 
@@ -79,7 +86,7 @@ statement_list
 			| statement_list statement
 			;
 
-statement   : expression SEMICOLON
+statement   : expression SEMICOLON { printf("expr statement\n"); }
 			| global_statement
 			| while_statement 
 			| return_statement
@@ -97,59 +104,59 @@ identifier_list
 			;
 
 expression  : logical_or_expression
-			| IDENTIFIER ASSIGN expression
+			| IDENTIFIER ASSIGN expression  { $$ = NULL; }
 			;
 logical_or_expression
 			: logical_and_expression
 			| logical_or_expression LOGICAL_OR logical_and_expression
 			;
 logical_and_expression
-			: equality_expression
+			: equality_expression { printf("logical_and expr\n"); }
 			| logical_and_expression LOGICAL_AND equality_expression
 			;
 
 equality_expression
-			: relational_expression
+			: relational_expression { printf("equality expr\n"); }
 			| equality_expression EQ relational_expression
 			| equality_expression NE relational_expression
 			;
 relational_expression
-			: additive_expression
+			: additive_expression { printf("relational expr\n"); }
 			| relational_expression GT additive_expression
 			| relational_expression GE additive_expression
 			| relational_expression LT additive_expression
 			| relational_expression LE additive_expression
 			;
 additive_expression
-			: multiplicative_expression
-			| additive_expression ADD multiplicative_expression
+			: multiplicative_expression { printf("additive expr\n"); }
+			| additive_expression ADD multiplicative_expression {printf("additive_expression AND\n");}
 			| additive_expression SUB multiplicative_expression
 			;
 multiplicative_expression
-			: unary_expression
+			: unary_expression { printf("multiplicative expr\n"); }
 			| multiplicative_expression MUL unary_expression
 			| multiplicative_expression DIV unary_expression
 			| multiplicative_expression MOD unary_expression
 			;
 unary_expression
-			: primary_expression
-			| SUB unary_expression /*{ printf("sub unary\n"); } */
+			: primary_expression   { printf("unary expr\n"); }
+			| SUB unary_expression { printf("sub unary\n"); } 
 			;
 argument_list
             : expression
 			| argument_list COMMA expression
 			;
 primary_expression
-			: IDENTIFIER LP RP
-			| IDENTIFIER LP argument_list RP
-			| LP expression RP
-			| IDENTIFIER
-			| INT_LITERAL
+			: IDENTIFIER LP RP { $$ = NULL; }
+			| IDENTIFIER LP argument_list RP { $$ = NULL; }
+			| LP expression RP { $$ = NULL; }
+			| IDENTIFIER       { $$ = NULL; }
+			| INT_LITERAL { printf("int literal\n"); $$ = $1;}
 			| DOUBLE_LITERAL
 			| STRING_LITERAL
-			| TRUE_T
-			| FALSE_T
-			| NULL_T
+			| TRUE_T           { $$ = NULL; }
+			| FALSE_T          { $$ = NULL; }
+			| NULL_T           { $$ = NULL; }
 			;
 
 while_statement
