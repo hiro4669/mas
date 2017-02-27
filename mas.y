@@ -103,15 +103,23 @@ identifier_list
 			| identifier_list COMMA IDENTIFIER
 			;
 
-expression  : logical_or_expression
-			| IDENTIFIER ASSIGN expression  { $$ = NULL; }
+expression              : logical_or_expression { 
+    printf("expression\n");
+    Expression* expr;
+    MAS_Interpreter* interp;
+    expr = $1;
+    interp = mas_get_interpreter();
+    interp->expression = expr;
+    printf("type = %d\n", expr->type);
+}
+                        | IDENTIFIER ASSIGN expression  { $$ = NULL; }
 			;
 logical_or_expression
-			: logical_and_expression
+			: logical_and_expression { $$ = $1; }
 			| logical_or_expression LOGICAL_OR logical_and_expression
 			;
 logical_and_expression
-			: equality_expression { printf("logical_and expr\n"); }
+			: equality_expression { printf("logical_and expr\n");  }
 			| logical_and_expression LOGICAL_AND equality_expression
 			;
 
@@ -129,7 +137,10 @@ relational_expression
 			;
 additive_expression
 			: multiplicative_expression { printf("additive expr\n"); }
-			| additive_expression ADD multiplicative_expression {printf("additive_expression AND\n");}
+			| additive_expression ADD multiplicative_expression { 
+                            printf("additive_expression AND\n");
+                            $$ = mas_create_binary_expression(ADD_EXPRESSION, $1, $3);
+                        }
 			| additive_expression SUB multiplicative_expression
 			;
 multiplicative_expression
@@ -143,7 +154,7 @@ unary_expression
 			| SUB unary_expression { printf("sub unary\n"); } 
 			;
 argument_list
-            : expression
+                        : expression
 			| argument_list COMMA expression
 			;
 primary_expression
@@ -151,7 +162,7 @@ primary_expression
 			| IDENTIFIER LP argument_list RP { $$ = NULL; }
 			| LP expression RP { $$ = NULL; }
 			| IDENTIFIER       { $$ = NULL; }
-			| INT_LITERAL { printf("int literal\n"); $$ = $1;}
+			| INT_LITERAL
 			| DOUBLE_LITERAL
 			| STRING_LITERAL
 			| TRUE_T           { $$ = NULL; }

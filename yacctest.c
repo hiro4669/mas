@@ -6,6 +6,8 @@
 #include "./memory/MEM.h"
 
 int main(int argc, char* argv[]) {
+    MAS_Interpreter* interp;
+    Visitor* visitor = create_visitor();
     char* file = "yacctest.ma";
     fprintf(stderr, "argc = %d\n", argc);
     if (argc > 1) {
@@ -15,16 +17,19 @@ int main(int argc, char* argv[]) {
     extern int yyparse(void);
     extern FILE *yyin;
     
-    //mas_init_localinfo();
     mas_create_interpreter();
-//    yyin = fopen("yacctest.ma", "r");
     yyin = fopen(file, "r");    
     if (yyparse()) {
         fprintf(stderr, "Error Error Error :line %d\n", mas_get_localinfo()->line_number);
         exit(1);
     }
     fclose(yyin);
-//    mas_delete_localinfo();
+    interp = mas_get_interpreter();
+    fprintf(stderr, "-- visiter traverse ---\n");
+    traverse_expr(interp->expression, visitor);
+    
+    
+    
     mas_delete_interpreter();
     
     return 0;
