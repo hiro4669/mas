@@ -111,6 +111,7 @@ Expression* mas_create_double_expression(double i);
 Expression* mas_create_string_expression(char* str);
 Expression* mas_create_null_expression();
 Expression* mas_create_boolean_expression(MAS_Boolean v);
+Expression* mas_create_identifier_expression(char* identifier);
 
 /* string.c */
 void mas_open_string_literal(void);

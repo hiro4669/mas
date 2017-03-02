@@ -54,4 +54,10 @@ Expression* mas_create_null_expression() {
     return expr;
 }
 
+Expression* mas_create_identifier_expression(char* identifier) {
+    Expression* expr = mas_alloc_expression(IDENTIFIER_EXPRESSION);
+    expr->u.identifier = identifier;
+    return expr;
+}
+
 

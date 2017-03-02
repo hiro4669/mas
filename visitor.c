@@ -110,6 +110,18 @@ static void leave_boolean_expression(Expression* expr) {
     fprintf(stderr, "leave booleanexpr\n");
 }
 
+static void enter_identifier_expression(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter identifierexpr = %s\n", expr->u.identifier);
+    increment();
+}
+
+static void leave_identifier_expression(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave identifierexpr\n");    
+}
+
 
 Visitor* create_visitor() {
     visit_expr* enter_list;
@@ -126,6 +138,7 @@ Visitor* create_visitor() {
     enter_list[STRING_EXPRESSION]  = enter_stringexpr;
     enter_list[NULL_EXPRESSION]    = enter_nullexpr;
     enter_list[BOOLEAN_EXPRESSION] = enter_boolean_expression;
+    enter_list[IDENTIFIER_EXPRESSION] = enter_identifier_expression;    
     
     
     leave_list[MUL_EXPRESSION]     = leave_mulexpr;
@@ -136,6 +149,7 @@ Visitor* create_visitor() {
     leave_list[STRING_EXPRESSION]  = leave_stringexpr;
     leave_list[NULL_EXPRESSION]    = leave_nullexpr;
     leave_list[BOOLEAN_EXPRESSION] = leave_boolean_expression;
+    leave_list[IDENTIFIER_EXPRESSION] = leave_identifier_expression;
     
     visitor->enter_list = enter_list;
     visitor->leave_list = leave_list;

@@ -168,7 +168,7 @@ primary_expression
 			: IDENTIFIER LP RP { $$ = NULL; }
 			| IDENTIFIER LP argument_list RP { $$ = NULL; }
 			| LP expression RP { $$ = NULL; }
-			| IDENTIFIER       { $$ = NULL; }
+			| IDENTIFIER       { $$ = mas_create_identifier_expression($1); }
 			| INT_LITERAL      
 			| DOUBLE_LITERAL
 			| STRING_LITERAL
