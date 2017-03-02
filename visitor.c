@@ -115,11 +115,21 @@ static void enter_identifier_expression(Expression* expr) {
     fprintf(stderr, "enter identifierexpr = %s\n", expr->u.identifier);
     increment();
 }
-
 static void leave_identifier_expression(Expression* expr) {
     decrement();
     print_depth();
     fprintf(stderr, "leave identifierexpr\n");    
+}
+
+static void enter_functioncall_expression(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter functioncall_expr = %s\n", expr->u.function_call_expression.identifier);    
+    increment();
+}
+static void leave_functioncall_expression(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave functioncall_expr\n");  
 }
 
 
@@ -130,26 +140,28 @@ Visitor* create_visitor() {
     Visitor* visitor = (Visitor*)malloc(sizeof(Visitor));
     enter_list = (visit_expr*)malloc(sizeof(visit_expr) * EXPRESSION_TYPE_COUNT_PLUS_1);
     leave_list = (visit_expr*)malloc(sizeof(visit_expr) * EXPRESSION_TYPE_COUNT_PLUS_1);
-    enter_list[MUL_EXPRESSION]     = enter_mulexpr;
-    enter_list[ADD_EXPRESSION]     = enter_addexpr;
-    enter_list[SUB_EXPRESSION]     = enter_subepr;
-    enter_list[INT_EXPRESION]      = enter_intexpr;
-    enter_list[DOUBLE_EXPRESSION]  = enter_doubleexpr;
-    enter_list[STRING_EXPRESSION]  = enter_stringexpr;
-    enter_list[NULL_EXPRESSION]    = enter_nullexpr;
-    enter_list[BOOLEAN_EXPRESSION] = enter_boolean_expression;
-    enter_list[IDENTIFIER_EXPRESSION] = enter_identifier_expression;    
+    enter_list[MUL_EXPRESSION]           = enter_mulexpr;
+    enter_list[ADD_EXPRESSION]           = enter_addexpr;
+    enter_list[SUB_EXPRESSION]           = enter_subepr;
+    enter_list[INT_EXPRESION]            = enter_intexpr;
+    enter_list[DOUBLE_EXPRESSION]        = enter_doubleexpr;
+    enter_list[STRING_EXPRESSION]        = enter_stringexpr;
+    enter_list[NULL_EXPRESSION]          = enter_nullexpr;
+    enter_list[BOOLEAN_EXPRESSION]       = enter_boolean_expression;
+    enter_list[IDENTIFIER_EXPRESSION]    = enter_identifier_expression;
+    enter_list[FUNCTION_CALL_EXPRESSION] = enter_functioncall_expression;
     
     
-    leave_list[MUL_EXPRESSION]     = leave_mulexpr;
-    leave_list[ADD_EXPRESSION]     = leave_addexpr;
-    leave_list[SUB_EXPRESSION]     = leave_subexpr;
-    leave_list[INT_EXPRESION]      = leave_intexpr;
-    leave_list[DOUBLE_EXPRESSION]  = leave_doubleexpr;
-    leave_list[STRING_EXPRESSION]  = leave_stringexpr;
-    leave_list[NULL_EXPRESSION]    = leave_nullexpr;
-    leave_list[BOOLEAN_EXPRESSION] = leave_boolean_expression;
-    leave_list[IDENTIFIER_EXPRESSION] = leave_identifier_expression;
+    leave_list[MUL_EXPRESSION]           = leave_mulexpr;
+    leave_list[ADD_EXPRESSION]           = leave_addexpr;
+    leave_list[SUB_EXPRESSION]           = leave_subexpr;
+    leave_list[INT_EXPRESION]            = leave_intexpr;
+    leave_list[DOUBLE_EXPRESSION]        = leave_doubleexpr;
+    leave_list[STRING_EXPRESSION]        = leave_stringexpr;
+    leave_list[NULL_EXPRESSION]          = leave_nullexpr;
+    leave_list[BOOLEAN_EXPRESSION]       = leave_boolean_expression;
+    leave_list[IDENTIFIER_EXPRESSION]    = leave_identifier_expression;
+    leave_list[FUNCTION_CALL_EXPRESSION] = leave_functioncall_expression;
     
     visitor->enter_list = enter_list;
     visitor->leave_list = leave_list;

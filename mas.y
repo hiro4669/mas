@@ -165,7 +165,7 @@ argument_list
 			| argument_list COMMA expression
 			;
 primary_expression
-			: IDENTIFIER LP RP { $$ = NULL; }
+			: IDENTIFIER LP RP { printf("functioncall!!!\n"); $$ = mas_create_functioncall_expression($1, NULL); }
 			| IDENTIFIER LP argument_list RP { $$ = NULL; }
 			| LP expression RP { $$ = NULL; }
 			| IDENTIFIER       { $$ = mas_create_identifier_expression($1); }

@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 
+#include <stdio.h>
 #include "mas.h"
 
 static void* ast_malloc(size_t size) {
@@ -58,6 +59,13 @@ Expression* mas_create_identifier_expression(char* identifier) {
     Expression* expr = mas_alloc_expression(IDENTIFIER_EXPRESSION);
     expr->u.identifier = identifier;
     return expr;
+}
+
+Expression* mas_create_functioncall_expression(char* identifier, ArgumentList* argument) {
+    Expression* expr = mas_alloc_expression(FUNCTION_CALL_EXPRESSION);
+    expr->u.function_call_expression.identifier = identifier;
+    expr->u.function_call_expression.argument = argument;    
+    return expr;            
 }
 
 

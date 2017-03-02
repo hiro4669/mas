@@ -7,6 +7,10 @@ static void traverse_expr_children(Expression* expr, Visitor* visitor);
 
 void traverse_expr(Expression* expr, Visitor* visitor) {
     if (expr) {
+        if (visitor->enter_list[expr->type] == NULL) { // for debugging                      
+            fprintf(stderr, "expr->type(%d) is null\n", expr->type);
+            exit(1);
+        }
         visitor->enter_list[expr->type](expr);
         traverse_expr_children(expr, visitor);
         visitor->leave_list[expr->type](expr);
@@ -40,6 +44,7 @@ static void traverse_expr_children(Expression* expr, Visitor* visitor) {
         case STRING_EXPRESSION:
         case IDENTIFIER_EXPRESSION:
         case BOOLEAN_EXPRESSION: 
+        case FUNCTION_CALL_EXPRESSION:
         case NULL_EXPRESSION:  {
             break;
         }

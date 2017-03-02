@@ -63,7 +63,8 @@ typedef struct {
 } AssignExpression;
 
 typedef struct {
-    char       *identifier;    
+    char       *identifier;
+    ArgumentList *argument;
 } FunctionCallExpression;
 
 struct Expression_tag {
@@ -76,7 +77,7 @@ struct Expression_tag {
         char                   *identifier;        
         AssignExpression       assign_expression;
         BinaryExpression       binary_expression; 
-        FunctionCallExpression *function_call_expression;
+        FunctionCallExpression function_call_expression;
     } u;    
 };
 
@@ -112,6 +113,8 @@ Expression* mas_create_string_expression(char* str);
 Expression* mas_create_null_expression();
 Expression* mas_create_boolean_expression(MAS_Boolean v);
 Expression* mas_create_identifier_expression(char* identifier);
+Expression* mas_create_functioncall_expression(char* identifier, ArgumentList* argument);
+
 
 /* string.c */
 void mas_open_string_literal(void);
