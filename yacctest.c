@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
     }
     fclose(yyin);
     interp = mas_get_interpreter();
-    fprintf(stderr, "-- visiter traverse ---\n");
+    fprintf(stderr, "-- visitor traverse ---\n");
     traverse_expr(interp->expression, visitor);
     
     

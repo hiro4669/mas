@@ -109,6 +109,8 @@ Expression* mas_create_binary_expression(ExpressionType type, Expression* left, 
 Expression* mas_create_int_expression(int i);
 Expression* mas_create_double_expression(double i);
 Expression* mas_create_string_expression(char* str);
+Expression* mas_create_null_expression();
+Expression* mas_create_boolean_expression(MAS_Boolean v);
 
 /* string.c */
 void mas_open_string_literal(void);

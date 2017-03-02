@@ -110,7 +110,11 @@ expression              : logical_or_expression {
     expr = $1;
     interp = mas_get_interpreter();
     interp->expression = expr;
-    printf("type = %d\n", expr->type);
+    if (expr) {
+        printf("type = %d\n", expr->type);
+    } else {
+        printf("no expr\n");
+    }
 }
                         | IDENTIFIER ASSIGN expression  { $$ = NULL; }
 			;
@@ -141,7 +145,10 @@ additive_expression
                             printf("additive_expression AND\n");
                             $$ = mas_create_binary_expression(ADD_EXPRESSION, $1, $3);
                         }
-			| additive_expression SUB multiplicative_expression
+			| additive_expression SUB multiplicative_expression {
+                            printf("additive_expression SUB\n");
+                            $$ = mas_create_binary_expression(SUB_EXPRESSION, $1, $3);
+                        }
 			;
 multiplicative_expression
 			: unary_expression { printf("multiplicative expr\n"); }
@@ -162,12 +169,12 @@ primary_expression
 			| IDENTIFIER LP argument_list RP { $$ = NULL; }
 			| LP expression RP { $$ = NULL; }
 			| IDENTIFIER       { $$ = NULL; }
-			| INT_LITERAL
+			| INT_LITERAL      
 			| DOUBLE_LITERAL
 			| STRING_LITERAL
-			| TRUE_T           { $$ = NULL; }
-			| FALSE_T          { $$ = NULL; }
-			| NULL_T           { $$ = NULL; }
+			| TRUE_T           { $$ = mas_create_boolean_expression(MAS_TRUE); }
+			| FALSE_T          { $$ = mas_create_boolean_expression(MAS_FALSE); }
+			| NULL_T           { $$ = mas_create_null_expression(); }
 			;
 
 while_statement

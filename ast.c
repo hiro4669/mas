@@ -38,8 +38,19 @@ Expression* mas_create_double_expression(double d) {
 }
 
 Expression* mas_create_string_expression(char* str) {
-    Expression* expr= mas_alloc_expression(STRING_EXPRESSION);
+    Expression* expr = mas_alloc_expression(STRING_EXPRESSION);
     expr->u.string_value = str;
+    return expr;
+}
+
+Expression* mas_create_boolean_expression(MAS_Boolean v) {
+    Expression* expr = mas_alloc_expression(BOOLEAN_EXPRESSION);
+    expr->u.boolean_value = v;
+    return expr;
+}
+
+Expression* mas_create_null_expression() {
+    Expression* expr = mas_alloc_expression(NULL_EXPRESSION);
     return expr;
 }
 

@@ -36,7 +36,10 @@ static void traverse_expr_children(Expression* expr, Visitor* visitor) {
             break;
         }
         case INT_EXPRESION:
-        case DOUBLE_EXPRESSION: {
+        case DOUBLE_EXPRESSION: 
+        case STRING_EXPRESSION:
+        case BOOLEAN_EXPRESSION: 
+        case NULL_EXPRESSION:  {
             break;
         }
         default: {
