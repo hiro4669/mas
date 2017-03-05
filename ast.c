@@ -64,8 +64,27 @@ Expression* mas_create_identifier_expression(char* identifier) {
 Expression* mas_create_functioncall_expression(char* identifier, ArgumentList* argument) {
     Expression* expr = mas_alloc_expression(FUNCTION_CALL_EXPRESSION);
     expr->u.function_call_expression.identifier = identifier;
-    expr->u.function_call_expression.argument = argument;    
+    expr->u.function_call_expression.argument = argument;
+    /*
+    if (argument) {
+        fprintf(stderr, "YESYESYES\n");
+    }
+     */
     return expr;            
+}
+
+ArgumentList* mas_create_argument_list(Expression* expr) {
+    ArgumentList* arglist = ast_malloc(sizeof(ArgumentList));
+    arglist->expression = expr;
+    arglist->next = NULL;    
+    return arglist;
+}
+
+ArgumentList* mas_chain_argument(ArgumentList* argument, Expression* expr) {
+    ArgumentList* pos;
+    for (pos = argument; pos->next; pos = pos->next); // go to the last argument
+    pos->next = mas_create_argument_list(expr);
+    return argument;
 }
 
 

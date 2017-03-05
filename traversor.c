@@ -44,8 +44,15 @@ static void traverse_expr_children(Expression* expr, Visitor* visitor) {
         case STRING_EXPRESSION:
         case IDENTIFIER_EXPRESSION:
         case BOOLEAN_EXPRESSION: 
-        case FUNCTION_CALL_EXPRESSION:
         case NULL_EXPRESSION:  {
+            break;
+        }
+        case FUNCTION_CALL_EXPRESSION: {
+            ArgumentList* arg_list = NULL;
+            for (arg_list = expr->u.function_call_expression.argument; arg_list; arg_list = arg_list->next) {
+                traverse_expr(arg_list->expression, visitor);                
+            }
+
             break;
         }
         default: {
