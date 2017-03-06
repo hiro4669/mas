@@ -23,7 +23,7 @@ static void print_depth() {
 
 static void enter_mulexpr(Expression* expr) {
     print_depth();
-    fprintf(stderr, "enter mulexpr\n");
+    fprintf(stderr, "enter mulexpr : *\n");
     increment();
 }
 static void leave_mulexpr(Expression* expr) {
@@ -31,6 +31,29 @@ static void leave_mulexpr(Expression* expr) {
     print_depth();
     fprintf(stderr, "leave mulexpr\n");
 }
+
+static void enter_divexpr(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter divexpr : / \n");
+    increment();
+}
+static void leave_divexpr(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave divexpr\n");
+}
+
+static void enter_modexpr(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter modexpr : mod \n");
+    increment();
+}
+static void leave_modexpr(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave modexpr\n");
+}
+
 
 static void enter_addexpr(Expression* expr) {
     print_depth();
@@ -144,6 +167,50 @@ static void leave_minus_expression(Expression* expr) {
     fprintf(stderr, "leave minusexpr\n");  
 }
 
+static void enter_gt_expression(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter gt expr: >\n");
+    increment();
+}
+static void leave_gt_expression(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave gt expr\n");  
+}
+
+static void enter_ge_expression(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter ge expr : >=\n");
+    increment();
+}
+static void leave_ge_expression(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave ge expr\n");  
+}
+
+static void enter_lt_expression(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter lt expr: <\n");
+    increment();
+}
+static void leave_lt_expression(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave lt expr\n");  
+}
+
+static void enter_le_expression(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter le expr: <=\n");
+    increment();
+}
+static void leave_le_expression(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave le expr\n");  
+}
+
 
 Visitor* create_visitor() {
     visit_expr* enter_list;
@@ -153,6 +220,8 @@ Visitor* create_visitor() {
     enter_list = (visit_expr*)malloc(sizeof(visit_expr) * EXPRESSION_TYPE_COUNT_PLUS_1);
     leave_list = (visit_expr*)malloc(sizeof(visit_expr) * EXPRESSION_TYPE_COUNT_PLUS_1);
     enter_list[MUL_EXPRESSION]           = enter_mulexpr;
+    enter_list[DIV_EXPRESSION]           = enter_divexpr;
+    enter_list[MOD_EXPRESSION]           = enter_modexpr;
     enter_list[ADD_EXPRESSION]           = enter_addexpr;
     enter_list[SUB_EXPRESSION]           = enter_subepr;
     enter_list[INT_EXPRESION]            = enter_intexpr;
@@ -163,9 +232,15 @@ Visitor* create_visitor() {
     enter_list[IDENTIFIER_EXPRESSION]    = enter_identifier_expression;
     enter_list[FUNCTION_CALL_EXPRESSION] = enter_functioncall_expression;
     enter_list[MINUS_EXPRESSION]         = enter_minus_expression;
+    enter_list[GT_EXPRESSION]            = enter_gt_expression;
+    enter_list[GE_EXPRESSION]            = enter_ge_expression;
+    enter_list[LT_EXPRESSION]            = enter_lt_expression;
+    enter_list[LE_EXPRESSION]            = enter_le_expression;
     
     
     leave_list[MUL_EXPRESSION]           = leave_mulexpr;
+    leave_list[DIV_EXPRESSION]           = leave_divexpr;
+    leave_list[MOD_EXPRESSION]           = leave_modexpr;
     leave_list[ADD_EXPRESSION]           = leave_addexpr;
     leave_list[SUB_EXPRESSION]           = leave_subexpr;
     leave_list[INT_EXPRESION]            = leave_intexpr;
@@ -176,6 +251,10 @@ Visitor* create_visitor() {
     leave_list[IDENTIFIER_EXPRESSION]    = leave_identifier_expression;
     leave_list[FUNCTION_CALL_EXPRESSION] = leave_functioncall_expression;
     leave_list[MINUS_EXPRESSION]         = leave_minus_expression;
+    leave_list[GT_EXPRESSION]            = leave_gt_expression;
+    leave_list[GE_EXPRESSION]            = leave_ge_expression;
+    leave_list[LT_EXPRESSION]            = leave_lt_expression;
+    leave_list[LE_EXPRESSION]            = leave_le_expression;
     
     visitor->enter_list = enter_list;
     visitor->leave_list = leave_list;

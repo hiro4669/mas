@@ -135,48 +135,63 @@ equality_expression
 			| equality_expression NE relational_expression
 			;
 relational_expression
-			: additive_expression { printf("relational expr\n"); }
-			| relational_expression GT additive_expression
-			| relational_expression GE additive_expression
-			| relational_expression LT additive_expression
-			| relational_expression LE additive_expression
+			: additive_expression
+			| relational_expression GT additive_expression {
+                            $$ = mas_create_binary_expression(GT_EXPRESSION, $1, $3); // OK
+                        }
+			| relational_expression GE additive_expression {
+                            $$ = mas_create_binary_expression(GE_EXPRESSION, $1, $3); // OK
+                        }
+			| relational_expression LT additive_expression {
+                            $$ = mas_create_binary_expression(LT_EXPRESSION, $1, $3); // OK
+                        }
+			| relational_expression LE additive_expression {
+                            $$ = mas_create_binary_expression(LE_EXPRESSION, $1, $3); // OK
+                        }
 			;
 additive_expression
-			: multiplicative_expression { printf("additive expr\n"); }
+			: multiplicative_expression 
 			| additive_expression ADD multiplicative_expression { 
-                            printf("additive_expression AND\n");
-                            $$ = mas_create_binary_expression(ADD_EXPRESSION, $1, $3);
+                            $$ = mas_create_binary_expression(ADD_EXPRESSION, $1, $3);  // OK
                         }
 			| additive_expression SUB multiplicative_expression {
-                            printf("additive_expression SUB\n");
-                            $$ = mas_create_binary_expression(SUB_EXPRESSION, $1, $3);
+                            $$ = mas_create_binary_expression(SUB_EXPRESSION, $1, $3);  // OK
                         }
 			;
 multiplicative_expression
-			: unary_expression { printf("multiplicative expr\n"); }
+			: unary_expression                                              // OK
 			| multiplicative_expression MUL unary_expression
+                        {
+                            $$ = mas_create_binary_expression(MUL_EXPRESSION, $1, $3);  // OK
+                        }
 			| multiplicative_expression DIV unary_expression
+                        {
+                            $$ = mas_create_binary_expression(DIV_EXPRESSION, $1, $3);  // OK
+                        }
 			| multiplicative_expression MOD unary_expression
+                        {
+                            $$ = mas_create_binary_expression(MOD_EXPRESSION, $1, $3);  // OK
+                        }
 			;
 unary_expression
-			: primary_expression  
-			| SUB unary_expression { $$ = mas_create_minus_expression($2); } 
+			: primary_expression                                                  // OK
+			| SUB unary_expression { $$ = mas_create_minus_expression($2); }      // OK
 			;
 argument_list
-                        : expression  { $$ = mas_create_argument_list($1); }
-			| argument_list COMMA expression { $$ = mas_chain_argument($1, $3); } // for temporary
+                        : expression  { $$ = mas_create_argument_list($1); }                  // OK
+			| argument_list COMMA expression { $$ = mas_chain_argument($1, $3); } // OK
 			;
 primary_expression
-			: IDENTIFIER LP RP { $$ = mas_create_functioncall_expression($1, NULL); }
-			| IDENTIFIER LP argument_list RP { $$ = mas_create_functioncall_expression($1, $3); }
-			| LP expression RP { $$ = $2; }
-			| IDENTIFIER       { $$ = mas_create_identifier_expression($1); }
-			| INT_LITERAL      
-			| DOUBLE_LITERAL
-			| STRING_LITERAL
-			| TRUE_T           { $$ = mas_create_boolean_expression(MAS_TRUE); }
-			| FALSE_T          { $$ = mas_create_boolean_expression(MAS_FALSE); }
-			| NULL_T           { $$ = mas_create_null_expression(); }
+			: IDENTIFIER LP RP { $$ = mas_create_functioncall_expression($1, NULL); }  //OK
+			| IDENTIFIER LP argument_list RP { $$ = mas_create_functioncall_expression($1, $3); } //OK
+			| LP expression RP { $$ = $2; }  //OK
+			| IDENTIFIER       { $$ = mas_create_identifier_expression($1); } //OK
+			| INT_LITERAL     //OK
+			| DOUBLE_LITERAL  //OK
+			| STRING_LITERAL  //OK
+			| TRUE_T           { $$ = mas_create_boolean_expression(MAS_TRUE); }  //OK
+			| FALSE_T          { $$ = mas_create_boolean_expression(MAS_FALSE); } //OK
+			| NULL_T           { $$ = mas_create_null_expression(); }  //OK
 			;
 
 while_statement
