@@ -121,18 +121,26 @@ expression              : logical_or_expression {
                         | IDENTIFIER ASSIGN expression  { $$ = NULL; }
 			;
 logical_or_expression
-			: logical_and_expression { $$ = $1; }
-			| logical_or_expression LOGICAL_OR logical_and_expression
+			: logical_and_expression
+			| logical_or_expression LOGICAL_OR logical_and_expression {
+                            $$ = mas_create_binary_expression(LOGICAL_OR_EXPRESSION, $1, $3);
+                        }
 			;
 logical_and_expression
-			: equality_expression { printf("logical_and expr\n");  }
-			| logical_and_expression LOGICAL_AND equality_expression
+			: equality_expression
+			| logical_and_expression LOGICAL_AND equality_expression {
+                            $$ = mas_create_binary_expression(LOGICAL_AND_EXPRESSION, $1, $3);
+                        }
 			;
 
 equality_expression
-			: relational_expression { printf("equality expr\n"); }
-			| equality_expression EQ relational_expression
-			| equality_expression NE relational_expression
+			: relational_expression
+			| equality_expression EQ relational_expression {
+                            $$ = mas_create_binary_expression(EQ_EXPRESSION, $1, $3); // OK
+                        }
+			| equality_expression NE relational_expression {
+                            $$ = mas_create_binary_expression(NE_EXPRESSION, $1, $3); // OK
+                        }
 			;
 relational_expression
 			: additive_expression

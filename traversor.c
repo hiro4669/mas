@@ -20,6 +20,8 @@ void traverse_expr(Expression* expr, Visitor* visitor) {
 
 static void traverse_expr_children(Expression* expr, Visitor* visitor) {
     switch(expr->type) {
+        case LOGICAL_AND_EXPRESSION:
+        case LOGICAL_OR_EXPRESSION:
         case ADD_EXPRESSION:
         case SUB_EXPRESSION:
         case MUL_EXPRESSION:

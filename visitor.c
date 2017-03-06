@@ -211,6 +211,49 @@ static void leave_le_expression(Expression* expr) {
     fprintf(stderr, "leave le expr\n");  
 }
 
+static void enter_eq_expression(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter eq expr: ==\n");
+    increment();
+}
+static void leave_eq_expression(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave eq expr\n");  
+}
+
+static void enter_ne_expression(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter ne expr: !=\n");
+    increment();
+}
+static void leave_ne_expression(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave ne expr\n");  
+}
+
+static void enter_logical_and_expression(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter logical and expr: &&\n");
+    increment();
+}
+static void leave_logical_and_expression(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave logical and expr\n");  
+}
+
+static void enter_logical_or_expression(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter logical or expr: ||\n");
+    increment();
+}
+static void leave_logical_or_expression(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave logical or expr\n");  
+}
 
 Visitor* create_visitor() {
     visit_expr* enter_list;
@@ -236,6 +279,10 @@ Visitor* create_visitor() {
     enter_list[GE_EXPRESSION]            = enter_ge_expression;
     enter_list[LT_EXPRESSION]            = enter_lt_expression;
     enter_list[LE_EXPRESSION]            = enter_le_expression;
+    enter_list[EQ_EXPRESSION]            = enter_eq_expression;
+    enter_list[NE_EXPRESSION]            = enter_ne_expression;
+    enter_list[LOGICAL_AND_EXPRESSION]   = enter_logical_and_expression;
+    enter_list[LOGICAL_OR_EXPRESSION]    = enter_logical_or_expression;
     
     
     leave_list[MUL_EXPRESSION]           = leave_mulexpr;
@@ -254,7 +301,11 @@ Visitor* create_visitor() {
     leave_list[GT_EXPRESSION]            = leave_gt_expression;
     leave_list[GE_EXPRESSION]            = leave_ge_expression;
     leave_list[LT_EXPRESSION]            = leave_lt_expression;
-    leave_list[LE_EXPRESSION]            = leave_le_expression;
+    leave_list[LE_EXPRESSION]            = leave_le_expression;    
+    leave_list[EQ_EXPRESSION]            = leave_eq_expression;
+    leave_list[NE_EXPRESSION]            = leave_ne_expression;
+    leave_list[LOGICAL_AND_EXPRESSION]   = leave_logical_and_expression;
+    leave_list[LOGICAL_OR_EXPRESSION]    = leave_logical_or_expression;
     
     visitor->enter_list = enter_list;
     visitor->leave_list = leave_list;
