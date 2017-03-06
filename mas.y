@@ -159,17 +159,17 @@ multiplicative_expression
 			| multiplicative_expression MOD unary_expression
 			;
 unary_expression
-			: primary_expression   { printf("unary expr\n"); }
-			| SUB unary_expression { printf("sub unary\n"); } 
+			: primary_expression  
+			| SUB unary_expression { $$ = mas_create_minus_expression($2); } 
 			;
 argument_list
-                        : expression  { printf("--> argument_list\n"); $$ = mas_create_argument_list($1); }
-			| argument_list COMMA expression { printf("--> argument_list , expr\n"); $$ = mas_chain_argument($1, $3); } // for temporary
+                        : expression  { $$ = mas_create_argument_list($1); }
+			| argument_list COMMA expression { $$ = mas_chain_argument($1, $3); } // for temporary
 			;
 primary_expression
 			: IDENTIFIER LP RP { $$ = mas_create_functioncall_expression($1, NULL); }
-			| IDENTIFIER LP argument_list RP { printf("function call\n"); $$ = mas_create_functioncall_expression($1, $3); }
-			| LP expression RP { $$ = NULL; }
+			| IDENTIFIER LP argument_list RP { $$ = mas_create_functioncall_expression($1, $3); }
+			| LP expression RP { $$ = $2; }
 			| IDENTIFIER       { $$ = mas_create_identifier_expression($1); }
 			| INT_LITERAL      
 			| DOUBLE_LITERAL

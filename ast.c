@@ -73,6 +73,12 @@ Expression* mas_create_functioncall_expression(char* identifier, ArgumentList* a
     return expr;            
 }
 
+Expression* mas_create_minus_expression(Expression* operand) {
+    Expression* expr = mas_alloc_expression(MINUS_EXPRESSION);
+    expr->u.minus_expression = operand;
+    return expr;
+}
+
 ArgumentList* mas_create_argument_list(Expression* expr) {
     ArgumentList* arglist = ast_malloc(sizeof(ArgumentList));
     arglist->expression = expr;
@@ -86,5 +92,7 @@ ArgumentList* mas_chain_argument(ArgumentList* argument, Expression* expr) {
     pos->next = mas_create_argument_list(expr);
     return argument;
 }
+
+
 
 

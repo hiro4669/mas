@@ -132,6 +132,18 @@ static void leave_functioncall_expression(Expression* expr) {
     fprintf(stderr, "leave functioncall_expr\n");  
 }
 
+static void enter_minus_expression(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter minusexpr: -\n");
+    increment();
+}
+
+static void leave_minus_expression(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave minusexpr\n");  
+}
+
 
 Visitor* create_visitor() {
     visit_expr* enter_list;
@@ -150,6 +162,7 @@ Visitor* create_visitor() {
     enter_list[BOOLEAN_EXPRESSION]       = enter_boolean_expression;
     enter_list[IDENTIFIER_EXPRESSION]    = enter_identifier_expression;
     enter_list[FUNCTION_CALL_EXPRESSION] = enter_functioncall_expression;
+    enter_list[MINUS_EXPRESSION]         = enter_minus_expression;
     
     
     leave_list[MUL_EXPRESSION]           = leave_mulexpr;
@@ -162,6 +175,7 @@ Visitor* create_visitor() {
     leave_list[BOOLEAN_EXPRESSION]       = leave_boolean_expression;
     leave_list[IDENTIFIER_EXPRESSION]    = leave_identifier_expression;
     leave_list[FUNCTION_CALL_EXPRESSION] = leave_functioncall_expression;
+    leave_list[MINUS_EXPRESSION]         = leave_minus_expression;
     
     visitor->enter_list = enter_list;
     visitor->leave_list = leave_list;

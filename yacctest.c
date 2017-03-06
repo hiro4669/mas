@@ -29,8 +29,10 @@ int main(int argc, char* argv[]) {
     traverse_expr(interp->expression, visitor);
     
     
-    
+    mas_reset_string_literal();
     mas_delete_interpreter();
+    MEM_dump_memory();
+    
     
     return 0;
 }

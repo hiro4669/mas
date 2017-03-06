@@ -37,6 +37,7 @@ typedef enum {
     LE_EXPRESSION,
     LOGICAL_AND_EXPRESSION,
     LOGICAL_OR_EXPRESSION,
+    MINUS_EXPRESSION,
     FUNCTION_CALL_EXPRESSION,
     NULL_EXPRESSION,
     EXPRESSION_TYPE_COUNT_PLUS_1
@@ -77,6 +78,7 @@ struct Expression_tag {
         char                   *identifier;        
         AssignExpression       assign_expression;
         BinaryExpression       binary_expression; 
+        Expression             *minus_expression;
         FunctionCallExpression function_call_expression;
     } u;    
 };
@@ -114,6 +116,7 @@ Expression* mas_create_null_expression();
 Expression* mas_create_boolean_expression(MAS_Boolean v);
 Expression* mas_create_identifier_expression(char* identifier);
 Expression* mas_create_functioncall_expression(char* identifier, ArgumentList* argument);
+Expression* mas_create_minus_expression(Expression* operand);
 
 ArgumentList* mas_create_argument_list(Expression* expr);
 ArgumentList* mas_chain_argument(ArgumentList* argument, Expression* expr);
