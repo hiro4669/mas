@@ -63,8 +63,7 @@
 
 %%
 translation_unit 
-/*			: expression { printf("good expression\n"); } */
-            : definision_or_statement { printf("accept\n"); }
+                        : definision_or_statement { printf("accept\n"); }
 			| translation_unit definision_or_statement { printf("double accept\n"); }
 			;
 
@@ -118,18 +117,24 @@ expression              : logical_or_expression {
         printf("no expr\n");
     }
 }
-                        | IDENTIFIER ASSIGN expression  { $$ = NULL; }
+                        | IDENTIFIER ASSIGN expression  { 
+                            Expression* expr = mas_create_assignment_expression($1, $3);
+                            MAS_Interpreter* interp;                            
+                            interp = mas_get_interpreter();
+                            interp->expression = expr;                            
+                            $$ = expr; 
+                        }
 			;
 logical_or_expression
 			: logical_and_expression
 			| logical_or_expression LOGICAL_OR logical_and_expression {
-                            $$ = mas_create_binary_expression(LOGICAL_OR_EXPRESSION, $1, $3);
+                            $$ = mas_create_binary_expression(LOGICAL_OR_EXPRESSION, $1, $3); // OK
                         }
 			;
 logical_and_expression
 			: equality_expression
 			| logical_and_expression LOGICAL_AND equality_expression {
-                            $$ = mas_create_binary_expression(LOGICAL_AND_EXPRESSION, $1, $3);
+                            $$ = mas_create_binary_expression(LOGICAL_AND_EXPRESSION, $1, $3); // OK
                         }
 			;
 

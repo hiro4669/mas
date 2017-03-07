@@ -61,6 +61,10 @@ static void traverse_expr_children(Expression* expr, Visitor* visitor) {
             traverse_expr(expr->u.minus_expression, visitor);
             break;
         }
+        case ASSIGN_EXPRESSION: {
+            traverse_expr(expr->u.assign_expression.operand, visitor);
+            break;
+        }
         default: {
             fprintf(stderr, "not decided ExpressionType in traverser.c %d\n", expr->type);
             exit(1);

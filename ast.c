@@ -79,6 +79,13 @@ Expression* mas_create_minus_expression(Expression* operand) {
     return expr;
 }
 
+Expression* mas_create_assignment_expression(char* identifier, Expression* operand) {
+    Expression* expr = mas_alloc_expression(ASSIGN_EXPRESSION);
+    expr->u.assign_expression.variable = identifier;
+    expr->u.assign_expression.operand = operand;
+    return expr;
+}
+
 ArgumentList* mas_create_argument_list(Expression* expr) {
     ArgumentList* arglist = ast_malloc(sizeof(ArgumentList));
     arglist->expression = expr;

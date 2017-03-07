@@ -117,6 +117,7 @@ Expression* mas_create_boolean_expression(MAS_Boolean v);
 Expression* mas_create_identifier_expression(char* identifier);
 Expression* mas_create_functioncall_expression(char* identifier, ArgumentList* argument);
 Expression* mas_create_minus_expression(Expression* operand);
+Expression* mas_create_assignment_expression(char* identifier, Expression* operand);
 
 ArgumentList* mas_create_argument_list(Expression* expr);
 ArgumentList* mas_chain_argument(ArgumentList* argument, Expression* expr);

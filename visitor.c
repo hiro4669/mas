@@ -255,6 +255,17 @@ static void leave_logical_or_expression(Expression* expr) {
     fprintf(stderr, "leave logical or expr\n");  
 }
 
+static void enter_assignment_expression(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter assignment expr : %s\n", expr->u.assign_expression.variable);
+    increment();
+}
+static void leave_assignment_expression(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave assignment expr\n");  
+}
+
 Visitor* create_visitor() {
     visit_expr* enter_list;
     visit_expr* leave_list;
@@ -282,7 +293,8 @@ Visitor* create_visitor() {
     enter_list[EQ_EXPRESSION]            = enter_eq_expression;
     enter_list[NE_EXPRESSION]            = enter_ne_expression;
     enter_list[LOGICAL_AND_EXPRESSION]   = enter_logical_and_expression;
-    enter_list[LOGICAL_OR_EXPRESSION]    = enter_logical_or_expression;
+    enter_list[LOGICAL_OR_EXPRESSION]    = enter_logical_or_expression;    
+    enter_list[ASSIGN_EXPRESSION]        = enter_assignment_expression;
     
     
     leave_list[MUL_EXPRESSION]           = leave_mulexpr;
@@ -306,6 +318,7 @@ Visitor* create_visitor() {
     leave_list[NE_EXPRESSION]            = leave_ne_expression;
     leave_list[LOGICAL_AND_EXPRESSION]   = leave_logical_and_expression;
     leave_list[LOGICAL_OR_EXPRESSION]    = leave_logical_or_expression;
+    leave_list[ASSIGN_EXPRESSION]        = leave_assignment_expression;
     
     visitor->enter_list = enter_list;
     visitor->leave_list = leave_list;
