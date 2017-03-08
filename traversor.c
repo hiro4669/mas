@@ -5,6 +5,23 @@
 
 static void traverse_expr_children(Expression* expr, Visitor* visitor);
 
+
+void traverse_stmt(Statement* stmt, Visitor* visitor) {
+    if (stmt) {
+        if (visitor->enter_stmt_list[stmt->type] == NULL) { // for debugging
+            fprintf(stderr, "stmt->type(%d) is null\n", stmt->type);
+            exit(1);
+        }
+        visitor->enter_stmt_list[stmt->type](stmt);
+        visitor->leave_stmt_list[stmt->type](stmt);
+        
+
+        
+    }
+}
+
+
+
 void traverse_expr(Expression* expr, Visitor* visitor) {
     if (expr) {
         if (visitor->enter_list[expr->type] == NULL) { // for debugging                      
@@ -14,8 +31,7 @@ void traverse_expr(Expression* expr, Visitor* visitor) {
         visitor->enter_list[expr->type](expr);
         traverse_expr_children(expr, visitor);
         visitor->leave_list[expr->type](expr);
-    }
-    
+    }    
 }
 
 static void traverse_expr_children(Expression* expr, Visitor* visitor) {

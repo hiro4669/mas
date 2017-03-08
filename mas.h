@@ -171,6 +171,7 @@ Visitor* create_visitor();
 
 /* traversor.c */
 void traverse_expr(Expression* expr, Visitor* visitor);
+void traverse_stmt(Statement* stmt,  Visitor* visitor);
 
 
 #endif /* MAS_H */

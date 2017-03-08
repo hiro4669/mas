@@ -266,13 +266,34 @@ static void leave_assignment_expression(Expression* expr) {
     fprintf(stderr, "leave assignment expr\n");  
 }
 
+/*  Statement */
+
+static void enter_expression_statement(Statement* stmt) {
+    print_depth();
+    fprintf(stderr, "enter expression stmt\n");
+    increment();
+}
+
+static void leave_expression_statement(Statement* stmt) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave expression stmt\n");
+}
+
 Visitor* create_visitor() {
     visit_expr* enter_list;
     visit_expr* leave_list;
+    visit_stmt* enter_stmt_list;
+    visit_stmt* leave_stmt_list; 
     
+
     Visitor* visitor = (Visitor*)malloc(sizeof(Visitor));
     enter_list = (visit_expr*)malloc(sizeof(visit_expr) * EXPRESSION_TYPE_COUNT_PLUS_1);
     leave_list = (visit_expr*)malloc(sizeof(visit_expr) * EXPRESSION_TYPE_COUNT_PLUS_1);
+    
+    enter_stmt_list = (visit_stmt*)malloc(sizeof(visit_stmt) * STATEMENT_TYPE_COUNT_PLUS_1);
+    leave_stmt_list = (visit_stmt*)malloc(sizeof(visit_stmt) * STATEMENT_TYPE_COUNT_PLUS_1);
+    
     enter_list[MUL_EXPRESSION]           = enter_mulexpr;
     enter_list[DIV_EXPRESSION]           = enter_divexpr;
     enter_list[MOD_EXPRESSION]           = enter_modexpr;
@@ -295,8 +316,7 @@ Visitor* create_visitor() {
     enter_list[LOGICAL_AND_EXPRESSION]   = enter_logical_and_expression;
     enter_list[LOGICAL_OR_EXPRESSION]    = enter_logical_or_expression;    
     enter_list[ASSIGN_EXPRESSION]        = enter_assignment_expression;
-    
-    
+        
     leave_list[MUL_EXPRESSION]           = leave_mulexpr;
     leave_list[DIV_EXPRESSION]           = leave_divexpr;
     leave_list[MOD_EXPRESSION]           = leave_modexpr;
@@ -320,8 +340,15 @@ Visitor* create_visitor() {
     leave_list[LOGICAL_OR_EXPRESSION]    = leave_logical_or_expression;
     leave_list[ASSIGN_EXPRESSION]        = leave_assignment_expression;
     
+    enter_stmt_list[EXPRESSION_STATEMENT] = enter_expression_statement;
+    leave_stmt_list[EXPRESSION_STATEMENT] = leave_expression_statement;
+    
     visitor->enter_list = enter_list;
     visitor->leave_list = leave_list;
+    
+    visitor->enter_stmt_list = enter_stmt_list;
+    visitor->leave_stmt_list = leave_stmt_list;
+    
     return visitor;
 }
 

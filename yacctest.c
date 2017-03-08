@@ -27,6 +27,13 @@ int main(int argc, char* argv[]) {
     interp = mas_get_interpreter();
     fprintf(stderr, "-- visitor traverse ---\n");
     
+    StatementList *slist;
+    if (interp->stmt_list) {
+        for (slist = interp->stmt_list; slist; slist = slist->next) {
+            traverse_stmt(slist->statement, visitor);
+        }
+    }
+    
     /*
     if (interp->expression) {
         traverse_expr(interp->expression, visitor);
