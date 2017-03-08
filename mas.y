@@ -11,6 +11,7 @@
     char *identifier;
     Expression* expression;
     ArgumentList* argument_list;
+    Statement*  statement;
 }
 
 %token FUNCTION
@@ -60,6 +61,8 @@
 
 %type <argument_list> argument_list
 
+%type <statement> statement
+
 
 %%
 translation_unit 
@@ -68,7 +71,15 @@ translation_unit
 			;
 
 definision_or_statement 
-            : statement
+                        : statement {
+                            printf("definision or statement\n"); 
+                            MAS_Interpreter* interp;
+                            StatementList* stmt_list = NULL;
+                            interp = mas_get_interpreter();
+                            stmt_list = interp->stmt_list;
+                            interp->stmt_list = mas_chain_statement_list(stmt_list, $1);
+                                                        
+                        }
 			| function_definition
             ;
 
@@ -82,19 +93,19 @@ parameter_list
 			| parameter_list COMMA IDENTIFIER
 			;
 
-statement_list
-			: statement
+statement_list // this is matched only in block
+			: statement { printf("statement in block \n");}
 			| statement_list statement
 			;
 
-statement   : expression SEMICOLON { printf("expr statement\n"); }
-			| global_statement
-			| while_statement 
-			| return_statement
-			| break_statement
-			| continue_statement
-			| for_statement /*{ printf("accept for "); } */
-			| if_statement
+statement               : expression SEMICOLON { printf("expr statement\n"); $$ = mas_create_expression_statement($1); }
+			| global_statement {$$ = NULL;}
+			| while_statement  {$$ = NULL;}
+			| return_statement {$$ = NULL;}
+			| break_statement  {$$ = NULL;}
+			| continue_statement {$$ = NULL;}
+			| for_statement {$$ = NULL;}
+			| if_statement  {$$ = NULL;}
 			;
 global_statement
 			: GLOBAL_T identifier_list SEMICOLON 
@@ -105,17 +116,18 @@ identifier_list
 			;
 
 expression              : logical_or_expression { 
-    printf("expression\n");
     Expression* expr;
     MAS_Interpreter* interp;
     expr = $1;
     interp = mas_get_interpreter();
     interp->expression = expr;
+    /*
     if (expr) {
         printf("type = %d\n", expr->type);
     } else {
         printf("no expr\n");
     }
+    */
 }
                         | IDENTIFIER ASSIGN expression  { 
                             Expression* expr = mas_create_assignment_expression($1, $3);

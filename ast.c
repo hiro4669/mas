@@ -6,10 +6,19 @@
 
 #include <stdio.h>
 #include "mas.h"
+#include "info.h"
 
 static void* ast_malloc(size_t size) {
     MAS_Interpreter *interp = mas_get_interpreter();
     return mas_malloc(interp->ast_storage, size);
+}
+
+static Statement* mas_alloc_statement(StatementType type) {
+    Statement* stmt = ast_malloc(sizeof(Statement));
+    stmt->type = type;
+    stmt->line_number = mas_get_localinfo()->line_number;
+
+    return stmt;    
 }
 
 static Expression* mas_alloc_expression(ExpressionType type) {
@@ -100,6 +109,30 @@ ArgumentList* mas_chain_argument(ArgumentList* argument, Expression* expr) {
     return argument;
 }
 
+/*  begin statement */
+Statement* mas_create_expression_statement(Expression* expr) {
+    Statement* stmt = mas_alloc_statement(EXPRESSION_STATEMENT);
+    stmt->u.expression_s = expr;
+    return stmt;
+}
+
+StatementList* mas_create_statement_list(Statement* stmt) {
+    StatementList* stmt_list = ast_malloc(sizeof(StatementList));
+    stmt_list->statement = stmt;
+    stmt_list->next = NULL;
+    return stmt_list;
+}
+StatementList* mas_chain_statement_list(StatementList *stmt_list, Statement* stmt) {
+    StatementList *pos;
+    if (stmt_list == NULL) {
+        stmt_list = mas_create_statement_list(stmt);
+        return stmt_list;
+    }
+    for (pos = stmt_list; pos->next; pos = pos->next);
+    pos->next = mas_create_statement_list(stmt);
+    return stmt_list;
+    
+}
 
 
 

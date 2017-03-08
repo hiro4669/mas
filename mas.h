@@ -43,6 +43,7 @@ typedef enum {
     EXPRESSION_TYPE_COUNT_PLUS_1
 } ExpressionType;
 
+
 typedef struct ArgumentList_tag {
     Expression *expression;
     struct ArgumentList_tag *next;    
@@ -83,10 +84,41 @@ struct Expression_tag {
     } u;    
 };
 
+typedef enum {
+    EXPRESSION_STATEMENT = 1,
+    GLOBAL_STATEMENT,
+    IF_STATEMENT,
+    WHILE_STATEMENT,
+    FOR_STATEMENT,
+    RETURN_STATEMENT,
+    BREAK_STATEMENT,
+    CONTINUE_STATEMENT,
+    STATEMENT_TYPE_COUNT_PLUS_1            
+} StatementType;
+
+typedef struct Statement_tag Statement;
+
+
+typedef struct StatementList_tag {
+    Statement* statement;
+    struct StatementList_tag* next;    
+} StatementList;
+
+
+struct Statement_tag {
+    StatementType     type;
+    int               line_number;
+    union {
+        Expression    *expression_s;        
+    }u;
+};
+
 struct MAS_Interpreter_tag {
     int line_number;
-    Expression *expression;
-    MEM_Storage ast_storage;    
+    Expression *expression; // temporary
+    MEM_Storage ast_storage;
+    Statement  *stmt;       // temporary
+    StatementList *stmt_list;
 };
 
 /* scanner.c */
@@ -121,6 +153,10 @@ Expression* mas_create_assignment_expression(char* identifier, Expression* opera
 
 ArgumentList* mas_create_argument_list(Expression* expr);
 ArgumentList* mas_chain_argument(ArgumentList* argument, Expression* expr);
+
+Statement* mas_create_expression_statement(Expression* expr);
+StatementList* mas_create_statement_list(Statement* stmt);
+StatementList* mas_chain_statement_list(StatementList *stmt_list, Statement* stmt);
 
 
 /* string.c */

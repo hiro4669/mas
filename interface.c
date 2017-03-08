@@ -11,6 +11,8 @@ MAS_Interpreter* mas_create_interpreter() {
     MEM_Storage ast_storage = MEM_open_storage(0);
     mas_interpreter = MEM_storage_malloc(ast_storage, sizeof(struct MAS_Interpreter_tag));
     mas_interpreter->ast_storage = ast_storage;
+    mas_interpreter->stmt = NULL;
+    mas_interpreter->stmt_list = NULL;
     return mas_interpreter;
 }
 

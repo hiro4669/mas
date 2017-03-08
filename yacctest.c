@@ -26,11 +26,14 @@ int main(int argc, char* argv[]) {
     fclose(yyin);
     interp = mas_get_interpreter();
     fprintf(stderr, "-- visitor traverse ---\n");
+    
+    /*
     if (interp->expression) {
         traverse_expr(interp->expression, visitor);
     } else {
         fprintf(stderr, "no expression");
     }
+     */
     
     
     mas_reset_string_literal();
