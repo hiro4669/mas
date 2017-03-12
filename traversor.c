@@ -4,21 +4,7 @@
 
 
 static void traverse_expr_children(Expression* expr, Visitor* visitor);
-
-
-void traverse_stmt(Statement* stmt, Visitor* visitor) {
-    if (stmt) {
-        if (visitor->enter_stmt_list[stmt->type] == NULL) { // for debugging
-            fprintf(stderr, "stmt->type(%d) is null\n", stmt->type);
-            exit(1);
-        }
-        visitor->enter_stmt_list[stmt->type](stmt);
-        visitor->leave_stmt_list[stmt->type](stmt);
-        
-
-        
-    }
-}
+static void traverse_stmt_children(Statement* stmt,  Visitor* visitor);
 
 
 
@@ -86,5 +72,36 @@ static void traverse_expr_children(Expression* expr, Visitor* visitor) {
             exit(1);
             break;
         }
+    }
+}
+
+
+void traverse_stmt(Statement* stmt, Visitor* visitor) {
+    if (stmt) {
+        if (visitor->enter_stmt_list[stmt->type] == NULL) { // for debugging
+            fprintf(stderr, "stmt->type(%d) is null\n", stmt->type);
+            exit(1);
+        }
+        visitor->enter_stmt_list[stmt->type](stmt);
+        traverse_stmt_children(stmt, visitor);
+        visitor->leave_stmt_list[stmt->type](stmt);               
+    }
+}
+
+static void traverse_stmt_children(Statement* stmt, Visitor* visitor) {
+    switch(stmt->type) {
+        case EXPRESSION_STATEMENT: {
+            traverse_expr(stmt->u.expression_s, visitor);
+            break;
+        }
+        case GLOBAL_STATEMENT: {
+            IdentifierList* i_list;
+            for (i_list = stmt->u.global_s.identifier_list; i_list; i_list = i_list->next) {
+                fprintf(stderr, "id = %s\n", i_list->identifier);
+            }
+            break;
+        }
+        default:
+            break;
     }
 }

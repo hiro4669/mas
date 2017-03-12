@@ -104,12 +104,23 @@ typedef struct StatementList_tag {
     struct StatementList_tag* next;    
 } StatementList;
 
+typedef struct IdentifierList_tag {
+    char* identifier;
+    struct IdentifierList_tag* next;
+} IdentifierList;
+
+typedef struct GlobalStatement_tag {
+    IdentifierList *identifier_list;
+} GlobalStatement;
+
 
 struct Statement_tag {
     StatementType     type;
     int               line_number;
     union {
-        Expression    *expression_s;        
+        Expression    *expression_s;
+        GlobalStatement global_s;
+        
     }u;
 };
 
@@ -155,8 +166,13 @@ ArgumentList* mas_create_argument_list(Expression* expr);
 ArgumentList* mas_chain_argument(ArgumentList* argument, Expression* expr);
 
 Statement* mas_create_expression_statement(Expression* expr);
+Statement* mas_create_global_statement(IdentifierList* identifier_list);
+
 StatementList* mas_create_statement_list(Statement* stmt);
 StatementList* mas_chain_statement_list(StatementList *stmt_list, Statement* stmt);
+IdentifierList* mas_create_identifier_list(char* identifier);
+IdentifierList* mas_chain_identifier_list(IdentifierList* id_list, char* identifier);
+
 
 
 /* string.c */

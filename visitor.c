@@ -280,6 +280,18 @@ static void leave_expression_statement(Statement* stmt) {
     fprintf(stderr, "leave expression stmt\n");
 }
 
+static void enter_global_statement(Statement* stmt) {
+    print_depth();
+    fprintf(stderr, "enter global statement\n");
+    increment();
+}
+
+static void leave_global_statement(Statement* stmt) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave global statement\n");
+}
+
 Visitor* create_visitor() {
     visit_expr* enter_list;
     visit_expr* leave_list;
@@ -288,9 +300,11 @@ Visitor* create_visitor() {
     
 
     Visitor* visitor = (Visitor*)malloc(sizeof(Visitor));
+    /* Expression list creation */
     enter_list = (visit_expr*)malloc(sizeof(visit_expr) * EXPRESSION_TYPE_COUNT_PLUS_1);
     leave_list = (visit_expr*)malloc(sizeof(visit_expr) * EXPRESSION_TYPE_COUNT_PLUS_1);
     
+    /* Statement list creation */
     enter_stmt_list = (visit_stmt*)malloc(sizeof(visit_stmt) * STATEMENT_TYPE_COUNT_PLUS_1);
     leave_stmt_list = (visit_stmt*)malloc(sizeof(visit_stmt) * STATEMENT_TYPE_COUNT_PLUS_1);
     
@@ -342,6 +356,9 @@ Visitor* create_visitor() {
     
     enter_stmt_list[EXPRESSION_STATEMENT] = enter_expression_statement;
     leave_stmt_list[EXPRESSION_STATEMENT] = leave_expression_statement;
+    
+    enter_stmt_list[GLOBAL_STATEMENT]     = enter_global_statement;
+    leave_stmt_list[GLOBAL_STATEMENT]     = leave_global_statement;
     
     visitor->enter_list = enter_list;
     visitor->leave_list = leave_list;

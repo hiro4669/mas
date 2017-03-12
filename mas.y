@@ -12,6 +12,7 @@
     Expression* expression;
     ArgumentList* argument_list;
     Statement*  statement;
+    IdentifierList* identifier_list;
 }
 
 %token FUNCTION
@@ -61,7 +62,8 @@
 
 %type <argument_list> argument_list
 
-%type <statement> statement
+%type <statement> statement global_statement
+%type <identifier_list> identifier_list
 
 
 %%
@@ -99,7 +101,7 @@ statement_list // this is matched only in block
 			;
 
 statement               : expression SEMICOLON { printf("expr statement\n"); $$ = mas_create_expression_statement($1); }
-			| global_statement {$$ = NULL;}
+			| global_statement 
 			| while_statement  {$$ = NULL;}
 			| return_statement {$$ = NULL;}
 			| break_statement  {$$ = NULL;}
@@ -108,11 +110,15 @@ statement               : expression SEMICOLON { printf("expr statement\n"); $$ 
 			| if_statement  {$$ = NULL;}
 			;
 global_statement
-			: GLOBAL_T identifier_list SEMICOLON 
+			: GLOBAL_T identifier_list SEMICOLON {
+                            $$ = mas_create_global_statement($2);
+                        }
 			;
 identifier_list
-			: IDENTIFIER
-			| identifier_list COMMA IDENTIFIER
+			: IDENTIFIER { $$ = mas_create_identifier_list($1); }
+			| identifier_list COMMA IDENTIFIER {
+                            $$ = mas_chain_identifier_list($1, $3);
+                        }
 			;
 
 expression              : logical_or_expression { 

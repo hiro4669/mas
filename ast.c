@@ -116,6 +116,12 @@ Statement* mas_create_expression_statement(Expression* expr) {
     return stmt;
 }
 
+Statement* mas_create_global_statement(IdentifierList* identifier_list) {
+    Statement* stmt = mas_alloc_statement(GLOBAL_STATEMENT);
+    stmt->u.global_s.identifier_list = identifier_list;
+    return stmt;
+}
+
 StatementList* mas_create_statement_list(Statement* stmt) {
     StatementList* stmt_list = ast_malloc(sizeof(StatementList));
     stmt_list->statement = stmt;
@@ -130,9 +136,28 @@ StatementList* mas_chain_statement_list(StatementList *stmt_list, Statement* stm
     }
     for (pos = stmt_list; pos->next; pos = pos->next);
     pos->next = mas_create_statement_list(stmt);
-    return stmt_list;
-    
+    return stmt_list;    
 }
+
+IdentifierList* mas_create_identifier_list(char* identifier) {
+    IdentifierList* id_list = ast_malloc(sizeof(IdentifierList));
+    id_list->identifier = identifier;
+    id_list->next = NULL;    
+    return id_list;
+}
+
+IdentifierList* mas_chain_identifier_list(IdentifierList* id_list, char* identifier) {
+    IdentifierList* pos;
+    if (id_list == NULL) {
+        return mas_create_identifier_list(identifier);
+    }
+    for (pos = id_list; pos->next; pos = pos->next);
+    pos->next = mas_create_identifier_list(identifier);
+    return id_list;    
+}
+
+
+
 
 
 
