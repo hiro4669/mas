@@ -139,6 +139,23 @@ StatementList* mas_chain_statement_list(StatementList *stmt_list, Statement* stm
     return stmt_list;    
 }
 
+Statement* mas_create_break_statement() {
+    Statement* stmt = mas_alloc_statement(BREAK_STATEMENT);
+    return stmt;
+}
+
+Statement* mas_create_continue_statement() {
+    Statement* stmt = mas_alloc_statement(CONTINUE_STATEMENT);
+    return stmt;
+}
+
+Statement* mas_create_return_statement(Expression* expr) {
+    Statement* stmt = mas_alloc_statement(RETURN_STATEMENT);
+    stmt->u.return_s.return_value = expr;
+    return stmt;  
+}
+
+
 IdentifierList* mas_create_identifier_list(char* identifier) {
     IdentifierList* id_list = ast_malloc(sizeof(IdentifierList));
     id_list->identifier = identifier;

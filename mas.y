@@ -59,10 +59,13 @@
 		equality_expression relational_expression
 		additive_expression multiplicative_expression
 		unary_expression primary_expression
+                expression_opt
 
 %type <argument_list> argument_list
 
-%type <statement> statement global_statement
+%type <statement> statement global_statement break_statement 
+                continue_statement return_statement
+
 %type <identifier_list> identifier_list
 
 
@@ -100,12 +103,12 @@ statement_list // this is matched only in block
 			| statement_list statement
 			;
 
-statement               : expression SEMICOLON { printf("expr statement\n"); $$ = mas_create_expression_statement($1); }
-			| global_statement 
+statement               : expression SEMICOLON { $$ = mas_create_expression_statement($1); } // OK
+			| global_statement                                                   // OK
 			| while_statement  {$$ = NULL;}
-			| return_statement {$$ = NULL;}
-			| break_statement  {$$ = NULL;}
-			| continue_statement {$$ = NULL;}
+			| return_statement 
+			| break_statement  
+			| continue_statement 
 			| for_statement {$$ = NULL;}
 			| if_statement  {$$ = NULL;}
 			;
@@ -134,14 +137,14 @@ expression              : logical_or_expression {
         printf("no expr\n");
     }
     */
-}
+} // OK
                         | IDENTIFIER ASSIGN expression  { 
                             Expression* expr = mas_create_assignment_expression($1, $3);
                             MAS_Interpreter* interp;                            
                             interp = mas_get_interpreter();
                             interp->expression = expr;                            
                             $$ = expr; 
-                        }
+                        } // OK
 			;
 logical_or_expression
 			: logical_and_expression
@@ -232,19 +235,25 @@ block : LC statement_list RC
 	  | LC RC
 	  ;
 expression_opt
-			: /* empty */ 
+			: {$$ = NULL;}
 			| expression
 			;
 return_statement
-			: RETURN_T expression_opt SEMICOLON
+			: RETURN_T expression_opt SEMICOLON {
+                            $$ = mas_create_return_statement($2);
+                        }
 			;
 break_statement
-			: BREAK SEMICOLON
+			: BREAK SEMICOLON {
+                            $$ = mas_create_break_statement();
+                        }
 			;
 continue_statement
-			: CONTINUE SEMICOLON
+			: CONTINUE SEMICOLON {
+                            $$ = mas_create_continue_statement();
+                        }
 			;
-
+                        
 for_statement
 			: FOR LP expression_opt SEMICOLON expression_opt SEMICOLON expression_opt RP block
 			;

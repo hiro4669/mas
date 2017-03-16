@@ -101,7 +101,17 @@ static void traverse_stmt_children(Statement* stmt, Visitor* visitor) {
             }
             break;
         }
-        default:
+        case RETURN_STATEMENT: {
+            traverse_expr(stmt->u.return_s.return_value, visitor);
+        }
+        case BREAK_STATEMENT:
+        case CONTINUE_STATEMENT: { // do nothing
             break;
+        }            
+        default: {
+            fprintf(stderr, "not decided StatementType in traverser.c %d\n", stmt->type);
+            exit(1);
+            break;
+        }
     }
 }

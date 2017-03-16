@@ -113,6 +113,10 @@ typedef struct GlobalStatement_tag {
     IdentifierList *identifier_list;
 } GlobalStatement;
 
+typedef struct ReturnStatement_tag {
+    Expression* return_value;
+} ReturnStatement;
+
 
 struct Statement_tag {
     StatementType     type;
@@ -120,7 +124,7 @@ struct Statement_tag {
     union {
         Expression    *expression_s;
         GlobalStatement global_s;
-        
+        ReturnStatement return_s;        
     }u;
 };
 
@@ -167,6 +171,9 @@ ArgumentList* mas_chain_argument(ArgumentList* argument, Expression* expr);
 
 Statement* mas_create_expression_statement(Expression* expr);
 Statement* mas_create_global_statement(IdentifierList* identifier_list);
+Statement* mas_create_break_statement();
+Statement* mas_create_continue_statement();
+Statement* mas_create_return_statement(Expression* expr);
 
 StatementList* mas_create_statement_list(Statement* stmt);
 StatementList* mas_chain_statement_list(StatementList *stmt_list, Statement* stmt);

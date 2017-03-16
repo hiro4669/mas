@@ -285,11 +285,43 @@ static void enter_global_statement(Statement* stmt) {
     fprintf(stderr, "enter global statement\n");
     increment();
 }
-
 static void leave_global_statement(Statement* stmt) {
     decrement();
     print_depth();
     fprintf(stderr, "leave global statement\n");
+}
+
+static void enter_return_statement(Statement* stmt) {
+    print_depth();
+    fprintf(stderr, "enter return statement\n");
+    increment();
+}
+static void leave_return_statement(Statement* stmt) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave return statement\n");
+}
+
+static void enter_break_statement(Statement* stmt) {
+    print_depth();
+    fprintf(stderr, "enter break statement\n");
+    increment();
+}
+static void leave_break_statement(Statement* stmt) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave break statement\n");
+}
+
+static void enter_continue_statement(Statement* stmt) {
+    print_depth();
+    fprintf(stderr, "enter continue statement\n");
+    increment();
+}
+static void leave_continue_statement(Statement* stmt) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave continue statement\n");
 }
 
 Visitor* create_visitor() {
@@ -355,10 +387,16 @@ Visitor* create_visitor() {
     leave_list[ASSIGN_EXPRESSION]        = leave_assignment_expression;
     
     enter_stmt_list[EXPRESSION_STATEMENT] = enter_expression_statement;
-    leave_stmt_list[EXPRESSION_STATEMENT] = leave_expression_statement;
-    
     enter_stmt_list[GLOBAL_STATEMENT]     = enter_global_statement;
+    enter_stmt_list[RETURN_STATEMENT]     = enter_return_statement;
+    enter_stmt_list[BREAK_STATEMENT]      = enter_break_statement;
+    enter_stmt_list[CONTINUE_STATEMENT]   = enter_continue_statement;
+    
+    leave_stmt_list[EXPRESSION_STATEMENT] = leave_expression_statement;
     leave_stmt_list[GLOBAL_STATEMENT]     = leave_global_statement;
+    leave_stmt_list[RETURN_STATEMENT]     = leave_return_statement;
+    leave_stmt_list[BREAK_STATEMENT]      = leave_break_statement;
+    leave_stmt_list[CONTINUE_STATEMENT]   = leave_continue_statement;
     
     visitor->enter_list = enter_list;
     visitor->leave_list = leave_list;
