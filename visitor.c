@@ -324,6 +324,17 @@ static void leave_continue_statement(Statement* stmt) {
     fprintf(stderr, "leave continue statement\n");
 }
 
+static void enter_while_statement(Statement* stmt) {
+    print_depth();
+    fprintf(stderr, "enter while statement\n");
+    increment();
+}
+static void leave_while_statement(Statement* stmt) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave while statement\n");
+}
+
 Visitor* create_visitor() {
     visit_expr* enter_list;
     visit_expr* leave_list;
@@ -386,17 +397,22 @@ Visitor* create_visitor() {
     leave_list[LOGICAL_OR_EXPRESSION]    = leave_logical_or_expression;
     leave_list[ASSIGN_EXPRESSION]        = leave_assignment_expression;
     
+    
+    
+    
     enter_stmt_list[EXPRESSION_STATEMENT] = enter_expression_statement;
     enter_stmt_list[GLOBAL_STATEMENT]     = enter_global_statement;
     enter_stmt_list[RETURN_STATEMENT]     = enter_return_statement;
     enter_stmt_list[BREAK_STATEMENT]      = enter_break_statement;
     enter_stmt_list[CONTINUE_STATEMENT]   = enter_continue_statement;
+    enter_stmt_list[WHILE_STATEMENT]      = enter_while_statement;
     
     leave_stmt_list[EXPRESSION_STATEMENT] = leave_expression_statement;
     leave_stmt_list[GLOBAL_STATEMENT]     = leave_global_statement;
     leave_stmt_list[RETURN_STATEMENT]     = leave_return_statement;
     leave_stmt_list[BREAK_STATEMENT]      = leave_break_statement;
     leave_stmt_list[CONTINUE_STATEMENT]   = leave_continue_statement;
+    leave_stmt_list[WHILE_STATEMENT]      = leave_while_statement;
     
     visitor->enter_list = enter_list;
     visitor->leave_list = leave_list;

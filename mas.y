@@ -13,6 +13,8 @@
     ArgumentList* argument_list;
     Statement*  statement;
     IdentifierList* identifier_list;
+    Block* block;
+    StatementList* statement_list;
 }
 
 %token FUNCTION
@@ -65,8 +67,11 @@
 
 %type <statement> statement global_statement break_statement 
                 continue_statement return_statement
+                while_statement
 
 %type <identifier_list> identifier_list
+%type <statement_list> statement_list
+%type <block> block
 
 
 %%
@@ -98,17 +103,17 @@ parameter_list
 			| parameter_list COMMA IDENTIFIER
 			;
 
-statement_list // this is matched only in block
-			: statement { printf("statement in block \n");}
-			| statement_list statement
+statement_list          // this is matched only in block
+			: statement { printf("statement in block \n"); $$ = mas_create_statement_list($1); }
+			| statement_list statement { $$ = mas_chain_statement_list($1, $2); }
 			;
 
 statement               : expression SEMICOLON { $$ = mas_create_expression_statement($1); } // OK
 			| global_statement                                                   // OK
-			| while_statement  {$$ = NULL;}
-			| return_statement 
-			| break_statement  
-			| continue_statement 
+			| while_statement  
+			| return_statement    // OK
+			| break_statement     // OK
+			| continue_statement  //OK
 			| for_statement {$$ = NULL;}
 			| if_statement  {$$ = NULL;}
 			;
@@ -229,10 +234,12 @@ primary_expression
 			;
 
 while_statement
-			: WHILE LP expression RP block
-
-block : LC statement_list RC
-	  | LC RC
+			: WHILE LP expression RP block {
+                            $$ = mas_create_while_statement($3, $5);
+                        }
+                        ;
+block     : LC statement_list RC {$$ = mas_create_block($2);} //{ $$ = mas_create_block($2); }
+	  | LC                RC {$$ = mas_create_block(NULL);}//{ $$ = mas_create_block(NULL); }
 	  ;
 expression_opt
 			: {$$ = NULL;}

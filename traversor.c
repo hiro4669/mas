@@ -88,6 +88,16 @@ void traverse_stmt(Statement* stmt, Visitor* visitor) {
     }
 }
 
+static void traverse_block(Block* block, Visitor* visitor) {
+    StatementList* slist;
+    if (block->stmt_list) {
+        for (slist = block->stmt_list; slist; slist = slist->next) {
+            traverse_stmt(slist->statement, visitor);
+        }
+    }
+
+}
+
 static void traverse_stmt_children(Statement* stmt, Visitor* visitor) {
     switch(stmt->type) {
         case EXPRESSION_STATEMENT: {
@@ -103,6 +113,14 @@ static void traverse_stmt_children(Statement* stmt, Visitor* visitor) {
         }
         case RETURN_STATEMENT: {
             traverse_expr(stmt->u.return_s.return_value, visitor);
+            break;
+        }
+        case WHILE_STATEMENT: {
+            traverse_expr(stmt->u.while_s.condexpr, visitor);
+            if (stmt->u.while_s.block) {
+                traverse_block(stmt->u.while_s.block, visitor);
+            }
+            break;
         }
         case BREAK_STATEMENT:
         case CONTINUE_STATEMENT: { // do nothing

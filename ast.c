@@ -27,6 +27,7 @@ static Expression* mas_alloc_expression(ExpressionType type) {
     return expr;
 }
 
+/* For Expression */
 Expression* mas_create_binary_expression(ExpressionType type,
         Expression* left, Expression* right) {
     Expression* bexpr = mas_alloc_expression(type);
@@ -74,11 +75,6 @@ Expression* mas_create_functioncall_expression(char* identifier, ArgumentList* a
     Expression* expr = mas_alloc_expression(FUNCTION_CALL_EXPRESSION);
     expr->u.function_call_expression.identifier = identifier;
     expr->u.function_call_expression.argument = argument;
-    /*
-    if (argument) {
-        fprintf(stderr, "YESYESYES\n");
-    }
-     */
     return expr;            
 }
 
@@ -109,7 +105,7 @@ ArgumentList* mas_chain_argument(ArgumentList* argument, Expression* expr) {
     return argument;
 }
 
-/*  begin statement */
+/*  begin For statement */
 Statement* mas_create_expression_statement(Expression* expr) {
     Statement* stmt = mas_alloc_statement(EXPRESSION_STATEMENT);
     stmt->u.expression_s = expr;
@@ -155,6 +151,18 @@ Statement* mas_create_return_statement(Expression* expr) {
     return stmt;  
 }
 
+Statement* mas_create_while_statement(Expression* condexpr, Block* block) {
+    Statement* stmt = mas_alloc_statement(WHILE_STATEMENT);
+    stmt->u.while_s.condexpr = condexpr;
+    stmt->u.while_s.block = block;
+    return stmt;
+}
+
+Block* mas_create_block(StatementList* stmt_list)  {
+    Block* block = (Block*)ast_malloc(sizeof(Block));
+    block->stmt_list = stmt_list;    
+    return block;
+}
 
 IdentifierList* mas_create_identifier_list(char* identifier) {
     IdentifierList* id_list = ast_malloc(sizeof(IdentifierList));

@@ -117,6 +117,15 @@ typedef struct ReturnStatement_tag {
     Expression* return_value;
 } ReturnStatement;
 
+typedef struct Block_tag {
+    StatementList* stmt_list;
+} Block;
+
+typedef struct WhileStatement_tag {
+    Expression* condexpr;
+    Block* block;
+} WhileStatement;
+
 
 struct Statement_tag {
     StatementType     type;
@@ -124,7 +133,8 @@ struct Statement_tag {
     union {
         Expression    *expression_s;
         GlobalStatement global_s;
-        ReturnStatement return_s;        
+        ReturnStatement return_s;
+        WhileStatement  while_s;
     }u;
 };
 
@@ -174,11 +184,13 @@ Statement* mas_create_global_statement(IdentifierList* identifier_list);
 Statement* mas_create_break_statement();
 Statement* mas_create_continue_statement();
 Statement* mas_create_return_statement(Expression* expr);
+Statement* mas_create_while_statement(Expression* condexpr, Block* block);
 
 StatementList* mas_create_statement_list(Statement* stmt);
 StatementList* mas_chain_statement_list(StatementList *stmt_list, Statement* stmt);
 IdentifierList* mas_create_identifier_list(char* identifier);
 IdentifierList* mas_chain_identifier_list(IdentifierList* id_list, char* identifier);
+Block* mas_create_block(StatementList* stmt_list);
 
 
 
