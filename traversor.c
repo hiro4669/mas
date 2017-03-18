@@ -122,6 +122,15 @@ static void traverse_stmt_children(Statement* stmt, Visitor* visitor) {
             }
             break;
         }
+        case FOR_STATEMENT: {
+            traverse_expr(stmt->u.for_s.bexpr, visitor);
+            traverse_expr(stmt->u.for_s.cexpr, visitor);
+            traverse_expr(stmt->u.for_s.iexpr, visitor);
+            if (stmt->u.for_s.block) {
+                traverse_block(stmt->u.for_s.block, visitor);
+            }
+            break;
+        }
         case BREAK_STATEMENT:
         case CONTINUE_STATEMENT: { // do nothing
             break;

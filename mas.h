@@ -126,6 +126,13 @@ typedef struct WhileStatement_tag {
     Block* block;
 } WhileStatement;
 
+typedef struct ForStatement_tag {
+    Expression* bexpr; // begin expr
+    Expression* cexpr; // condition expr
+    Expression* iexpr; // iteration expr
+    Block*      block;
+} ForStatement;
+
 
 struct Statement_tag {
     StatementType     type;
@@ -135,6 +142,7 @@ struct Statement_tag {
         GlobalStatement global_s;
         ReturnStatement return_s;
         WhileStatement  while_s;
+        ForStatement    for_s;
     }u;
 };
 
@@ -185,6 +193,8 @@ Statement* mas_create_break_statement();
 Statement* mas_create_continue_statement();
 Statement* mas_create_return_statement(Expression* expr);
 Statement* mas_create_while_statement(Expression* condexpr, Block* block);
+Statement* mas_create_for_statement(Expression* bexpr, Expression* cexpr, 
+        Expression* iexpr, Block* block);
 
 StatementList* mas_create_statement_list(Statement* stmt);
 StatementList* mas_chain_statement_list(StatementList *stmt_list, Statement* stmt);

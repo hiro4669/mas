@@ -67,7 +67,7 @@
 
 %type <statement> statement global_statement break_statement 
                 continue_statement return_statement
-                while_statement
+                while_statement for_statement
 
 %type <identifier_list> identifier_list
 %type <statement_list> statement_list
@@ -109,12 +109,12 @@ statement_list          // this is matched only in block
 			;
 
 statement               : expression SEMICOLON { $$ = mas_create_expression_statement($1); } // OK
-			| global_statement                                                   // OK
-			| while_statement  
+			| global_statement    // OK                                                 // OK
+			| while_statement   
 			| return_statement    // OK
 			| break_statement     // OK
-			| continue_statement  //OK
-			| for_statement {$$ = NULL;}
+			| continue_statement  // OK
+			| for_statement // OK?
 			| if_statement  {$$ = NULL;}
 			;
 global_statement
@@ -235,15 +235,15 @@ primary_expression
 
 while_statement
 			: WHILE LP expression RP block {
-                            $$ = mas_create_while_statement($3, $5);
+                            $$ = mas_create_while_statement($3, $5); // OK
                         }
                         ;
-block     : LC statement_list RC {$$ = mas_create_block($2);} //{ $$ = mas_create_block($2); }
-	  | LC                RC {$$ = mas_create_block(NULL);}//{ $$ = mas_create_block(NULL); }
+block     : LC statement_list RC {$$ = mas_create_block($2);}  // OK
+	  | LC                RC {$$ = mas_create_block(NULL);}// OK
 	  ;
 expression_opt
-			: {$$ = NULL;}
-			| expression
+			: {$$ = NULL;}  // OK
+			| expression    // OK
 			;
 return_statement
 			: RETURN_T expression_opt SEMICOLON {
@@ -262,7 +262,9 @@ continue_statement
 			;
                         
 for_statement
-			: FOR LP expression_opt SEMICOLON expression_opt SEMICOLON expression_opt RP block
+			: FOR LP expression_opt SEMICOLON expression_opt SEMICOLON expression_opt RP block {
+                            $$ = mas_create_for_statement($3, $5, $7, $9);
+                        }
 			;
 
 if_statement

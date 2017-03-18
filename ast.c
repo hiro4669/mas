@@ -158,6 +158,15 @@ Statement* mas_create_while_statement(Expression* condexpr, Block* block) {
     return stmt;
 }
 
+Statement* mas_create_for_statement(Expression* bexpr, Expression* cexpr, Expression* iexpr, Block* block) {
+    Statement* stmt = mas_alloc_statement(FOR_STATEMENT);
+    stmt->u.for_s.bexpr = bexpr;
+    stmt->u.for_s.cexpr = cexpr;
+    stmt->u.for_s.iexpr = iexpr;
+    stmt->u.for_s.block = block;
+    return stmt;
+}
+
 Block* mas_create_block(StatementList* stmt_list)  {
     Block* block = (Block*)ast_malloc(sizeof(Block));
     block->stmt_list = stmt_list;    
