@@ -134,6 +134,16 @@ static void traverse_stmt_children(Statement* stmt, Visitor* visitor) {
         case IF_STATEMENT: {
             traverse_expr(stmt->u.if_s.condexpr, visitor);
             traverse_block(stmt->u.if_s.thenblock, visitor);
+            if (stmt->u.if_s.elsif) {
+                Elsif* pos;
+                for (pos = stmt->u.if_s.elsif; pos; pos = pos->next) {
+                    traverse_expr(pos->cexpr, visitor);
+                    traverse_block(pos->block, visitor);
+                }
+            }
+            if (stmt->u.if_s.elseblock) {
+                traverse_block(stmt->u.if_s.elseblock, visitor);
+            }
             break;
         }
         case BREAK_STATEMENT:

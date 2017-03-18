@@ -118,7 +118,7 @@ statement               : expression SEMICOLON { $$ = mas_create_expression_stat
 			| break_statement     // OK
 			| continue_statement  // OK
 			| for_statement // OK
-			| if_statement  // OK?
+			| if_statement  // OK
 			;
 global_statement
 			: GLOBAL_T identifier_list SEMICOLON {
@@ -133,25 +133,18 @@ identifier_list
 			;
 
 expression              : logical_or_expression { 
-    Expression* expr;
-    MAS_Interpreter* interp;
-    expr = $1;
-    interp = mas_get_interpreter();
-    interp->expression = expr;
-    /*
-    if (expr) {
-        printf("type = %d\n", expr->type);
-    } else {
-        printf("no expr\n");
-    }
-    */
-} // OK
+                          Expression* expr;
+                          MAS_Interpreter* interp;
+                          expr = $1;
+                          interp = mas_get_interpreter();
+                          interp->expression = expr;    
+                        } // OK
                         | IDENTIFIER ASSIGN expression  { 
-                            Expression* expr = mas_create_assignment_expression($1, $3);
-                            MAS_Interpreter* interp;                            
-                            interp = mas_get_interpreter();
-                            interp->expression = expr;                            
-                            $$ = expr; 
+                           Expression* expr = mas_create_assignment_expression($1, $3);
+                           MAS_Interpreter* interp;                            
+                           interp = mas_get_interpreter();
+                           interp->expression = expr;                            
+                           $$ = expr; 
                         } // OK
 			;
 logical_or_expression
@@ -272,9 +265,9 @@ for_statement
 
 if_statement
 			: IF LP expression RP block { $$ = mas_create_if_statement($3, $5, NULL, NULL); }
-			| IF LP expression RP block ELSE block { printf("if match 2 ");  $$ = NULL; }
-			| IF LP expression RP block elsif_list { printf("if match 3 ");  $$ = NULL; }
-			| IF LP expression RP block elsif_list ELSE block { printf("if match 4 "); $$ = NULL; }
+			| IF LP expression RP block ELSE block { $$ = mas_create_if_statement($3, $5, NULL, $7); }
+			| IF LP expression RP block elsif_list { $$ = mas_create_if_statement($3, $5, $6, NULL); }
+			| IF LP expression RP block elsif_list ELSE block { $$ = mas_create_if_statement($3, $5, $6, $8); }
 			;
 
 elsif_list         : elsif
