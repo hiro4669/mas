@@ -167,6 +167,16 @@ Statement* mas_create_for_statement(Expression* bexpr, Expression* cexpr, Expres
     return stmt;
 }
 
+Statement* mas_create_if_statement(Expression* condexpr, Block* thenblock, Elsif* elsif, Block* elseblock) {
+    Statement* stmt = mas_alloc_statement(IF_STATEMENT);
+    stmt->u.if_s.condexpr = condexpr;
+    stmt->u.if_s.thenblock = thenblock;
+    stmt->u.if_s.elsif = elsif;
+    stmt->u.if_s.elseblock = elseblock;
+    
+    return stmt;    
+}
+
 Block* mas_create_block(StatementList* stmt_list)  {
     Block* block = (Block*)ast_malloc(sizeof(Block));
     block->stmt_list = stmt_list;    
@@ -189,7 +199,20 @@ IdentifierList* mas_chain_identifier_list(IdentifierList* id_list, char* identif
     pos->next = mas_create_identifier_list(identifier);
     return id_list;    
 }
+Elsif* mas_chain_elsif(Elsif* e_list, Elsif* elsif) {
+    Elsif* pos;
+    for (pos = e_list; pos->next; pos = pos->next);
+    pos->next = elsif;
+    return e_list;
+}
 
+Elsif* mas_create_elsif(Expression* cexpr, Block* block) {
+    Elsif* elsif = (Elsif*)ast_malloc(sizeof(Elsif));
+    elsif->cexpr = cexpr;
+    elsif->block = block;
+    elsif->next = NULL;    
+    return elsif;
+}
 
 
 

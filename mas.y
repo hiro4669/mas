@@ -9,12 +9,13 @@
 	double double_value;
      */
     char *identifier;
-    Expression* expression;
-    ArgumentList* argument_list;
-    Statement*  statement;
+    Expression*     expression;
+    ArgumentList*   argument_list;
+    Statement*      statement;
     IdentifierList* identifier_list;
-    Block* block;
-    StatementList* statement_list;
+    Block*          block;
+    StatementList*  statement_list;
+    Elsif*          elsif;
 }
 
 %token FUNCTION
@@ -68,10 +69,12 @@
 %type <statement> statement global_statement break_statement 
                 continue_statement return_statement
                 while_statement for_statement
+                if_statement
 
 %type <identifier_list> identifier_list
 %type <statement_list> statement_list
 %type <block> block
+%type <elsif> elsif elsif_list
 
 
 %%
@@ -110,12 +113,12 @@ statement_list          // this is matched only in block
 
 statement               : expression SEMICOLON { $$ = mas_create_expression_statement($1); } // OK
 			| global_statement    // OK                                                 // OK
-			| while_statement   
+			| while_statement     // OK
 			| return_statement    // OK
 			| break_statement     // OK
 			| continue_statement  // OK
-			| for_statement // OK?
-			| if_statement  {$$ = NULL;}
+			| for_statement // OK
+			| if_statement  // OK?
 			;
 global_statement
 			: GLOBAL_T identifier_list SEMICOLON {
@@ -268,17 +271,19 @@ for_statement
 			;
 
 if_statement
-			: IF LP expression RP block { printf("if match "); }
-			| IF LP expression RP block ELSE block { printf("if match 2 "); }
-			| IF LP expression RP block elsif_list { printf("if match 3 "); }
-			| IF LP expression RP block elsif_list ELSE block { printf("if match 4 "); }
+			: IF LP expression RP block { $$ = mas_create_if_statement($3, $5, NULL, NULL); }
+			| IF LP expression RP block ELSE block { printf("if match 2 ");  $$ = NULL; }
+			| IF LP expression RP block elsif_list { printf("if match 3 ");  $$ = NULL; }
+			| IF LP expression RP block elsif_list ELSE block { printf("if match 4 "); $$ = NULL; }
 			;
 
-elsif_list : elsif
-		   | elsif_list elsif
+elsif_list         : elsif
+		   | elsif_list elsif { $$ = mas_chain_elsif($1, $2); }
 		   ;
 
-elsif	   : ELSIF LP expression RP block
+elsif	           : ELSIF LP expression RP block {
+                     $$ = mas_create_elsif($3, $5);
+                   }
 		   ;
 
 %%

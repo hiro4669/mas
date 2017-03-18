@@ -346,6 +346,17 @@ static void leave_for_statement(Statement* stmt) {
     fprintf(stderr, "leave for statement\n");
 }
 
+static void enter_if_statement(Statement* stmt) {
+    print_depth();
+    fprintf(stderr, "enter if statement\n");
+    increment();
+}
+static void leave_if_statement(Statement* stmt) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave if statement\n");
+}
+
 Visitor* create_visitor() {
     visit_expr* enter_list;
     visit_expr* leave_list;
@@ -417,6 +428,7 @@ Visitor* create_visitor() {
     enter_stmt_list[CONTINUE_STATEMENT]   = enter_continue_statement;
     enter_stmt_list[WHILE_STATEMENT]      = enter_while_statement;
     enter_stmt_list[FOR_STATEMENT]        = enter_for_statement;
+    enter_stmt_list[IF_STATEMENT]         = enter_if_statement;
     
     leave_stmt_list[EXPRESSION_STATEMENT] = leave_expression_statement;
     leave_stmt_list[GLOBAL_STATEMENT]     = leave_global_statement;
@@ -425,6 +437,7 @@ Visitor* create_visitor() {
     leave_stmt_list[CONTINUE_STATEMENT]   = leave_continue_statement;
     leave_stmt_list[WHILE_STATEMENT]      = leave_while_statement;
     leave_stmt_list[FOR_STATEMENT]        = leave_for_statement;
+    leave_stmt_list[IF_STATEMENT]         = leave_if_statement;
     
     visitor->enter_list = enter_list;
     visitor->leave_list = leave_list;

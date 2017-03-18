@@ -133,16 +133,31 @@ typedef struct ForStatement_tag {
     Block*      block;
 } ForStatement;
 
+typedef struct Elsif_tag {
+    Expression* cexpr;
+    Block*      block;
+    struct Elsif_tag* next;
+} Elsif;
+
+typedef struct IfStatement_tag {
+    Expression* condexpr;
+    Block*      thenblock;
+    Elsif*      elsif;
+    Block*      elseblock;
+} IfStatement;
+
+
 
 struct Statement_tag {
     StatementType     type;
     int               line_number;
     union {
-        Expression    *expression_s;
+        Expression      *expression_s;
         GlobalStatement global_s;
         ReturnStatement return_s;
         WhileStatement  while_s;
         ForStatement    for_s;
+        IfStatement     if_s; 
     }u;
 };
 
@@ -195,12 +210,16 @@ Statement* mas_create_return_statement(Expression* expr);
 Statement* mas_create_while_statement(Expression* condexpr, Block* block);
 Statement* mas_create_for_statement(Expression* bexpr, Expression* cexpr, 
         Expression* iexpr, Block* block);
+Statement* mas_create_if_statement(Expression* condexpr, Block* thenblock, 
+        Elsif* elsif, Block* elseblock);
 
 StatementList* mas_create_statement_list(Statement* stmt);
 StatementList* mas_chain_statement_list(StatementList *stmt_list, Statement* stmt);
 IdentifierList* mas_create_identifier_list(char* identifier);
 IdentifierList* mas_chain_identifier_list(IdentifierList* id_list, char* identifier);
 Block* mas_create_block(StatementList* stmt_list);
+Elsif* mas_create_elsif(Expression* cexpr, Block* block);
+Elsif* mas_chain_elsif(Elsif* e_list, Elsif* elsif);
 
 
 
