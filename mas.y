@@ -17,6 +17,7 @@
     StatementList*  statement_list;
     Elsif*          elsif;
     ParameterList*  parameter_list;
+    FunctionDefinition* function_definition;
 }
 
 %token FUNCTION
@@ -77,6 +78,7 @@
 %type <block> block
 %type <elsif> elsif elsif_list
 %type <parameter_list> parameter_list
+%type <function_definition> function_definition
 
 %%
 translation_unit 
@@ -98,8 +100,12 @@ definision_or_statement
                         ;
 
 function_definition
-			: FUNCTION IDENTIFIER LP parameter_list RP block
-			| FUNCTION IDENTIFIER LP                RP block
+			: FUNCTION IDENTIFIER LP parameter_list RP block {
+                          $$ = mas_create_function_definition($2, $4, $6);
+                        }
+			| FUNCTION IDENTIFIER LP                RP block {
+                          $$ = mas_create_function_definition($2, NULL, $5);
+                        }
 			;
 
 parameter_list

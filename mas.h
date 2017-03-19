@@ -172,7 +172,7 @@ typedef struct ParameterList_tag {
     struct ParameterList_tag *next;
 } ParameterList;
 
-typedef struct FunctionDefinision_tag {
+typedef struct FunctionDefinition_tag {
     char* name; // function name
     FunctionDefinitionType type;
     union {
@@ -181,8 +181,8 @@ typedef struct FunctionDefinision_tag {
             Block*         block;
         } mas_f;
     }u;
-    
-} FunctionDefinision;
+    struct FunctionDefinition_tag* next;
+} FunctionDefinition;
 
 struct MAS_Interpreter_tag {
     int line_number;
@@ -190,7 +190,7 @@ struct MAS_Interpreter_tag {
     MEM_Storage ast_storage;
     Statement  *stmt;       // temporary
     StatementList *stmt_list;
-    FunctionDefinision *func_list;
+    FunctionDefinition *func_list;
 };
 
 /* scanner.c */
@@ -236,6 +236,8 @@ Statement* mas_create_for_statement(Expression* bexpr, Expression* cexpr,
         Expression* iexpr, Block* block);
 Statement* mas_create_if_statement(Expression* condexpr, Block* thenblock, 
         Elsif* elsif, Block* elseblock);
+FunctionDefinition* mas_create_function_definition(char* name, ParameterList* params, Block* block);
+FunctionDefinition* mas_chain_function_definition(FunctionDefinition* flist, FunctionDefinition* newf);
 
 StatementList* mas_create_statement_list(Statement* stmt);
 StatementList* mas_chain_statement_list(StatementList *stmt_list, Statement* stmt);

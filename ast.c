@@ -177,6 +177,25 @@ Statement* mas_create_if_statement(Expression* condexpr, Block* thenblock, Elsif
     return stmt;    
 }
 
+/* Function Definition */
+FunctionDefinition* mas_create_function_definition(char* name, ParameterList* params, Block* block) {
+    FunctionDefinition* fdef = (FunctionDefinition*)ast_malloc(sizeof(FunctionDefinition));
+    fdef->name = name;
+    fdef->u.mas_f.param = params;
+    fdef->u.mas_f.block = block;
+    fdef->next = NULL;
+    return fdef;
+}
+
+FunctionDefinition* mas_chain_function_definition(FunctionDefinition* flist, FunctionDefinition* newf) {
+    if (flist == NULL) {
+        return newf;
+    }
+    FunctionDefinition* pos;
+    for (pos = flist; pos->next; pos = pos->next);
+    pos->next = newf;
+    return flist;
+}
 
 /* MISC */
 Block* mas_create_block(StatementList* stmt_list)  {
@@ -232,6 +251,8 @@ ParameterList* mas_chain_parameter(ParameterList* plist, char* name) {
     pos->next = mas_create_parameter(name);
     return plist;
 }
+
+
 
 
 
