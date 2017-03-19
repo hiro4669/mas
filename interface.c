@@ -13,6 +13,7 @@ MAS_Interpreter* mas_create_interpreter() {
     mas_interpreter->ast_storage = ast_storage;
     mas_interpreter->stmt = NULL;
     mas_interpreter->stmt_list = NULL;
+    mas_interpreter->func_list = NULL;
     return mas_interpreter;
 }
 

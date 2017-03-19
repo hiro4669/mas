@@ -177,6 +177,8 @@ Statement* mas_create_if_statement(Expression* condexpr, Block* thenblock, Elsif
     return stmt;    
 }
 
+
+/* MISC */
 Block* mas_create_block(StatementList* stmt_list)  {
     Block* block = (Block*)ast_malloc(sizeof(Block));
     block->stmt_list = stmt_list;    
@@ -212,6 +214,23 @@ Elsif* mas_create_elsif(Expression* cexpr, Block* block) {
     elsif->block = block;
     elsif->next = NULL;    
     return elsif;
+}
+
+ParameterList* mas_create_parameter(char* name) {
+    ParameterList *param = (ParameterList*)ast_malloc(sizeof(ParameterList));
+    param->name = name;
+    param->next = NULL;
+    return param;
+}
+
+ParameterList* mas_chain_parameter(ParameterList* plist, char* name) {
+    if (plist == NULL) {
+        return mas_create_parameter(name);
+    }
+    ParameterList* pos;
+    for(pos = plist; pos->next; pos = pos->next);
+    pos->next = mas_create_parameter(name);
+    return plist;
 }
 
 

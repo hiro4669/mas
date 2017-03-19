@@ -16,6 +16,7 @@
     Block*          block;
     StatementList*  statement_list;
     Elsif*          elsif;
+    ParameterList*  parameter_list;
 }
 
 %token FUNCTION
@@ -75,7 +76,7 @@
 %type <statement_list> statement_list
 %type <block> block
 %type <elsif> elsif elsif_list
-
+%type <parameter_list> parameter_list
 
 %%
 translation_unit 
@@ -94,7 +95,7 @@ definision_or_statement
                                                         
                         }
 			| function_definition
-            ;
+                        ;
 
 function_definition
 			: FUNCTION IDENTIFIER LP parameter_list RP block
@@ -102,12 +103,14 @@ function_definition
 			;
 
 parameter_list
-			: IDENTIFIER
-			| parameter_list COMMA IDENTIFIER
+			: IDENTIFIER { $$ = mas_create_parameter($1); }
+			| parameter_list COMMA IDENTIFIER {
+                            $$ = mas_chain_parameter($1, $3);
+                        }
 			;
 
 statement_list          // this is matched only in block
-			: statement { printf("statement in block \n"); $$ = mas_create_statement_list($1); }
+			: statement { $$ = mas_create_statement_list($1); }
 			| statement_list statement { $$ = mas_chain_statement_list($1, $2); }
 			;
 

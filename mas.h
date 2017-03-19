@@ -161,12 +161,36 @@ struct Statement_tag {
     }u;
 };
 
+typedef enum {
+    MAS_FUNCTION = 1,
+    NATIVE_FUNCTION,
+    FUNCTION_TYPE_PLUS1
+} FunctionDefinitionType;
+
+typedef struct ParameterList_tag {
+    char* name;
+    struct ParameterList_tag *next;
+} ParameterList;
+
+typedef struct FunctionDefinision_tag {
+    char* name; // function name
+    FunctionDefinitionType type;
+    union {
+        struct {
+            ParameterList* param;
+            Block*         block;
+        } mas_f;
+    }u;
+    
+} FunctionDefinision;
+
 struct MAS_Interpreter_tag {
     int line_number;
     Expression *expression; // temporary
     MEM_Storage ast_storage;
     Statement  *stmt;       // temporary
     StatementList *stmt_list;
+    FunctionDefinision *func_list;
 };
 
 /* scanner.c */
@@ -220,6 +244,8 @@ IdentifierList* mas_chain_identifier_list(IdentifierList* id_list, char* identif
 Block* mas_create_block(StatementList* stmt_list);
 Elsif* mas_create_elsif(Expression* cexpr, Block* block);
 Elsif* mas_chain_elsif(Elsif* e_list, Elsif* elsif);
+ParameterList* mas_create_parameter(char* name);
+ParameterList* mas_chain_parameter(ParameterList *plist, char* name);
 
 
 
