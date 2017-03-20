@@ -12,6 +12,7 @@
 
 typedef void (*visit_expr)(Expression* expr);
 typedef void (*visit_stmt)(Statement*  stmt);
+typedef void (*visit_func)(FunctionDefinition* func);
 
 struct Visitor_tag {
     visit_expr* enter_list;
@@ -19,6 +20,9 @@ struct Visitor_tag {
     
     visit_stmt* enter_stmt_list;
     visit_stmt* leave_stmt_list;
+    
+    visit_func* enter_func_list;
+    visit_func* leave_func_list;
     
 };
 

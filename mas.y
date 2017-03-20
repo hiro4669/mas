@@ -96,7 +96,12 @@ definision_or_statement
                             interp->stmt_list = mas_chain_statement_list(stmt_list, $1);
                                                         
                         }
-			| function_definition
+			| function_definition {
+                            MAS_Interpreter* interp;
+                            interp = mas_get_interpreter();
+                            interp->func_list = mas_chain_function_definition(interp->func_list, $1);
+                            printf("function definision\n");
+                        }
                         ;
 
 function_definition

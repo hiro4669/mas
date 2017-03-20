@@ -5,6 +5,7 @@
 
 static void traverse_expr_children(Expression* expr, Visitor* visitor);
 static void traverse_stmt_children(Statement* stmt,  Visitor* visitor);
+static void traverse_func_children(FunctionDefinition* func, Visitor* visitor);
 
 
 
@@ -156,4 +157,22 @@ static void traverse_stmt_children(Statement* stmt, Visitor* visitor) {
             break;
         }
     }
+}
+
+void traverse_func(FunctionDefinition* func, Visitor* visitor) {
+
+    if (func) {
+        if (visitor->enter_func_list[func->type] == NULL) { // for debugging
+            fprintf(stderr, "func->type(%d) is null\n", func->type);
+            exit(1);
+        }
+
+        visitor->enter_func_list[func->type](func);
+        traverse_func_children(func, visitor);
+        visitor->leave_func_list[func->type](func);
+    }
+}
+
+static void traverse_func_children(FunctionDefinition* func, Visitor* visitor) {
+    
 }

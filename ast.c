@@ -180,6 +180,7 @@ Statement* mas_create_if_statement(Expression* condexpr, Block* thenblock, Elsif
 /* Function Definition */
 FunctionDefinition* mas_create_function_definition(char* name, ParameterList* params, Block* block) {
     FunctionDefinition* fdef = (FunctionDefinition*)ast_malloc(sizeof(FunctionDefinition));
+    fdef->type = MAS_FUNCTION;
     fdef->name = name;
     fdef->u.mas_f.param = params;
     fdef->u.mas_f.block = block;
@@ -191,6 +192,7 @@ FunctionDefinition* mas_chain_function_definition(FunctionDefinition* flist, Fun
     if (flist == NULL) {
         return newf;
     }
+    fprintf(stderr, "flist is not null\n");
     FunctionDefinition* pos;
     for (pos = flist; pos->next; pos = pos->next);
     pos->next = newf;

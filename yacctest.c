@@ -26,11 +26,18 @@ int main(int argc, char* argv[]) {
     fclose(yyin);
     interp = mas_get_interpreter();
     fprintf(stderr, "-- visitor traverse ---\n");
-    
+    fprintf(stderr, "-- traverse statement ---\n");    
     StatementList *slist;
     if (interp->stmt_list) {
         for (slist = interp->stmt_list; slist; slist = slist->next) {
             traverse_stmt(slist->statement, visitor);
+        }
+    }
+    fprintf(stderr, "-- traverse function ---\n");    
+    FunctionDefinition* flist; 
+    if (interp->func_list) { // traverse function list
+        for (flist = interp->func_list; flist; flist = flist->next) {
+            traverse_func(flist, visitor);
         }
     }
     
@@ -43,7 +50,7 @@ int main(int argc, char* argv[]) {
      */
     
     
-    mas_reset_string_literal();
+    mas_reset_string_literal(); // remove string buffer
     mas_delete_interpreter();
     MEM_dump_memory();
     

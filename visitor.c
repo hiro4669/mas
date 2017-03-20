@@ -357,11 +357,25 @@ static void leave_if_statement(Statement* stmt) {
     fprintf(stderr, "leave if statement\n");
 }
 
+/* Function */
+static void enter_mas_func(FunctionDefinition* func) {
+    print_depth();
+    fprintf(stderr, "enter mas func\n");
+    increment();
+}
+static void leave_mas_func(FunctionDefinition* func) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave mas func\n");
+}
+
 Visitor* create_visitor() {
     visit_expr* enter_list;
     visit_expr* leave_list;
     visit_stmt* enter_stmt_list;
     visit_stmt* leave_stmt_list; 
+    visit_func* enter_func_list;
+    visit_func* leave_func_list;
     
 
     Visitor* visitor = (Visitor*)malloc(sizeof(Visitor));
@@ -372,6 +386,10 @@ Visitor* create_visitor() {
     /* Statement list creation */
     enter_stmt_list = (visit_stmt*)malloc(sizeof(visit_stmt) * STATEMENT_TYPE_COUNT_PLUS_1);
     leave_stmt_list = (visit_stmt*)malloc(sizeof(visit_stmt) * STATEMENT_TYPE_COUNT_PLUS_1);
+    
+    /* Function list creation */
+    enter_func_list = (visit_func*)malloc(sizeof(visit_func) * FUNCTION_TYPE_PLUS1);
+    leave_func_list = (visit_func*)malloc(sizeof(visit_func) * FUNCTION_TYPE_PLUS1);
     
     enter_list[MUL_EXPRESSION]           = enter_mulexpr;
     enter_list[DIV_EXPRESSION]           = enter_divexpr;
@@ -439,11 +457,19 @@ Visitor* create_visitor() {
     leave_stmt_list[FOR_STATEMENT]        = leave_for_statement;
     leave_stmt_list[IF_STATEMENT]         = leave_if_statement;
     
+    /* Function */
+    enter_func_list[MAS_FUNCTION]    = enter_mas_func;
+    
+    leave_func_list[MAS_FUNCTION]    = leave_mas_func;
+    
     visitor->enter_list = enter_list;
     visitor->leave_list = leave_list;
     
     visitor->enter_stmt_list = enter_stmt_list;
     visitor->leave_stmt_list = leave_stmt_list;
+    
+    visitor->enter_func_list = enter_func_list;
+    visitor->leave_func_list = leave_func_list;
     
     return visitor;
 }
