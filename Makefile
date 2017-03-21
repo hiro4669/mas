@@ -21,7 +21,7 @@ all: $(OBJS) $(YTEST)
 	$(MAKE) $@ -C memory
 	$(CC) -o $(TARGET) $^
 
-errortest: $(MEMORY) error.o
+errortest: $(MEMORY) error.o error_message.o
 	$(MAKE) all -C memory
 	$(CC) -o $@ $^
 
