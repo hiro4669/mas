@@ -247,6 +247,7 @@ LocalInfo *mas_get_localinfo();
 void mas_init_localinfo();
 void mas_delete_localinfo();
 void* mas_malloc(MEM_Storage storage, size_t size);
+FunctionDefinition* mas_search_function(const char* name);
 
 /* interface.c */
 MAS_Interpreter* mas_create_interpreter();

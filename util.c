@@ -1,4 +1,5 @@
 
+#include <string.h>
 #include "info.h"
 //#include "./memory/MEM.h"
 
@@ -21,4 +22,14 @@ void mas_delete_localinfo() {
 
 void* mas_malloc(MEM_Storage storage, size_t size) {
     return MEM_storage_malloc(storage, size);
+}
+
+FunctionDefinition* mas_search_function(const char* name) {
+    FunctionDefinition* pos = NULL;
+    MAS_Interpreter* interp;
+    interp = mas_get_interpreter();
+    for (pos = interp->func_list; pos; pos = pos->next) {
+        if (!strcmp(name, pos->name)) break;           
+    }
+    return pos;
 }

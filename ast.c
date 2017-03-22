@@ -179,6 +179,11 @@ Statement* mas_create_if_statement(Expression* condexpr, Block* thenblock, Elsif
 
 /* Function Definition */
 FunctionDefinition* mas_create_function_definition(char* name, ParameterList* params, Block* block) {
+    if (mas_search_function(name)) {
+        mas_compile_error(FUNCTION_MULTIPLE_DEFINE_ERR,
+                STRING_MESSAGE_ARGUMENT, "name", name,
+                MESSAGE_ARGUMENT_END);
+    }    
     FunctionDefinition* fdef = (FunctionDefinition*)ast_malloc(sizeof(FunctionDefinition));
     fdef->type = MAS_FUNCTION;
     fdef->name = name;
