@@ -174,5 +174,20 @@ void traverse_func(FunctionDefinition* func, Visitor* visitor) {
 }
 
 static void traverse_func_children(FunctionDefinition* func, Visitor* visitor) {
-    
+    switch(func->type) {
+        case MAS_FUNCTION: {
+            ParameterList* plist = func->u.mas_f.param;
+            for(; plist; plist = plist->next) {
+                fprintf(stderr, "%s ", plist->name);
+            }
+            fprintf(stderr, "\n");
+            traverse_block(func->u.mas_f.block, visitor);
+            break;            
+        }
+        case NATIVE_FUNCTION: {
+            break;
+        }
+        default:
+            break;
+    }
 }
