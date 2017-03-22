@@ -48,8 +48,14 @@ static void add_string(VString* v, char* str) {
 
 
 
+static void init_v_string(VString* v) {
+    v->string = NULL;
+}
 static void clear_v_string(VString* v) {
-    v->string = NULL;    
+    if (v->string) {
+        MEM_free(v->string);
+        v->string = NULL;
+    }
 }
 
 static int create_argument_list(MessageArgument* args, va_list ap) {
@@ -74,7 +80,7 @@ static int create_argument_list(MessageArgument* args, va_list ap) {
                 break;
             }
             case POINTER_MESSAGE_ARGUMENT: {
-                
+                args[idx].u.pointer_val = va_arg(ap, void*);
                 break;
             }
             default: {
@@ -89,31 +95,114 @@ static int create_argument_list(MessageArgument* args, va_list ap) {
     return idx;
 }
 
+static void show_args(const MessageArgument* args) {
+    int i = 0;
+    while(args[i].type != MESSAGE_ARGUMENT_END) {
+        fprintf(stderr, "type:%d, name:%s val:", args[i].type, args[i].name);
+
+        switch(args[i].type) {
+            case INT_MESSAGE_ARGUMENT:
+                fprintf(stderr, "%d\n", args[i].u.int_val);
+                break;
+            case STRING_MESSAGE_ARGUMENT:
+                fprintf(stderr, "%s\n", args[i].u.str_val);
+                break;
+            default:
+                break;
+        }
+
+        ++i;
+    }
+}
+
+static int search_args(const MessageArgument* args, MessageArgument* target, const char* name) {
+    int i = 0, r = 0;
+    while(args[i].type != MESSAGE_ARGUMENT_END) {
+        if (!strcmp(name, args[i].name)) { // equels
+            r = 1;
+            *target = args[i];
+            break;
+        }
+        ++i;        
+    }    
+    return r;
+}
+
 void create_message(VString* v, int len, MessageArgument* args, const MessageFormat msg) {
-    fprintf(stderr, "message = %s\n", msg.format);
+    int i, j, k;
+    int r;
+    char buffer[256] = {0};
+    int str_len = strlen(msg.format);
+    init_v_string(v);
+    MessageArgument cur_arg;
+    
+    for (i = 0; i < str_len; ++i) {
+        if (msg.format[i] == '$') {            
+            for(k = 0, j = i+2;; ++j, ++k) {
+                if (msg.format[j] == ')') break;
+                buffer[k] = msg.format[j];
+            }
+            buffer[k] = 0;
+//            fprintf(stderr, "serach : %s\n", buffer);
+            r = search_args(args, &cur_arg, buffer);
+            if (r) { // find
+//                fprintf(stderr, "find!\n");
+//                fprintf(stderr, "type = %d, name = %s\n", cur_arg.type, cur_arg.name);
+                switch(cur_arg.type) {
+                    case INT_MESSAGE_ARGUMENT:
+                        sprintf(buffer, "%d", cur_arg.u.int_val);
+                        break;
+                    case STRING_MESSAGE_ARGUMENT:
+                        sprintf(buffer, "%s", cur_arg.u.str_val);
+                        break;
+                    case DOUBLE_MESSAGE_ARGUMENT:
+                        sprintf(buffer, "%f", cur_arg.u.double_val);
+                        break;
+                    case CHARACTER_MESSAGE_ARGUMENT:
+                        sprintf(buffer, "%c", cur_arg.u.char_val);
+                        break;
+                    case POINTER_MESSAGE_ARGUMENT:
+                        sprintf(buffer, "0x%p", cur_arg.u.pointer_val);
+                        break;
+                    default:
+                        break;
+                }
+//                fprintf(stderr, "val = %s\n", buffer);
+                add_string(v, buffer); // add string
+                i = j;                
+  //              fprintf(stderr, "i = %d, c = %c\n", i, msg.format[i]);
+            }
+            
+        } else {
+            add_character(v, msg.format[i]);
+        }
+    }
+    fprintf(stderr, "\n");
+    
     
     
 }
 
 void mas_compile_error(CompileError id, ...) {
-    fprintf(stderr, "compile error\n");
     int idx;
     VString message;
     MessageArgument args[MESSAGE_MAX];
     CompileError etype;
+    
     va_list ap;
     va_start(ap, id);
-    
-    
     idx = create_argument_list(args, ap);
     create_message(&message, idx, args, mas_compile_error_message_format[id]);
-    
+//    fprintf(stderr, "message = %s\n", message.string);
+    fprintf(stderr, "%s\n", message.string);
     va_end(ap);
+    MEM_free(message.string);
+    exit(1);
 }
 
 int main(void) {
     VString message;
-    clear_v_string(&message);
+    init_v_string(&message);
     add_character(&message, 'a');
     add_character(&message, 'b');
     add_character(&message, 'c');    
@@ -125,8 +214,12 @@ int main(void) {
             INT_MESSAGE_ARGUMENT, "token", 10, 
             STRING_MESSAGE_ARGUMENT, "test", "hoge", 
             MESSAGE_ARGUMENT_END);
+    
+    mas_compile_error(FUNCTION_MULTIPLE_DEFINE_ERR,
+            STRING_MESSAGE_ARGUMENT, "name", "ftest", 
+            MESSAGE_ARGUMENT_END);
 
-    MEM_dump_memory();
     MEM_free(message.string);
+    MEM_dump_memory();
 
 }

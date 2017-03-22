@@ -2,8 +2,8 @@
 
 MessageFormat mas_compile_error_message_format[] = {
     {"dummy"},
-// origin   {"文法エラー($(token)付近)"},
-    {"文法エラー($(token)付近)($(test)desu)"},    
+    {"文法エラー($(token)付近)"},
+//    {"文法エラー($(token)付近)($(test)です)"},    
     {"不正な文字($(bad_char))"},
     {"関数名が重複しています($(name))"},
     {"dummy"},
