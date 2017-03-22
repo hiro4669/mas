@@ -308,5 +308,8 @@ void traverse_expr(Expression* expr, Visitor* visitor);
 void traverse_stmt(Statement* stmt,  Visitor* visitor);
 void traverse_func(FunctionDefinition* func, Visitor* visitor);
 
+/* error.c */
+void mas_compile_error(CompileError id, ...);
+
 #endif /* MAS_H */
 

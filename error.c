@@ -200,6 +200,7 @@ void mas_compile_error(CompileError id, ...) {
     exit(1);
 }
 
+/*
 int main(void) {
     VString message;
     init_v_string(&message);
@@ -223,3 +224,4 @@ int main(void) {
     MEM_dump_memory();
 
 }
+ */

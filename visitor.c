@@ -360,7 +360,7 @@ static void leave_if_statement(Statement* stmt) {
 /* Function */
 static void enter_mas_func(FunctionDefinition* func) {
     print_depth();
-    fprintf(stderr, "enter mas func\n");
+    fprintf(stderr, "enter mas func : %s\n", func->name);
     increment();
 }
 static void leave_mas_func(FunctionDefinition* func) {
