@@ -46,9 +46,11 @@ typedef struct {
     } u;    
 } MAS_Value;
 
-typedef MAS_Value (*MAS_NativeFunctionProc)(MAS_Interpreter* interp, int arg_count,
+typedef MAS_Value MAS_NativeFunctionProc(MAS_Interpreter* interp, int arg_count,
         MAS_Value* args);
 
+/* interface.c */
+void MAS_add_native_function(char* name, MAS_NativeFunctionProc* proc);
 
 #endif /* MAS_DEV_H */
 

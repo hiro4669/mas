@@ -163,7 +163,7 @@ void traverse_func(FunctionDefinition* func, Visitor* visitor) {
 
     if (func) {
         if (visitor->enter_func_list[func->type] == NULL) { // for debugging
-            fprintf(stderr, "func->type(%d) is null\n", func->type);
+            fprintf(stderr, "func->type(%d) is null in traverse_func of traverwor.c\n", func->type);
             exit(1);
         }
 
@@ -184,7 +184,7 @@ static void traverse_func_children(FunctionDefinition* func, Visitor* visitor) {
             traverse_block(func->u.mas_f.block, visitor);
             break;            
         }
-        case NATIVE_FUNCTION: {
+        case NATIVE_FUNCTION: {                    
             break;
         }
         default:

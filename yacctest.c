@@ -42,12 +42,14 @@ int main(int argc, char* argv[]) {
     }
     
     /*
-    if (interp->expression) {
-        traverse_expr(interp->expression, visitor);
-    } else {
-        fprintf(stderr, "no expression");
+    if (interp->func_list) {
+        for (flist = interp->func_list; flist; flist = flist->next) {
+            if (flist->type == NATIVE_FUNCTION) {
+                flist->u.native_f.n_func(interp, 3, NULL);
+            }
+        }
     }
-     */
+    */
     
     
     mas_reset_string_literal(); // remove string buffer

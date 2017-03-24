@@ -369,6 +369,17 @@ static void leave_mas_func(FunctionDefinition* func) {
     fprintf(stderr, "leave mas func\n");
 }
 
+static void enter_native_func(FunctionDefinition* func) {
+    print_depth();
+    fprintf(stderr, "enter native func : %s\n", func->name);
+    increment();
+}
+static void leave_native_func(FunctionDefinition* func) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave native func\n");
+}
+
 Visitor* create_visitor() {
     visit_expr* enter_list;
     visit_expr* leave_list;
@@ -459,8 +470,12 @@ Visitor* create_visitor() {
     
     /* Function */
     enter_func_list[MAS_FUNCTION]    = enter_mas_func;
+    enter_func_list[NATIVE_FUNCTION] = enter_native_func;
     
     leave_func_list[MAS_FUNCTION]    = leave_mas_func;
+    leave_func_list[NATIVE_FUNCTION] = leave_native_func;
+    
+    
     
     visitor->enter_list = enter_list;
     visitor->leave_list = leave_list;
