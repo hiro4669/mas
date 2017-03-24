@@ -33,7 +33,7 @@ void mas_delete_interpreter() {
     MEM_dispose(mas_interpreter->ast_storage);
 }
 
-void MAS_add_native_function(char* name, MAS_NativeFunctionProc* proc) {
+void MAS_add_native_function(char* name, MAS_NativeFunctionProc proc) {
     MAS_Interpreter* interp = mas_get_interpreter();
     FunctionDefinition* func = (FunctionDefinition*)mas_malloc(interp->ast_storage, sizeof(FunctionDefinition));
     func->type = NATIVE_FUNCTION;

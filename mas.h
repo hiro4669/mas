@@ -228,7 +228,7 @@ typedef struct FunctionDefinition_tag {
             Block*         block;
         } mas_f;
         struct {
-            MAS_NativeFunctionProc* n_func;
+            MAS_NativeFunctionProc n_func;
         } native_f;
     }u;
     struct FunctionDefinition_tag* next;
