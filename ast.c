@@ -212,7 +212,7 @@ Block* mas_create_block(StatementList* stmt_list)  {
 }
 
 IdentifierList* mas_create_identifier_list(char* identifier) {
-    IdentifierList* id_list = ast_malloc(sizeof(IdentifierList));
+    IdentifierList* id_list = (IdentifierList*)ast_malloc(sizeof(IdentifierList));
     id_list->identifier = identifier;
     id_list->next = NULL;    
     return id_list;

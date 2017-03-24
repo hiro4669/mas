@@ -8,14 +8,18 @@
 #ifndef _MAS_H_
 #define _MAS_H_
 
+#include "MAS_dev.h"
 #include "./memory/MEM.h"
 
 
 typedef struct LocalInfo_tag LocalInfo;
 typedef struct Expression_tag Expression;
-typedef struct MAS_Interpreter_tag MAS_Interpreter;
 typedef struct Visitor_tag Visitor;
 
+
+/***********************/
+/* Definition of Error */
+/***********************/
 typedef enum {
     PARSE_ERR = 1,
     CHARACTER_INVALID_ERR,
@@ -86,15 +90,14 @@ typedef enum {
 } ExpressionType;
 
 
+/********************************/
+/*   Definition of Expression   */
+/********************************/
 typedef struct ArgumentList_tag {
     Expression *expression;
     struct ArgumentList_tag *next;    
 } ArgumentList;
 
-typedef enum {
-    MAS_FALSE = 0,
-    MAS_TRUE    
-} MAS_Boolean;
 
 typedef struct {
     Expression *left;
@@ -126,6 +129,9 @@ struct Expression_tag {
     } u;    
 };
 
+/********************************/
+/*   Definition of Statement   */
+/********************************/
 typedef enum {
     EXPRESSION_STATEMENT = 1,
     GLOBAL_STATEMENT,
@@ -139,7 +145,6 @@ typedef enum {
 } StatementType;
 
 typedef struct Statement_tag Statement;
-
 
 typedef struct StatementList_tag {
     Statement* statement;
@@ -222,9 +227,15 @@ typedef struct FunctionDefinition_tag {
             ParameterList* param;
             Block*         block;
         } mas_f;
+        struct {
+            MAS_NativeFunctionProc* n_func;
+        } native_f;
     }u;
     struct FunctionDefinition_tag* next;
 } FunctionDefinition;
+
+
+/* Definition of Interpreter*/
 
 struct MAS_Interpreter_tag {
     int line_number;
