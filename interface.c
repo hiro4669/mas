@@ -1,5 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
+
 #include "mas.h"
+#include "info.h"
 
 
 static MAS_Interpreter *mas_interpreter;
@@ -31,6 +34,38 @@ void mas_delete_interpreter() {
     mas_delete_localinfo();
     if (mas_interpreter == NULL) return;    
     MEM_dispose(mas_interpreter->ast_storage);
+}
+
+void MAS_compile(MAS_Interpreter* interp, FILE* fp) {
+    extern FILE *yyin;
+    extern int yyparse(void);
+    
+    yyin = fp;
+    if (yyparse()) {
+        fprintf(stderr, "Error Error Error :line %d\n", mas_get_localinfo()->line_number);
+        exit(1);
+    }
+    mas_reset_string_literal();
+}
+
+void mas_traverse_test() {
+    MAS_Interpreter* interp = mas_get_interpreter();
+    Visitor* visitor = create_visitor();
+    
+    StatementList *slist;
+    if (interp->stmt_list) {
+        for (slist = interp->stmt_list; slist; slist = slist->next) {
+            traverse_stmt(slist->statement, visitor);
+        }
+    }
+    fprintf(stderr, "-- traverse function ---\n");    
+    FunctionDefinition* flist; 
+    if (interp->func_list) { // traverse function list
+        for (flist = interp->func_list; flist; flist = flist->next) {
+            traverse_func(flist, visitor);
+        }
+    }
+
 }
 
 void MAS_add_native_function(char* name, MAS_NativeFunctionProc proc) {

@@ -8,6 +8,7 @@
 #ifndef _MAS_H_
 #define _MAS_H_
 
+#include <stdio.h>
 #include "MAS_dev.h"
 #include "./memory/MEM.h"
 
@@ -263,7 +264,10 @@ FunctionDefinition* mas_search_function(const char* name);
 /* interface.c */
 MAS_Interpreter* mas_create_interpreter();
 MAS_Interpreter* mas_get_interpreter();
+void MAS_compile(MAS_Interpreter* interp, FILE* fp);
+void mas_traverse_test();
 void mas_delete_interpreter();
+
 
 /* ast.c */
 Expression* mas_create_binary_expression(ExpressionType type, Expression* left, Expression* right);
