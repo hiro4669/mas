@@ -236,6 +236,39 @@ typedef struct FunctionDefinition_tag {
 } FunctionDefinition;
 
 
+/* For Execution */
+typedef struct Variable_tag {
+    char* name;
+    MAS_Value value;
+    struct Variable_tag* next;    
+} Variable;
+
+typedef enum {
+    NORMAL_STATEMENT_RESULT = 1,
+    RETURN_STATEMENT_RESULT,
+    BREAK_STATEMENT_RESULT,
+    CONTINUE_STATEMENT_RESULT,
+    STATEMENT_RESULT_TYPE_COUNT_PLUS_1
+} StatementResultType;
+
+typedef struct {
+    StatementResultType type;
+    union {
+        MAS_Value return_value;
+    } u;
+} StatementResult;
+
+typedef struct GlobalVariableRef_tag {
+    Variable* variable;
+    struct GlobalVariableRef_tag *next;
+} GlobalVariableRef;
+
+typedef struct LocalEnvironment_tag {
+    Variable* variable;
+    GlobalVariableRef* global_variable;
+} LocalEnvironment;
+
+
 /* Definition of Interpreter*/
 
 struct MAS_Interpreter_tag {
