@@ -273,8 +273,10 @@ typedef struct LocalEnvironment_tag {
 
 struct MAS_Interpreter_tag {
     int line_number;
-    Expression *expression; // temporary
+    Expression *expression; // temporary    
     MEM_Storage ast_storage;
+    MEM_Storage execution_storage;
+    Variable* variable;
     Statement  *stmt;       // temporary
     StatementList *stmt_list;
     FunctionDefinition *func_list;
@@ -362,6 +364,10 @@ void mas_compile_error(CompileError id, ...);
 
 /* native.c */
 MAS_Value mas_nv_print(MAS_Interpreter* interp, int arg_count, MAS_Value* args);
+
+/* simpleexec.c */
+StatementResult mas_execute_statementlist(MAS_Interpreter* interp, 
+        LocalEnvironment* env, StatementList* stmt_list);
 
 #endif /* MAS_H */
 
