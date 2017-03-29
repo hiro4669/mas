@@ -165,6 +165,7 @@ void* MEM_realloc_func(MEM_Controller controller, char* filename, int line, void
     Header old_header;
     int old_size;
     size_t alloc_size = sizeof(Header) + size + MARK_SIZE;
+//    fprintf(stderr, "alloc_size = %d\n", (int)alloc_size);
 
 
     if (ptr) {

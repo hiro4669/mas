@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "visitor.h"
 
@@ -101,8 +102,15 @@ static void leave_doubleexpr(Expression* expr) {
 }
 
 static void enter_stringexpr(Expression *expr) {
+    int i;
     print_depth();
-    fprintf(stderr, "enter stringexpr : %s\n", expr->u.string_value);
+    fprintf(stderr, "enter stringexpr : str = %s, len = %d\n", expr->u.string_value, (int)strlen(expr->u.string_value));
+    /*
+    for (i = 0; i < strlen(expr->u.string_value); ++i) {
+        fprintf(stderr, "0x%x\n", expr->u.string_value[i]);
+    }
+     */
+    
     increment();
 }
 static void leave_stringexpr(Expression *expr) {

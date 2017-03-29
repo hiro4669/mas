@@ -27,7 +27,9 @@ void mas_add_string_literal(int letter) {
     if (max == str_index) {
 //        fprintf(stderr, "extend memory\n");
         max += STRING_ALLOC_SIZE;
-        buffer = MEM_realloc(buffer, STRING_ALLOC_SIZE);
+        buffer = MEM_realloc(buffer, max);
+//        buffer = MEM_realloc(buffer, STRING_ALLOC_SIZE); // mistake
+
     }
     buffer[str_index++] = letter;
 }

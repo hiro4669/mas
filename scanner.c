@@ -320,7 +320,18 @@ retry:
 //                    yylval.identifier = (char*)yytext;
 //                    yylval.identifier = mas_create_identifier((char*)yytext);
 //                    yylval.identifier = mas_close_string_literal();
+                    
+                    /*
+                    int p;
+                    char* tmp = mas_close_string_literal();
+                    fprintf(stderr, "tmp char len = %d\n", (int)strlen(tmp));
+                    for (p = 0; p < strlen(tmp); ++p) {
+                        fprintf(stderr, "%02x\n", tmp[p]);
+                    }
+                    Expression* expr = mas_create_string_expression(tmp);                    
+                    */
                     Expression* expr = mas_create_string_expression(mas_close_string_literal());
+
                     yylval.expression = expr;
                     
                     
