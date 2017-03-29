@@ -350,6 +350,8 @@ void mas_add_string_literal(int letter);
 void mas_reset_string_literal();
 char* mas_close_string_literal();
 char* mas_create_identifier(char* str);
+char mas_read_previous();
+void mas_add_previous(int letter);
 
 /* visitor.c*/
 Visitor* create_visitor();

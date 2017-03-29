@@ -34,6 +34,15 @@ void mas_add_string_literal(int letter) {
     buffer[str_index++] = letter;
 }
 
+char mas_read_previous() {
+    return buffer[str_index - 1];
+}
+
+void mas_add_previous(int letter) {
+    --str_index;
+    mas_add_string_literal(letter);
+}
+
 void mas_reset_string_literal() {
     if (buffer) {
         MEM_free(buffer);

@@ -268,48 +268,60 @@ retry:
             int flg = FALSE;
             while(1) {
                 c = read();
+//                fprintf(stderr, "c = %c", c);
                 switch (c) {
                     case 'n': {
-                        if (yytext[ytp - 1] == '\\') {
+//                        fprintf(stderr, "match n\n");
+//                        if (yytext[ytp - 1] == '\\') {
+                        if (mas_read_previous() == '\\') {
+//                            fprintf(stderr, "match previous slash\n");
                             if (flg == TRUE) {
                                 mas_add_string_literal(c);
 //                                addtext(c);
                                 flg = FALSE;
                             } else {
-                                --ytp;
-                                mas_add_string_literal(c);
+//                                --ytp;
+//                                mas_add_string_literal('\n');
+                                mas_add_previous('\n');
   //                              addtext('\n');                    
                             }
                             continue;
                         }
                     }
                     case 't': {
-                        if (yytext[ytp - 1] == '\\') {
+                        if (mas_read_previous() == '\\') {
+//                        if (yytext[ytp - 1] == '\\') {                            
                             if (flg == TRUE) {
                                 mas_add_string_literal(c);
 //                                addtext(c);
                                 flg = FALSE;
                             } else {
                                 --ytp;
-                                mas_add_string_literal('\t');
+//                                mas_add_string_literal('\t');
+                                mas_add_previous('\t');
 //                                addtext('\t');
                             }
                             continue;
                         }
                     }
                     case '"': {
-                        if (yytext[ytp - 1] == '\\') {
-                            --ytp;
-                            mas_add_string_literal('"');
+                        if (mas_read_previous() == '\\') {
+//                        if (yytext[ytp - 1] == '\\') {
+  //                          --ytp;
+//                            mas_add_string_literal('"');
+                            mas_add_previous('"');
 //                            addtext('"');
                             continue;
                         }
                     }
                     case '\\': {
-                        if (yytext[ytp - 1] == '\\') {
-                            --ytp;
+                        if (mas_read_previous() == '\\') {
+//                        if (yytext[ytp - 1] == '\\') {
+//                            --ytp;
 //                            addtext('\\');
-                            mas_add_string_literal('\\');
+//                            fprintf(stderr, "slash herere\n");
+//                            mas_add_string_literal('\\');
+                            mas_add_previous('\\');
                             flg = TRUE;
                             continue;
                         }

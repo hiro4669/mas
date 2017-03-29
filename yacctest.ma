@@ -3,7 +3,7 @@ test(1, 2);
 test();
 hoge;
 10.2;
-"hoge";
+"hoge\n";
 true;
 false;
 null;
