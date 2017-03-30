@@ -363,6 +363,7 @@ void traverse_func(FunctionDefinition* func, Visitor* visitor);
 
 /* error.c */
 void mas_compile_error(CompileError id, ...);
+void mas_runtime_error(RuntimeError id, ...);
 
 /* native.c */
 MAS_Value mas_nv_print(MAS_Interpreter* interp, int arg_count, MAS_Value* args);

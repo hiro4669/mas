@@ -1,6 +1,11 @@
 #include "mas.h"
 
-int main(void) {    
+int main(void) {
+    
+    mas_runtime_error(FUNCTION_NOT_FOUND_ERR,
+            STRING_MESSAGE_ARGUMENT, "name", "print",
+            MESSAGE_ARGUMENT_END);
+    
     mas_compile_error(PARSE_ERR, 
             INT_MESSAGE_ARGUMENT, "token", 10, 
             STRING_MESSAGE_ARGUMENT, "test", "hoge", 

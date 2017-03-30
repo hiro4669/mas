@@ -128,7 +128,7 @@ static int search_args(const MessageArgument* args, MessageArgument* target, con
     return r;
 }
 
-void create_message(VString* v, int len, MessageArgument* args, const MessageFormat msg) {
+static void create_message(VString* v, int len, MessageArgument* args, const MessageFormat msg) {
     int i, j, k;
     int r;
     char buffer[256] = {0};
@@ -181,6 +181,22 @@ void create_message(VString* v, int len, MessageArgument* args, const MessageFor
     
     
     
+}
+
+void mas_runtime_error(RuntimeError id, ...) {
+    int idx;
+    VString message;
+    MessageArgument args[MESSAGE_MAX];
+    RuntimeError etype;
+    
+    va_list ap;
+    va_start(ap, id);
+    idx = create_argument_list(args, ap);
+    create_message(&message, idx, args, mas_runtime_error_message_format[id]);
+    fprintf(stderr, "%s\n", message.string);
+    va_end(ap);
+    MEM_free(message.string);
+    exit(1);
 }
 
 void mas_compile_error(CompileError id, ...) {
