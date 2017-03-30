@@ -55,6 +55,7 @@ void mas_traverse_test() {
     MAS_Interpreter* interp = mas_get_interpreter();
     Visitor* visitor = create_visitor();
     
+    fprintf(stderr, "-- traverse statement ---\n");    
     StatementList *slist;
     if (interp->stmt_list) {
         for (slist = interp->stmt_list; slist; slist = slist->next) {

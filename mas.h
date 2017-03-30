@@ -371,5 +371,10 @@ MAS_Value mas_nv_print(MAS_Interpreter* interp, int arg_count, MAS_Value* args);
 StatementResult mas_execute_statementlist(MAS_Interpreter* interp, 
         LocalEnvironment* env, StatementList* stmt_list);
 
+/* simpleeval.c */
+MAS_Value mas_eval_expression(MAS_Interpreter* interp, LocalEnvironment* env, 
+        Expression* expr);
+
+
 #endif /* MAS_H */
 
