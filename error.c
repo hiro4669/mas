@@ -183,7 +183,7 @@ static void create_message(VString* v, int len, MessageArgument* args, const Mes
     
 }
 
-void mas_runtime_error(RuntimeError id, ...) {
+void mas_runtime_error(int line_number, RuntimeError id, ...) {
     int idx;
     VString message;
     MessageArgument args[MESSAGE_MAX];
@@ -193,7 +193,7 @@ void mas_runtime_error(RuntimeError id, ...) {
     va_start(ap, id);
     idx = create_argument_list(args, ap);
     create_message(&message, idx, args, mas_runtime_error_message_format[id]);
-    fprintf(stderr, "%s\n", message.string);
+    fprintf(stderr, "%d:%s\n", line_number, message.string);
     va_end(ap);
     MEM_free(message.string);
     exit(1);

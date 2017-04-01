@@ -2,7 +2,7 @@
 
 int main(void) {
     
-    mas_runtime_error(FUNCTION_NOT_FOUND_ERR,
+    mas_runtime_error(23, FUNCTION_NOT_FOUND_ERR,
             STRING_MESSAGE_ARGUMENT, "name", "print",
             MESSAGE_ARGUMENT_END);
     

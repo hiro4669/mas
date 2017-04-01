@@ -117,6 +117,7 @@ typedef struct {
 
 struct Expression_tag {
     ExpressionType type;    
+    int line_number;
     union {
         MAS_Boolean            boolean_value;
         int                    int_value;
@@ -272,7 +273,7 @@ typedef struct LocalEnvironment_tag {
 /* Definition of Interpreter*/
 
 struct MAS_Interpreter_tag {
-    int line_number;
+//    int line_number;
     Expression *expression; // temporary    
     MEM_Storage ast_storage;
     MEM_Storage execution_storage;
@@ -363,7 +364,7 @@ void traverse_func(FunctionDefinition* func, Visitor* visitor);
 
 /* error.c */
 void mas_compile_error(CompileError id, ...);
-void mas_runtime_error(RuntimeError id, ...);
+void mas_runtime_error(int line_number, RuntimeError id, ...);
 
 /* native.c */
 MAS_Value mas_nv_print(MAS_Interpreter* interp, int arg_count, MAS_Value* args);

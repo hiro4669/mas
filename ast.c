@@ -24,6 +24,7 @@ static Statement* mas_alloc_statement(StatementType type) {
 static Expression* mas_alloc_expression(ExpressionType type) {
     Expression* expr = ast_malloc(sizeof(Expression));
     expr->type = type;
+    expr->line_number = mas_get_localinfo()->line_number;
     return expr;
 }
 

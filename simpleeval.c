@@ -18,8 +18,10 @@ static MAS_Value mas_eval_function_call_expression(MAS_Interpreter* interp,
     fprintf(stderr, "func name = %s\n", expr->u.function_call_expression.identifier);
     FunctionDefinition* func = mas_search_function(expr->u.function_call_expression.identifier);
     if (func == NULL) {
-        fprintf(stderr, "function %s not found\n", expr->u.function_call_expression.identifier);
-        exit(1);
+        mas_runtime_error(expr->line_number,
+                FUNCTION_NOT_FOUND_ERR,
+                STRING_MESSAGE_ARGUMENT, "name", expr->u.function_call_expression.identifier,
+                MESSAGE_ARGUMENT_END);
     }
     
     switch(func->type) {
