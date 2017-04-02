@@ -6,7 +6,12 @@
 static MAS_Value call_native_function(MAS_Interpreter* interp, LocalEnvironment* env,
         Expression* expr, MAS_NativeFunctionProc proc) {
     MAS_Value v;
-    fprintf(stderr, "call native_function\n");
+    // check argument count
+    ArgumentList* arg_list;
+    int arg_count;
+    for (arg_count = 0, arg_list = expr->u.function_call_expression.argument; arg_list;
+            arg_list = arg_list->next, ++arg_count);
+
     proc(interp, 0, NULL);
     
     return v;

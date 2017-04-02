@@ -7,7 +7,7 @@ MAKE = /usr/bin/make
 #OBJS = y.tab.o scanner.o lextest.o keyword.o
 #OBJS = y.tab.o scanner.o keyword.o yacctest.o
 COMMON = y.tab.o keyword.o util.o interface.o ast.o string.o visitor.o traversor.o \
-         error.o error_message.o native.o simpleexec.o simpleeval.o
+         error.o error_message.o native.o simpleexec.o simpleeval.o string_pool.o
 MEMORY = ./memory/memory.o ./memory/storage.o
 OBJS = $(COMMON) $(MEMORY) scanner.o
 YTEST = yacctest.o
@@ -22,6 +22,10 @@ YACC = mas.y
 all: $(OBJS) $(EXEC)
 	$(MAKE) $@ -C memory
 	$(CC) -o $(TARGET) $^
+
+stringpooltest: $(OBJS) stringpooltest.o
+	$(MAKE) all -C memory
+	$(CC) -o $@ $^
 
 errortest: $(MEMORY) error.o error_message.o errortestmain.o
 	$(MAKE) all -C memory

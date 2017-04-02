@@ -377,6 +377,12 @@ StatementResult mas_execute_statementlist(MAS_Interpreter* interp,
 MAS_Value mas_eval_expression(MAS_Interpreter* interp, LocalEnvironment* env, 
         Expression* expr);
 
+/* string_pool.c */
+MAS_String* mas_literal_to_mas_string(MAS_Interpreter* interp, char* str);
+void mas_refer_string(MAS_String* str);
+void mas_release_string(MAS_String* str);
+MAS_String* mas_create_mas_string(MAS_Interpreter* interp, char* str);
+
 
 #endif /* MAS_H */
 
