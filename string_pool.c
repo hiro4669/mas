@@ -31,12 +31,9 @@ void mas_refer_string(MAS_String* str) {
 
 void mas_release_string(MAS_String* str) {
     --str->ref_count;
-    fprintf(stderr, "ref_count = %d\n", str->ref_count);
     if (str->ref_count == 0) {
-        fprintf(stderr, "release ref_count = 0\n");
         if (!str->is_literal) {
             MEM_free(str->string);
-            fprintf(stderr, "real release\n");
         }
         MEM_free(str);
     }

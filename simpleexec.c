@@ -16,9 +16,7 @@ static StatementResult mas_execute_statement(MAS_Interpreter* interp,
             fprintf(stderr, "undefined stmt type in mas_execute_statement %d\n", stmt->type);
             exit(1);
         }
-    }
-    
-    fprintf(stderr, "yes\n");
+    }    
     
     return result;
 }
