@@ -71,17 +71,41 @@ static MAS_Value mas_eval_string_expression(MAS_Interpreter* interp,
     return value;
 }
 
+static MAS_Value mas_eval_int_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value value;
+    value.u.int_value = expr->u.int_value;
+    value.type = MAS_INT_VALUE;
+    return value;
+}
+
+static MAS_Value mas_eval_boolean_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value value;
+    value.u.boolean_value = expr->u.boolean_value;
+    value.type = MAS_BOOLEAN_VALUE;    
+    return value;
+}
+
 MAS_Value mas_eval_expression(MAS_Interpreter* interp, 
         LocalEnvironment* env, Expression* expr) {
     MAS_Value value;
     
     switch (expr->type) {
+        case BOOLEAN_EXPRESSION: {
+            value = mas_eval_boolean_expression(interp, env, expr);
+            break;
+        }
         case FUNCTION_CALL_EXPRESSION: {         
             value = mas_eval_function_call_expression(interp, env, expr);
             break;
         }
         case STRING_EXPRESSION: {
             value = mas_eval_string_expression(interp, env, expr);
+            break;
+        }
+        case INT_EXPRESION: {
+            value = mas_eval_int_expression(interp, env, expr);
             break;
         }
         default: {
