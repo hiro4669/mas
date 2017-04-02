@@ -87,6 +87,21 @@ static MAS_Value mas_eval_boolean_expression(MAS_Interpreter* interp,
     return value;
 }
 
+static MAS_Value mas_eval_double_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value value;
+    value.u.double_value = expr->u.double_value;
+    value.type = MAS_DOUBLE_VALUE;
+    return value;
+}
+
+static MAS_Value mas_eval_null_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value value;
+    value.type = MAS_NULL_VALUE;
+    return value;
+}
+
 MAS_Value mas_eval_expression(MAS_Interpreter* interp, 
         LocalEnvironment* env, Expression* expr) {
     MAS_Value value;
@@ -106,6 +121,14 @@ MAS_Value mas_eval_expression(MAS_Interpreter* interp,
         }
         case INT_EXPRESION: {
             value = mas_eval_int_expression(interp, env, expr);
+            break;
+        }
+        case DOUBLE_EXPRESSION: {
+            value = mas_eval_double_expression(interp, env, expr);
+            break;
+        }
+        case NULL_EXPRESSION: {
+            value = mas_eval_null_expression(interp, env, expr);
             break;
         }
         default: {

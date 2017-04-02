@@ -31,6 +31,14 @@ MAS_Value mas_nv_print(MAS_Interpreter* interp, int arg_count, MAS_Value* args) 
             }
             break;
         }
+        case MAS_DOUBLE_VALUE: {
+            printf("%lf", args[0].u.double_value);
+            break;
+        }
+        case MAS_NULL_VALUE: {
+            printf("null");
+            break;
+        }
         default: {
             fprintf(stderr, "no mas type(%d) in mas_nv_print\n", args[0].type);
             exit(1);
