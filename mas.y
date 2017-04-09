@@ -231,16 +231,16 @@ argument_list
 			| argument_list COMMA expression { $$ = mas_chain_argument($1, $3); } // OK
 			;
 primary_expression
-			: IDENTIFIER LP RP { $$ = mas_create_functioncall_expression($1, NULL); }  //OK
-			| IDENTIFIER LP argument_list RP { $$ = mas_create_functioncall_expression($1, $3); } //OK
-			| LP expression RP { $$ = $2; }  //OK
+			: IDENTIFIER LP RP { $$ = mas_create_functioncall_expression($1, NULL); }  // OK  // exec half ok
+			| IDENTIFIER LP argument_list RP { $$ = mas_create_functioncall_expression($1, $3); } //OK // exec half ok
+			| LP expression RP { $$ = $2; }  //OK // exec ok
 			| IDENTIFIER       { $$ = mas_create_identifier_expression($1); } //OK
-			| INT_LITERAL     //OK
-			| DOUBLE_LITERAL  //OK
-			| STRING_LITERAL  //OK
-			| TRUE_T           { $$ = mas_create_boolean_expression(MAS_TRUE); }  //OK
-			| FALSE_T          { $$ = mas_create_boolean_expression(MAS_FALSE); } //OK
-			| NULL_T           { $$ = mas_create_null_expression(); }  //OK
+			| INT_LITERAL     //OK // exec ok
+			| DOUBLE_LITERAL  //OK // exec ok
+			| STRING_LITERAL  //OK // exec ok
+			| TRUE_T           { $$ = mas_create_boolean_expression(MAS_TRUE); }  //OK // exec ok
+			| FALSE_T          { $$ = mas_create_boolean_expression(MAS_FALSE); } //OK // exec ok
+			| NULL_T           { $$ = mas_create_null_expression(); }  //OK  // exec ok
 			;
 
 while_statement

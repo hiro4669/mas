@@ -102,6 +102,32 @@ static MAS_Value mas_eval_null_expression(MAS_Interpreter* interp,
     return value;
 }
 
+static MAS_Value mas_eval_minus_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value value = mas_eval_expression(interp, env, expr->u.minus_expression);
+    
+    if (value.type != MAS_INT_VALUE &&
+            value.type != MAS_DOUBLE_VALUE) {
+        mas_runtime_error(expr->line_number,
+                MINUS_OPERAND_TYPE_ERR,
+                MESSAGE_ARGUMENT_END);
+    }
+    switch (value.type) {
+        case MAS_INT_VALUE: {
+            value.u.int_value = - value.u.int_value;
+            break;
+        }
+        case MAS_DOUBLE_VALUE: {
+            value.u.double_value = - value.u.double_value;
+            break;
+        }
+        default: {
+            exit(1);
+        }
+    }
+    return value;
+}
+
 MAS_Value mas_eval_expression(MAS_Interpreter* interp, 
         LocalEnvironment* env, Expression* expr) {
     MAS_Value value;
@@ -129,6 +155,10 @@ MAS_Value mas_eval_expression(MAS_Interpreter* interp,
         }
         case NULL_EXPRESSION: {
             value = mas_eval_null_expression(interp, env, expr);
+            break;
+        }
+        case MINUS_EXPRESSION: {
+            value = mas_eval_minus_expression(interp, env, expr);
             break;
         }
         default: {
