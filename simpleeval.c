@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "mas.h"
 
 static void release_if_string(MAS_Value* v) {
@@ -128,6 +129,84 @@ static MAS_Value mas_eval_minus_expression(MAS_Interpreter* interp,
     return value;
 }
 
+MAS_Value mas_eval_multiplicative_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value value;
+    MAS_Value l_value = mas_eval_expression(interp, env, expr->u.binary_expression.left);
+    MAS_Value r_value = mas_eval_expression(interp, env, expr->u.binary_expression.right);
+    
+    switch (expr->type) {
+        case MUL_EXPRESSION: {
+            if (l_value.type == MAS_INT_VALUE && r_value.type == MAS_INT_VALUE) { // int * int
+                value.type = MAS_INT_VALUE;
+                value.u.int_value = l_value.u.int_value * r_value.u.int_value;
+            } else if (l_value.type == MAS_INT_VALUE && r_value.type == MAS_DOUBLE_VALUE) {
+                value.type = MAS_DOUBLE_VALUE;
+                value.u.double_value = l_value.u.int_value * r_value.u.double_value;
+            } else if (l_value.type == MAS_DOUBLE_VALUE && r_value.type == MAS_INT_VALUE) {
+                value.type = MAS_DOUBLE_VALUE;
+                value.u.double_value = l_value.u.double_value * r_value.u.int_value;
+            } else if (l_value.type == MAS_DOUBLE_VALUE && r_value.type == MAS_DOUBLE_VALUE) {
+                value.type = MAS_DOUBLE_VALUE;
+                value.u.double_value = l_value.u.double_value * r_value.u.double_value;
+            } else {
+                mas_runtime_error(expr->line_number,
+                        BAD_OPERAND_TYPE_ERR,
+                        STRING_MESSAGE_ARGUMENT, "operator", "*",
+                        MESSAGE_ARGUMENT_END);
+            }
+            break;
+        }
+        case DIV_EXPRESSION: {
+            if (l_value.type == MAS_INT_VALUE && r_value.type == MAS_INT_VALUE) { // int * int
+                value.type = MAS_INT_VALUE;
+                value.u.int_value = (int)(l_value.u.int_value / r_value.u.int_value);
+            } else if (l_value.type == MAS_INT_VALUE && r_value.type == MAS_DOUBLE_VALUE) {
+                value.type = MAS_DOUBLE_VALUE;
+                value.u.double_value = l_value.u.int_value / r_value.u.double_value;
+            } else if (l_value.type == MAS_DOUBLE_VALUE && r_value.type == MAS_INT_VALUE) {
+                value.type = MAS_DOUBLE_VALUE;
+                value.u.double_value = l_value.u.double_value / r_value.u.int_value;
+            } else if (l_value.type == MAS_DOUBLE_VALUE && r_value.type == MAS_DOUBLE_VALUE) {
+                value.type = MAS_DOUBLE_VALUE;
+                value.u.double_value = l_value.u.double_value / r_value.u.double_value;
+            } else {
+                mas_runtime_error(expr->line_number,
+                        BAD_OPERAND_TYPE_ERR,
+                        STRING_MESSAGE_ARGUMENT, "operator", "/",
+                        MESSAGE_ARGUMENT_END);
+            }
+            break;
+        }
+        case MOD_EXPRESSION: {
+            if (l_value.type == MAS_INT_VALUE && r_value.type == MAS_INT_VALUE) { // int * int
+                value.type = MAS_INT_VALUE;
+                value.u.int_value = (int)(l_value.u.int_value % r_value.u.int_value);
+            } else if (l_value.type == MAS_INT_VALUE && r_value.type == MAS_DOUBLE_VALUE) {
+                value.type = MAS_DOUBLE_VALUE;
+                value.u.double_value = fmod(l_value.u.int_value, r_value.u.double_value);                
+            } else if (l_value.type == MAS_DOUBLE_VALUE && r_value.type == MAS_INT_VALUE) {
+                value.type = MAS_DOUBLE_VALUE;
+                value.u.double_value = fmod(l_value.u.double_value, r_value.u.int_value);
+            } else if (l_value.type == MAS_DOUBLE_VALUE && r_value.type == MAS_DOUBLE_VALUE) {
+                value.type = MAS_DOUBLE_VALUE;
+                value.u.double_value = fmod(l_value.u.double_value, r_value.u.double_value);
+            } else {
+                mas_runtime_error(expr->line_number,
+                        BAD_OPERAND_TYPE_ERR,
+                        STRING_MESSAGE_ARGUMENT, "operator", "%",
+                        MESSAGE_ARGUMENT_END);
+            }
+            break;
+        }
+        default: {
+            break;
+        }        
+    }
+    
+    return value;
+}
+
 MAS_Value mas_eval_expression(MAS_Interpreter* interp, 
         LocalEnvironment* env, Expression* expr) {
     MAS_Value value;
@@ -160,6 +239,12 @@ MAS_Value mas_eval_expression(MAS_Interpreter* interp,
         case MINUS_EXPRESSION: {
             value = mas_eval_minus_expression(interp, env, expr);
             break;
+        }
+        case MUL_EXPRESSION:
+        case DIV_EXPRESSION:
+        case MOD_EXPRESSION: {
+            value = mas_eval_multiplicative_expression(interp, env, expr);
+            break;            
         }
         default: {
             fprintf(stderr, "undefined expression type in mas_eval_expression %d\n", expr->type);
