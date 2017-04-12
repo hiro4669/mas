@@ -201,25 +201,25 @@ relational_expression
 additive_expression
 			: multiplicative_expression 
 			| additive_expression ADD multiplicative_expression { 
-                            $$ = mas_create_binary_expression(ADD_EXPRESSION, $1, $3);  // OK
+                            $$ = mas_create_binary_expression(ADD_EXPRESSION, $1, $3);  // OK  // exec OK
                         }
 			| additive_expression SUB multiplicative_expression {
-                            $$ = mas_create_binary_expression(SUB_EXPRESSION, $1, $3);  // OK
+                            $$ = mas_create_binary_expression(SUB_EXPRESSION, $1, $3);  // OK  // exec OK
                         }
 			;
 multiplicative_expression
 			: unary_expression                                              // OK
 			| multiplicative_expression MUL unary_expression
                         {
-                            $$ = mas_create_binary_expression(MUL_EXPRESSION, $1, $3);  // OK
+                            $$ = mas_create_binary_expression(MUL_EXPRESSION, $1, $3);  // OK // exec OK
                         }
 			| multiplicative_expression DIV unary_expression
                         {
-                            $$ = mas_create_binary_expression(DIV_EXPRESSION, $1, $3);  // OK
+                            $$ = mas_create_binary_expression(DIV_EXPRESSION, $1, $3);  // OK  // exec OK
                         }
 			| multiplicative_expression MOD unary_expression
                         {
-                            $$ = mas_create_binary_expression(MOD_EXPRESSION, $1, $3);  // OK
+                            $$ = mas_create_binary_expression(MOD_EXPRESSION, $1, $3);  // OK  // exec OK
                         }
 			;
 unary_expression
