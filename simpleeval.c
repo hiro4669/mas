@@ -10,15 +10,12 @@ static MAS_String* chain_mas_string(MAS_Interpreter* interp,
     int n_len, l_len, r_len;
     char* buf;
     MAS_String* n_str;
-
     
     n_len = (l_len = strlen(l_str->string)) + (r_len =strlen(r_str->string));
-//    fprintf(stderr, "new len = %d\n", n_len);
     buf = (char*)MEM_malloc(n_len + 1);
     strncpy(buf, l_str->string, l_len);
     strncpy(&buf[l_len], r_str->string, r_len+1);
     
-//    fprintf(stderr, "n_str = %s\n", buf);
     n_str = mas_create_mas_string(interp, buf);
     mas_release_string(l_str);
     mas_release_string(r_str);
@@ -240,26 +237,23 @@ MAS_Value mas_eval_addtive_expression(MAS_Interpreter* interp,
     switch (expr->type) {
         case ADD_EXPRESSION: {
             
+            // in case the left type is string
             if (l_value.type == MAS_STRING_VALUE) {
+                value.type = MAS_STRING_VALUE;
                 char buf[1024];
                 switch(r_value.type) {
                     case MAS_INT_VALUE: {
                         sprintf(buf, "%d", r_value.u.int_value);
-                        char* str = (char*)MEM_malloc(strlen(buf) + 1);
-                        strncpy(str, buf, strlen(buf)+1);
-                        MAS_String* r_str = mas_create_mas_string(interp, str);
-                        MAS_String* n_str = chain_mas_string(interp, l_value.u.string_value, r_str);
-
-                        value.type = MAS_STRING_VALUE;
-                        value.u.string_value = n_str;
-                        return value;
-//                        break;
+                        break;
                     }
                     case MAS_DOUBLE_VALUE: {
+                        sprintf(buf, "%f", r_value.u.double_value);
                         break;
                     }
                     case MAS_STRING_VALUE: {
-                        break;
+                        MAS_String* n_str = chain_mas_string(interp, l_value.u.string_value, r_value.u.string_value);
+                        value.u.string_value = n_str;
+                        return value;        // return immediately
                     }
                     default: {
                         fprintf(stderr, "r_value type is not supported in add expression\n");
@@ -267,10 +261,46 @@ MAS_Value mas_eval_addtive_expression(MAS_Interpreter* interp,
                         BAD_OPERAND_TYPE_ERR,
                         STRING_MESSAGE_ARGUMENT, "operator", "+",
                         MESSAGE_ARGUMENT_END);                        
+                        break;
                     }
                 }
-
+                char* str = (char*)MEM_malloc(strlen(buf) + 1);
+                strncpy(str, buf, strlen(buf)+1);
+                MAS_String* r_str = mas_create_mas_string(interp, str);
+                MAS_String* n_str = chain_mas_string(interp, l_value.u.string_value, r_str);
                 
+                value.u.string_value = n_str;
+                return value;                                
+            }
+            
+            if (r_value.type == MAS_STRING_VALUE) {
+                value.type = MAS_STRING_VALUE;
+                char buf[1024];
+                switch (l_value.type) {
+                    case MAS_INT_VALUE: {
+                        sprintf(buf, "%d", l_value.u.int_value);
+                        break;
+                    }
+                    case MAS_DOUBLE_VALUE: {
+                        sprintf(buf, "%f", l_value.u.double_value);
+                        break;
+                    }
+                    default: {
+                        fprintf(stderr, "l_value type is not supported in add expression\n");
+                        mas_runtime_error(expr->line_number,
+                        BAD_OPERAND_TYPE_ERR,
+                        STRING_MESSAGE_ARGUMENT, "operator", "+",
+                        MESSAGE_ARGUMENT_END);      
+                        break;
+                    }
+                }
+                char* str = (char*)MEM_malloc(strlen(buf) + 1);
+                strncpy(str, buf, strlen(buf)+1);
+                MAS_String* l_str = mas_create_mas_string(interp, str);
+                MAS_String* n_str = chain_mas_string(interp, l_str, r_value.u.string_value);
+                
+                value.u.string_value = n_str;
+                return value;                          
             }
             
             
