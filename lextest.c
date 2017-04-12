@@ -12,6 +12,7 @@ int main(void) {
     mas_init_localinfo();
     yyin = fopen("yacctest.ma", "r");
 //    yyin = fopen("rtest.ma", "r");
+    yyin = fopen("expr.ma", "r");    
     if (yyin == NULL) {
         fprintf(stderr, "cannot open file\n");
     }

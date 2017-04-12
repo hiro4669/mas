@@ -35,6 +35,8 @@ void mas_add_string_literal(int letter) {
 }
 
 char mas_read_previous() {
+//    fprintf(stderr, "str_index = %d\n", str_index);
+    if (str_index == 0) return -1;
     return buffer[str_index - 1];
 }
 

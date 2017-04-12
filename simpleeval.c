@@ -233,7 +233,6 @@ MAS_Value mas_eval_addtive_expression(MAS_Interpreter* interp,
     MAS_Value l_value = mas_eval_expression(interp, env, expr->u.binary_expression.left);
     MAS_Value r_value = mas_eval_expression(interp, env, expr->u.binary_expression.right);
     
-    
     switch (expr->type) {
         case ADD_EXPRESSION: {
             
@@ -255,8 +254,13 @@ MAS_Value mas_eval_addtive_expression(MAS_Interpreter* interp,
                         value.u.string_value = n_str;
                         return value;        // return immediately
                     }
+                    case MAS_BOOLEAN_VALUE: {
+                        (r_value.u.boolean_value == MAS_FALSE) ?  
+                            strncpy(buf, "false", 6) : strncpy(buf, "true", 5);
+                        break;
+                    }
                     default: {
-                        fprintf(stderr, "r_value type is not supported in add expression\n");
+                        fprintf(stderr, "r_value type is not supported in add expression %d\n", r_value.type);
                         mas_runtime_error(expr->line_number,
                         BAD_OPERAND_TYPE_ERR,
                         STRING_MESSAGE_ARGUMENT, "operator", "+",
@@ -283,6 +287,11 @@ MAS_Value mas_eval_addtive_expression(MAS_Interpreter* interp,
                     }
                     case MAS_DOUBLE_VALUE: {
                         sprintf(buf, "%f", l_value.u.double_value);
+                        break;
+                    }
+                    case MAS_BOOLEAN_VALUE: {
+                        (l_value.u.boolean_value == MAS_FALSE) ?  
+                            strncpy(buf, "false", 6) : strncpy(buf, "true", 5);
                         break;
                     }
                     default: {

@@ -88,7 +88,7 @@ int yylex() {
     char c; 
     ytp = 0;
 //    char *v = "ab\"c";
-    
+//    fprintf(stderr, "yylex\n");
 retry:
     switch(c = read()) {
         case ' ':
@@ -268,7 +268,7 @@ retry:
             int flg = FALSE;
             while(1) {
                 c = read();
-//                fprintf(stderr, "c = %c", c);
+//                fprintf(stderr, "c = %c\n", c);
                 switch (c) {
                     case 'n': {
 //                        fprintf(stderr, "match n\n");
