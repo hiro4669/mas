@@ -378,6 +378,11 @@ MAS_Value mas_eval_relational_expression(MAS_Interpreter* interp,
                 value.u.boolean_value = (l_value.u.double_value > r_value.u.int_value) ? MAS_TRUE : MAS_FALSE;
             } else if (l_value.type == MAS_DOUBLE_VALUE && r_value.type == MAS_DOUBLE_VALUE) {
                 value.u.boolean_value = (l_value.u.double_value > r_value.u.double_value) ? MAS_TRUE : MAS_FALSE;
+            } else if (l_value.type == MAS_STRING_VALUE && r_value.type == MAS_STRING_VALUE) {
+                value.u.boolean_value = (strcmp(l_value.u.string_value->string, r_value.u.string_value->string) > 0) ?
+                    MAS_TRUE : MAS_FALSE;
+                mas_release_string(l_value.u.string_value);
+                mas_release_string(r_value.u.string_value); 
             } else {
                 mas_runtime_error(expr->line_number,
                         BAD_OPERAND_TYPE_ERR,
@@ -395,6 +400,11 @@ MAS_Value mas_eval_relational_expression(MAS_Interpreter* interp,
                 value.u.boolean_value = (l_value.u.double_value >= r_value.u.int_value) ? MAS_TRUE : MAS_FALSE;
             } else if (l_value.type == MAS_DOUBLE_VALUE && r_value.type == MAS_DOUBLE_VALUE) {
                 value.u.boolean_value = (l_value.u.double_value >= r_value.u.double_value) ? MAS_TRUE : MAS_FALSE;
+            } else if (l_value.type == MAS_STRING_VALUE && r_value.type == MAS_STRING_VALUE) {
+                value.u.boolean_value = (strcmp(l_value.u.string_value->string, r_value.u.string_value->string) >= 0) ?
+                    MAS_TRUE : MAS_FALSE;
+                mas_release_string(l_value.u.string_value);
+                mas_release_string(r_value.u.string_value);  
             } else {
                 mas_runtime_error(expr->line_number,
                         BAD_OPERAND_TYPE_ERR,
@@ -413,6 +423,11 @@ MAS_Value mas_eval_relational_expression(MAS_Interpreter* interp,
                 value.u.boolean_value = (l_value.u.double_value < r_value.u.int_value) ? MAS_TRUE : MAS_FALSE;
             } else if (l_value.type == MAS_DOUBLE_VALUE && r_value.type == MAS_DOUBLE_VALUE) {
                 value.u.boolean_value = (l_value.u.double_value < r_value.u.double_value) ? MAS_TRUE : MAS_FALSE;
+            } else if (l_value.type == MAS_STRING_VALUE && r_value.type == MAS_STRING_VALUE) {
+                value.u.boolean_value = (strcmp(l_value.u.string_value->string, r_value.u.string_value->string) < 0) ?                    
+                    MAS_TRUE : MAS_FALSE;
+                mas_release_string(l_value.u.string_value);
+                mas_release_string(r_value.u.string_value);
             } else {
                 mas_runtime_error(expr->line_number,
                         BAD_OPERAND_TYPE_ERR,
@@ -430,6 +445,11 @@ MAS_Value mas_eval_relational_expression(MAS_Interpreter* interp,
                 value.u.boolean_value = (l_value.u.double_value <= r_value.u.int_value) ? MAS_TRUE : MAS_FALSE;
             } else if (l_value.type == MAS_DOUBLE_VALUE && r_value.type == MAS_DOUBLE_VALUE) {
                 value.u.boolean_value = (l_value.u.double_value <= r_value.u.double_value) ? MAS_TRUE : MAS_FALSE;
+            } else if (l_value.type == MAS_STRING_VALUE && r_value.type == MAS_STRING_VALUE) {
+                value.u.boolean_value = (strcmp(l_value.u.string_value->string, r_value.u.string_value->string) <= 0) ?
+                    MAS_TRUE : MAS_FALSE;
+                mas_release_string(l_value.u.string_value);
+                mas_release_string(r_value.u.string_value);                
             } else {
                 mas_runtime_error(expr->line_number,
                         BAD_OPERAND_TYPE_ERR,

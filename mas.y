@@ -186,16 +186,16 @@ equality_expression
 relational_expression
 			: additive_expression
 			| relational_expression GT additive_expression {
-                            $$ = mas_create_binary_expression(GT_EXPRESSION, $1, $3); // OK
+                            $$ = mas_create_binary_expression(GT_EXPRESSION, $1, $3); // OK // exec OK
                         }
 			| relational_expression GE additive_expression {
-                            $$ = mas_create_binary_expression(GE_EXPRESSION, $1, $3); // OK
+                            $$ = mas_create_binary_expression(GE_EXPRESSION, $1, $3); // OK // exec OK
                         }
 			| relational_expression LT additive_expression {
-                            $$ = mas_create_binary_expression(LT_EXPRESSION, $1, $3); // OK
+                            $$ = mas_create_binary_expression(LT_EXPRESSION, $1, $3); // OK // exec OK
                         }
 			| relational_expression LE additive_expression {
-                            $$ = mas_create_binary_expression(LE_EXPRESSION, $1, $3); // OK
+                            $$ = mas_create_binary_expression(LE_EXPRESSION, $1, $3); // OK // exec OK
                         }
 			;
 additive_expression
