@@ -164,13 +164,13 @@ expression              : logical_or_expression {
 logical_or_expression
 			: logical_and_expression
 			| logical_or_expression LOGICAL_OR logical_and_expression {
-                            $$ = mas_create_binary_expression(LOGICAL_OR_EXPRESSION, $1, $3); // OK
+                            $$ = mas_create_binary_expression(LOGICAL_OR_EXPRESSION, $1, $3); // OK // exec OK
                         }
 			;
 logical_and_expression
 			: equality_expression
 			| logical_and_expression LOGICAL_AND equality_expression {
-                            $$ = mas_create_binary_expression(LOGICAL_AND_EXPRESSION, $1, $3); // OK
+                            $$ = mas_create_binary_expression(LOGICAL_AND_EXPRESSION, $1, $3); // OK // exec OK
                         }
 			;
 
