@@ -414,7 +414,6 @@ MAS_Value mas_eval_relational_expression(MAS_Interpreter* interp,
             break;
         }
         case LT_EXPRESSION: {
-
             if (l_value.type == MAS_INT_VALUE && r_value.type == MAS_INT_VALUE) {
                 value.u.boolean_value = (l_value.u.int_value < r_value.u.int_value) ? MAS_TRUE : MAS_FALSE;
             } else if (l_value.type == MAS_INT_VALUE && r_value.type == MAS_DOUBLE_VALUE) {
@@ -462,10 +461,69 @@ MAS_Value mas_eval_relational_expression(MAS_Interpreter* interp,
             break;
         }
     }
-    
-       
     return value;
 }
+
+MAS_Value mas_eval_equality_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value value;
+    MAS_Value l_value = mas_eval_expression(interp, env, expr->u.binary_expression.left);
+    MAS_Value r_value = mas_eval_expression(interp, env, expr->u.binary_expression.right);
+    
+    value.type = MAS_BOOLEAN_VALUE;
+    switch(expr->type) {
+        case EQ_EXPRESSION: {
+            if (l_value.type == MAS_INT_VALUE && r_value.type == MAS_INT_VALUE) {
+                value.u.boolean_value = (l_value.u.int_value == r_value.u.int_value) ? MAS_TRUE : MAS_FALSE;
+            } else if (l_value.type == MAS_INT_VALUE && r_value.type == MAS_DOUBLE_VALUE) {
+                value.u.boolean_value = (l_value.u.int_value == r_value.u.double_value) ? MAS_TRUE : MAS_FALSE;
+            } else if (l_value.type == MAS_DOUBLE_VALUE && r_value.type == MAS_INT_VALUE) {
+                value.u.boolean_value = (l_value.u.double_value == r_value.u.int_value) ? MAS_TRUE : MAS_FALSE;
+            } else if (l_value.type == MAS_DOUBLE_VALUE && r_value.type == MAS_DOUBLE_VALUE) {
+                value.u.boolean_value = (l_value.u.double_value == r_value.u.double_value) ? MAS_TRUE : MAS_FALSE;                
+            } else if (l_value.type == MAS_STRING_VALUE && r_value.type == MAS_STRING_VALUE) {
+                value.u.boolean_value = (strcmp(l_value.u.string_value->string, r_value.u.string_value->string) == 0) ?
+                    MAS_TRUE : MAS_FALSE;
+                mas_release_string(l_value.u.string_value);
+                mas_release_string(r_value.u.string_value);  
+            } else {
+                mas_runtime_error(expr->line_number,
+                        BAD_OPERAND_TYPE_ERR,
+                        STRING_MESSAGE_ARGUMENT, "operator", "==",
+                        MESSAGE_ARGUMENT_END);
+            }
+            break;
+        }
+        case NE_EXPRESSION: {
+            if (l_value.type == MAS_INT_VALUE && r_value.type == MAS_INT_VALUE) {
+                value.u.boolean_value = (l_value.u.int_value != r_value.u.int_value) ? MAS_TRUE : MAS_FALSE;
+            } else if (l_value.type == MAS_INT_VALUE && r_value.type == MAS_DOUBLE_VALUE) {
+                value.u.boolean_value = (l_value.u.int_value != r_value.u.double_value) ? MAS_TRUE : MAS_FALSE;
+            } else if (l_value.type == MAS_DOUBLE_VALUE && r_value.type == MAS_INT_VALUE) {
+                value.u.boolean_value = (l_value.u.double_value != r_value.u.int_value) ? MAS_TRUE : MAS_FALSE;
+            } else if (l_value.type == MAS_DOUBLE_VALUE && r_value.type == MAS_DOUBLE_VALUE) {
+                value.u.boolean_value = (l_value.u.double_value != r_value.u.double_value) ? MAS_TRUE : MAS_FALSE;                
+            } else if (l_value.type == MAS_STRING_VALUE && r_value.type == MAS_STRING_VALUE) {
+                value.u.boolean_value = (strcmp(l_value.u.string_value->string, r_value.u.string_value->string) != 0) ?
+                    MAS_TRUE : MAS_FALSE;
+                mas_release_string(l_value.u.string_value);
+                mas_release_string(r_value.u.string_value);  
+            } else {
+                mas_runtime_error(expr->line_number,
+                        BAD_OPERAND_TYPE_ERR,
+                        STRING_MESSAGE_ARGUMENT, "operator", "!=",
+                        MESSAGE_ARGUMENT_END);
+            }
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+    
+    return value;
+}
+
 
 
 MAS_Value mas_eval_expression(MAS_Interpreter* interp, 
@@ -517,6 +575,11 @@ MAS_Value mas_eval_expression(MAS_Interpreter* interp,
         case LT_EXPRESSION:
         case LE_EXPRESSION: {
             value = mas_eval_relational_expression(interp, env, expr);
+            break;
+        }
+        case EQ_EXPRESSION:
+        case NE_EXPRESSION: {
+            value = mas_eval_equality_expression(interp, env, expr);
             break;
         }
         default: {

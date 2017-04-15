@@ -177,10 +177,10 @@ logical_and_expression
 equality_expression
 			: relational_expression
 			| equality_expression EQ relational_expression {
-                            $$ = mas_create_binary_expression(EQ_EXPRESSION, $1, $3); // OK
+                            $$ = mas_create_binary_expression(EQ_EXPRESSION, $1, $3); // OK // exec OK
                         }
 			| equality_expression NE relational_expression {
-                            $$ = mas_create_binary_expression(NE_EXPRESSION, $1, $3); // OK
+                            $$ = mas_create_binary_expression(NE_EXPRESSION, $1, $3); // OK // exec OK
                         }
 			;
 relational_expression
