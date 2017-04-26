@@ -147,17 +147,17 @@ identifier_list
 			;
 
 expression              : logical_or_expression { 
-                          Expression* expr;
-                          MAS_Interpreter* interp;
-                          expr = $1;
-                          interp = mas_get_interpreter();
-                          interp->expression = expr;    
+//                          Expression* expr;
+//                          MAS_Interpreter* interp;
+//                          expr = $1;
+//                          interp = mas_get_interpreter();
+//                          interp->expression = expr;    
                         } // OK
                         | IDENTIFIER ASSIGN expression  { 
                            Expression* expr = mas_create_assignment_expression($1, $3);
-                           MAS_Interpreter* interp;                            
-                           interp = mas_get_interpreter();
-                           interp->expression = expr;                            
+  //                         MAS_Interpreter* interp;                            
+//                           interp = mas_get_interpreter();
+//                           interp->expression = expr;                            
                            $$ = expr; 
                         } // OK
 			;

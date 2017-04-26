@@ -36,7 +36,12 @@ MAS_Interpreter* mas_get_interpreter() {
 void mas_delete_interpreter() {
     mas_delete_localinfo();
     if (mas_interpreter == NULL) return;    
+    
+    if (mas_interpreter->execution_storage) {
+        MEM_dispose(mas_interpreter->execution_storage);
+    }    
     MEM_dispose(mas_interpreter->ast_storage);
+
 }
 
 void MAS_compile(MAS_Interpreter* interp, FILE* fp) {
@@ -49,6 +54,11 @@ void MAS_compile(MAS_Interpreter* interp, FILE* fp) {
         exit(1);
     }
     mas_reset_string_literal();
+}
+
+void MAS_interpret(MAS_Interpreter* interp) {
+    interp->execution_storage = MEM_open_storage(0);
+    mas_execute_statementlist(interp, NULL, interp->stmt_list);    
 }
 
 void mas_traverse_test() {

@@ -3,6 +3,10 @@
 #include "MEM.h"
 #include "../info.h"
 
+struct st {
+	MEM_Storage head;
+};
+
 int main(void) {
     char *ptr, *ptr2;
     LocalInfo *l_info;
@@ -38,22 +42,33 @@ int main(void) {
     */
     
 
-    printf("------------------------------------\n");
+    fprintf(stderr, "------------------------------------>>>>>>\n");
 
-    /*
+
     MEM_Storage storage = MEM_open_storage(0);
+
+	struct st *pt = (struct st*)MEM_storage_malloc(storage, sizeof(struct st));
+	pt->head = MEM_open_storage(0);
+	fprintf(stderr, "ptr addr = %p\n", pt->head);
+	
     ptr = MEM_storage_malloc(storage, 10);
     for (i = 0; i < 10; ++i) {
         ptr[i] = 0xaa;
     }
+	
     ptr2 = MEM_storage_malloc(storage, 10);
     for (i = 0; i < 10; ++i) {
         ptr2[i] = 0xbb;
     }
+	
     
-    MEM_dump_memory();
+	//	MEM_dump_memory();
+	MEM_dispose(pt->head);
     MEM_dispose(storage);
+	//	fprintf(stderr, "addr = %p\n", pt->head);
+
+	
     MEM_dump_memory();
-     */
+
     return 0;
 }

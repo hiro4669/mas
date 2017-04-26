@@ -301,6 +301,7 @@ FunctionDefinition* mas_search_function(const char* name);
 MAS_Interpreter* mas_create_interpreter();
 MAS_Interpreter* mas_get_interpreter();
 void MAS_compile(MAS_Interpreter* interp, FILE* fp);
+void MAS_interpret(MAS_Interpreter* interp);
 void mas_traverse_test();
 void mas_delete_interpreter();
 
