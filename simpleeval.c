@@ -259,6 +259,10 @@ MAS_Value mas_eval_addtive_expression(MAS_Interpreter* interp,
                             strncpy(buf, "false", 6) : strncpy(buf, "true", 5);
                         break;
                     }
+                    case MAS_NULL_VALUE: {
+                        strncpy(buf, "null", 5);
+                        break;
+                    }
                     default: {
                         fprintf(stderr, "r_value type is not supported in add expression %d\n", r_value.type);
                         mas_runtime_error(expr->line_number,
@@ -292,6 +296,10 @@ MAS_Value mas_eval_addtive_expression(MAS_Interpreter* interp,
                     case MAS_BOOLEAN_VALUE: {
                         (l_value.u.boolean_value == MAS_FALSE) ?  
                             strncpy(buf, "false", 6) : strncpy(buf, "true", 5);
+                        break;
+                    }
+                    case MAS_NULL_VALUE: {
+                        strncpy(buf, "null", 5);
                         break;
                     }
                     default: {
@@ -486,6 +494,8 @@ MAS_Value mas_eval_equality_expression(MAS_Interpreter* interp,
                     MAS_TRUE : MAS_FALSE;
                 mas_release_string(l_value.u.string_value);
                 mas_release_string(r_value.u.string_value);  
+            } else if (l_value.type == MAS_NULL_VALUE && r_value.type == MAS_NULL_VALUE) {
+                value.u.boolean_value = MAS_TRUE;
             } else {
                 mas_runtime_error(expr->line_number,
                         BAD_OPERAND_TYPE_ERR,
@@ -508,6 +518,8 @@ MAS_Value mas_eval_equality_expression(MAS_Interpreter* interp,
                     MAS_TRUE : MAS_FALSE;
                 mas_release_string(l_value.u.string_value);
                 mas_release_string(r_value.u.string_value);  
+            } else if (l_value.type == MAS_NULL_VALUE && r_value.type == MAS_NULL_VALUE) {
+                value.u.boolean_value = MAS_FALSE;
             } else {
                 mas_runtime_error(expr->line_number,
                         BAD_OPERAND_TYPE_ERR,
