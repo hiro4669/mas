@@ -296,6 +296,10 @@ void mas_init_localinfo();
 void mas_delete_localinfo();
 void* mas_malloc(MEM_Storage storage, size_t size);
 FunctionDefinition* mas_search_function(const char* name);
+Variable* MAS_search_global_variable(MAS_Interpreter* interp, char* identifier);
+void MAS_add_global_variable(MAS_Interpreter* interp, char* identifier, MAS_Value *v);
+Variable* MAS_search_local_variable(LocalEnvironment* env, char* identifier);
+void MAS_add_local_variable(LocalEnvironment* env, char* identifier, MAS_Value *v);
 
 /* interface.c */
 MAS_Interpreter* mas_create_interpreter();

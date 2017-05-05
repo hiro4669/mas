@@ -24,6 +24,11 @@ void* mas_malloc(MEM_Storage storage, size_t size) {
     return MEM_storage_malloc(storage, size);
 }
 
+static void* execute_malloc(size_t size) {
+    MAS_Interpreter *interp = mas_get_interpreter();
+    return mas_malloc(interp->execution_storage, size);
+}
+
 FunctionDefinition* mas_search_function(const char* name) {
     FunctionDefinition* pos = NULL;
     MAS_Interpreter* interp;
@@ -32,4 +37,44 @@ FunctionDefinition* mas_search_function(const char* name) {
         if (!strcmp(name, pos->name)) break;           
     }
     return pos;
+}
+
+Variable* MAS_search_global_variable(MAS_Interpreter* interp, char* identifier) {
+    Variable* pos = NULL;
+    for (pos = interp->variable; pos; pos = pos->next) {
+        if (!strcmp(identifier, pos->name)) { // find
+            return pos;
+        }
+    }    
+    return pos;
+}
+
+void MAS_add_global_variable(MAS_Interpreter* interp, char* identifier, MAS_Value *v) {
+    Variable* nv = (Variable*)execute_malloc(sizeof(Variable));
+    nv->name = (char*)execute_malloc(strlen(identifier) + 1); // identifierの領域はast_mallocで確保されているからこぴらなくてもいいのでは？
+    strcpy(nv->name, identifier);
+    nv->next = interp->variable;
+    interp->variable = nv;
+    nv->value = *v;        
+}
+
+Variable* MAS_search_local_variable(LocalEnvironment* env, char* identifier) {
+    Variable* pos;
+    if (env == NULL) {
+        return NULL;
+    }
+    for (pos = env->variable; pos; pos = pos->next) {
+        if (!strcmp(identifier, pos->name)) {
+            return pos;
+        }
+    }    
+    return NULL;
+}
+
+void MAS_add_local_variable(LocalEnvironment* env, char* identifier, MAS_Value *v) {
+    Variable* nv = (Variable*)execute_malloc(sizeof(Variable));
+    nv->name = identifier;
+    nv->next = env->variable;
+    env->variable = nv;
+    nv->value = *v;    
 }

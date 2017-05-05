@@ -23,6 +23,10 @@ all: $(OBJS) $(EXEC)
 	$(MAKE) $@ -C memory
 	$(CC) -o $(TARGET) $^
 
+variabletest: $(OBJS) variabletest.o
+	$(MAKE) all -C memory
+	$(CC) -o $@ $^
+
 stringpooltest: $(OBJS) stringpooltest.o
 	$(MAKE) all -C memory
 	$(CC) -o $@ $^
