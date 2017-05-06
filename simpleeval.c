@@ -569,6 +569,39 @@ MAS_Value mas_eval_logical_and_or_expression(MAS_Interpreter* interp,
     return value;
 }
 
+MAS_Value mas_eval_assign_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value value;
+    char* identifier = expr->u.assign_expression.variable;
+    MAS_Value r_value = mas_eval_expression(interp, env, expr->u.assign_expression.operand);
+    
+    Variable* val = MAS_search_local_variable(env, identifier);
+    if (val) {
+        MAS_Value p_value = val->value;
+        val->value = r_value;
+        release_if_string(&p_value);
+    } else {
+        val = MAS_search_global_variable(interp, identifier);
+        if (val) {
+            MAS_Value p_value = val->value;
+            val->value = r_value;
+            release_if_string(&p_value);           
+        } else {
+            if (env) {
+                MAS_add_local_variable(env, identifier, &r_value);
+            } else {
+                MAS_add_global_variable(interp, identifier, &r_value);
+            }
+            if (r_value.type == MAS_STRING_VALUE) {
+                mas_refer_string(r_value.u.string_value);
+            }            
+        }
+    }
+    
+    
+    return r_value;
+}
+
 
 
 MAS_Value mas_eval_expression(MAS_Interpreter* interp, 
@@ -630,6 +663,10 @@ MAS_Value mas_eval_expression(MAS_Interpreter* interp,
         case LOGICAL_OR_EXPRESSION:
         case LOGICAL_AND_EXPRESSION: {
             value = mas_eval_logical_and_or_expression(interp, env, expr);
+            break;
+        }
+        case ASSIGN_EXPRESSION: {
+            value = mas_eval_assign_expression(interp, env, expr);
             break;
         }
         default: {

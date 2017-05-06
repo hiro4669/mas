@@ -9,7 +9,10 @@ static StatementResult mas_execute_statement(MAS_Interpreter* interp,
     result.type = NORMAL_STATEMENT_RESULT;
     switch (stmt->type) {
         case EXPRESSION_STATEMENT: {
-            mas_eval_expression(interp, env, stmt->u.expression_s);
+            MAS_Value val = mas_eval_expression(interp, env, stmt->u.expression_s);
+            if (val.type == MAS_STRING_VALUE) {
+                mas_release_string(val.u.string_value);
+            }
             break;
         }
         default: {
