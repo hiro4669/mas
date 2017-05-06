@@ -30,6 +30,21 @@ static void release_if_string(MAS_Value* v) {
     }
 }
 
+static void refer_if_string(MAS_Value* v) {
+    if (v->type == MAS_STRING_VALUE) {
+        mas_refer_string(v->u.string_value);
+    }
+}
+
+static Variable* search_global_variable_from_env(MAS_Interpreter* interp, LocalEnvironment* env, char* identifier) {
+    if (env == NULL) {
+        return MAS_search_global_variable(interp, identifier);
+    }
+    fprintf(stderr, "not implemented yet in search_global_variable_from_env");
+    exit(1);
+    
+}
+
 static MAS_Value call_native_function(MAS_Interpreter* interp, LocalEnvironment* env,
         Expression* expr, MAS_NativeFunctionProc proc) {
     MAS_Value v;
@@ -596,10 +611,33 @@ MAS_Value mas_eval_assign_expression(MAS_Interpreter* interp,
                 mas_refer_string(r_value.u.string_value);
             }            
         }
+    }        
+    return r_value;
+}
+
+MAS_Value mas_eval_identifier_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value value;
+    fprintf(stderr, "id = %s\n", expr->u.identifier);
+    char* identifier = expr->u.identifier;
+    Variable* v = NULL;
+    v = MAS_search_local_variable(env, identifier);
+    if (v) {
+        value = v->value;
+    } else {
+        v = search_global_variable_from_env(interp, env, identifier);
+        if (v == NULL) {
+             mas_runtime_error(expr->line_number,
+                        VARIABLE_NOT_FOUND_ERR,
+                        STRING_MESSAGE_ARGUMENT, "name", identifier,
+                        MESSAGE_ARGUMENT_END);
+        }
+        value = v->value;
     }
     
+    refer_if_string(&value);
     
-    return r_value;
+    return value;        
 }
 
 
@@ -667,6 +705,10 @@ MAS_Value mas_eval_expression(MAS_Interpreter* interp,
         }
         case ASSIGN_EXPRESSION: {
             value = mas_eval_assign_expression(interp, env, expr);
+            break;
+        }
+        case IDENTIFIER_EXPRESSION: {
+            value = mas_eval_identifier_expression(interp, env, expr);
             break;
         }
         default: {

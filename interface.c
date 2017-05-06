@@ -11,6 +11,17 @@ static void add_native_functions() {
     MAS_add_native_function("print", mas_nv_print);
 }
 
+static void release_global_variables(MAS_Interpreter* interp) {
+    Variable* val;
+    val = interp->variable;
+    while(val) {
+        if (val->value.type == MAS_STRING_VALUE) {
+            mas_release_string(val->value.u.string_value);
+        }
+        val = val->next;        
+    }    
+}
+
 MAS_Interpreter* mas_create_interpreter() {
     
     mas_init_localinfo();
@@ -36,6 +47,8 @@ MAS_Interpreter* mas_get_interpreter() {
 void mas_delete_interpreter() {
     mas_delete_localinfo();
     if (mas_interpreter == NULL) return;    
+    
+    release_global_variables(mas_interpreter);
     
     if (mas_interpreter->execution_storage) {
         MEM_dispose(mas_interpreter->execution_storage);
