@@ -618,7 +618,6 @@ MAS_Value mas_eval_assign_expression(MAS_Interpreter* interp,
 MAS_Value mas_eval_identifier_expression(MAS_Interpreter* interp,
         LocalEnvironment* env, Expression* expr) {
     MAS_Value value;
-    fprintf(stderr, "id = %s\n", expr->u.identifier);
     char* identifier = expr->u.identifier;
     Variable* v = NULL;
     v = MAS_search_local_variable(env, identifier);
