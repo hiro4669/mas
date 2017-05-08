@@ -30,6 +30,11 @@ static StatementResult execute_while_statement(MAS_Interpreter* interp,
         if (cv.u.boolean_value == MAS_TRUE) {
             result = mas_execute_statementlist(interp, env, 
                     stmt->u.while_s.block->stmt_list);
+            
+            if (result.type == BREAK_STATEMENT_RESULT) { // break
+                return result;
+            }
+            
         } else {
             break;
         }
@@ -82,6 +87,20 @@ static StatementResult execute_if_statement(MAS_Interpreter* interp,
     return result;
 }
 
+static StatementResult execute_break_statement(MAS_Interpreter* interp,
+        LocalEnvironment* env, Statement* stmt) {
+    StatementResult result;
+    result.type = BREAK_STATEMENT_RESULT;
+    return result;
+}
+
+static StatementResult execute_continue_statement(MAS_Interpreter* interp,
+        LocalEnvironment* env, Statement* stmt) {
+    StatementResult result;
+    result.type = CONTINUE_STATEMENT_RESULT;
+    return result;
+}
+
 static StatementResult mas_execute_statement(MAS_Interpreter* interp,
         LocalEnvironment* env, Statement* stmt) {
     StatementResult result;
@@ -96,6 +115,14 @@ static StatementResult mas_execute_statement(MAS_Interpreter* interp,
         }
         case IF_STATEMENT: {
             result = execute_if_statement(interp, env, stmt);
+            break;
+        }
+        case BREAK_STATEMENT: {
+            result = execute_break_statement(interp, env, stmt);            
+            break;
+        }
+        case CONTINUE_STATEMENT: {
+            result = execute_continue_statement(interp, env, stmt);
             break;
         }
         default: {
@@ -114,6 +141,15 @@ StatementResult mas_execute_statementlist(MAS_Interpreter* interp,
     
     for (pos = stmt_list; pos; pos = pos->next) {
         result = mas_execute_statement(interp, env, pos->statement);
+        switch (result.type) {
+            case BREAK_STATEMENT_RESULT:
+            case CONTINUE_STATEMENT_RESULT: {
+                return result;
+            }
+            default: {
+                break;
+            }
+        }
     }
     
     return result;
