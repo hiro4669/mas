@@ -63,13 +63,55 @@ static MAS_Value call_native_function(MAS_Interpreter* interp, LocalEnvironment*
         args[i] = mas_eval_expression(interp, env, arg_list->expression);        
     }
 
-    proc(interp, arg_count, args);
+    v = proc(interp, arg_count, args);
     for (i = 0; i < arg_count; ++i) {
         release_if_string(&args[i]);
     }
     MEM_free(args);    
     
     return v;
+}
+
+static MAS_Value call_mas_function(MAS_Interpreter* interp, LocalEnvironment* env,
+        Expression* expr, ParameterList* params, Block* block) {
+    
+    ParameterList* p_pos;
+    ArgumentList*  a_pos;
+    int arg_count, par_count, i;
+    for (par_count = 0, p_pos = params; p_pos; p_pos = p_pos->next, ++par_count);
+    for (arg_count = 0, a_pos = expr->u.function_call_expression.argument; 
+            a_pos; a_pos = a_pos->next, ++arg_count);
+
+    if (par_count < arg_count) {
+        mas_runtime_error(expr->line_number,
+                ARGUMENT_TOO_MANY_ERR,
+                MESSAGE_ARGUMENT_END);
+    } else if (par_count > arg_count) {
+        mas_runtime_error(expr->line_number,
+                ARGUMENT_TOO_FEW_ERR,
+                MESSAGE_ARGUMENT_END);
+    }    
+    MAS_Value* args = (MAS_Value*)MEM_malloc(sizeof(MAS_Value) * arg_count);
+    
+    for (i = 0, a_pos = expr->u.function_call_expression.argument;
+            a_pos; a_pos = a_pos->next, ++i) {
+        args[i] = mas_eval_expression(interp, env, a_pos->expression);
+    }
+    
+    LocalEnvironment* local_env = (LocalEnvironment*)MEM_malloc(sizeof(LocalEnvironment));
+    for (i = 0, p_pos = params; i < arg_count; ++i, p_pos = p_pos->next) {
+        MAS_add_local_variable(local_env, p_pos->name, &args[i]);
+    }
+    
+    StatementResult r = mas_execute_statementlist(interp, local_env, block->stmt_list);
+    
+    for (i = 0; i < arg_count; ++i) {
+        release_if_string(&args[i]);
+    }
+    MEM_free(local_env);
+    MEM_free(args);
+    
+    return r.u.return_value;
 }
 
 static MAS_Value mas_eval_function_call_expression(MAS_Interpreter* interp, 
@@ -88,6 +130,10 @@ static MAS_Value mas_eval_function_call_expression(MAS_Interpreter* interp,
         case NATIVE_FUNCTION: {
 //            fprintf(stderr, "call native function\n");
             v = call_native_function(interp, env, expr, func->u.native_f.n_func);
+            break;
+        }
+        case MAS_FUNCTION: {
+            v = call_mas_function(interp, env, expr, func->u.mas_f.param, func->u.mas_f.block);
             break;
         }
         default: {  
