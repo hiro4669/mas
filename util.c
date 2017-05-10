@@ -45,7 +45,8 @@ Variable* MAS_search_global_variable(MAS_Interpreter* interp, char* identifier) 
         if (!strcmp(identifier, pos->name)) { // find
             return pos;
         }
-    }    
+    }
+    
     return pos;
 }
 
@@ -55,7 +56,7 @@ void MAS_add_global_variable(MAS_Interpreter* interp, char* identifier, MAS_Valu
     strcpy(nv->name, identifier);
     nv->next = interp->variable;
     interp->variable = nv;
-    nv->value = *v;        
+    nv->value = *v;
 }
 
 Variable* MAS_search_local_variable(LocalEnvironment* env, char* identifier) {

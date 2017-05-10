@@ -42,7 +42,7 @@ typedef struct {
         int                int_value;
         double             double_value;
         MAS_String*        string_value;
-        MAS_NativePointer* native_pointer;
+        MAS_NativePointer native_pointer;
     } u;    
 } MAS_Value;
 
