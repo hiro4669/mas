@@ -9,6 +9,7 @@ static StatementResult execute_expression_statement(MAS_Interpreter* interp,
     result.type = NORMAL_STATEMENT_RESULT;
     MAS_Value val = mas_eval_expression(interp, env, stmt->u.expression_s);
     if (val.type == MAS_STRING_VALUE) {
+//        printf("invoke release string in expression statement\n");
         mas_release_string(val.u.string_value);
     }
     result.u.return_value = val;
@@ -137,6 +138,9 @@ static StatementResult mas_execute_statement(MAS_Interpreter* interp,
 StatementResult mas_execute_statementlist(MAS_Interpreter* interp, 
         LocalEnvironment* env, StatementList* stmt_list) {
     StatementResult result;
+    result.type = NORMAL_STATEMENT_RESULT;
+    result.u.return_value.type = MAS_NULL_VALUE;
+    
     StatementList* pos;
     
     for (pos = stmt_list; pos; pos = pos->next) {

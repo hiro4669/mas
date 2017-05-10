@@ -72,9 +72,24 @@ static MAS_Value call_native_function(MAS_Interpreter* interp, LocalEnvironment*
     return v;
 }
 
+static void dispose_local_environment(MAS_Interpreter* interp, LocalEnvironment* env) {
+
+    Variable *pos, *next;
+    pos = env->variable;
+    while(pos) {
+        next = pos->next;
+        release_if_string(&pos->value);
+        MEM_free(pos);
+        pos = next;
+    }
+    MEM_free(env);
+
+}
+
 static MAS_Value call_mas_function(MAS_Interpreter* interp, LocalEnvironment* env,
         Expression* expr, ParameterList* params, Block* block) {
     
+    MAS_Value v;
     ParameterList* p_pos;
     ArgumentList*  a_pos;
     int arg_count, par_count, i;
@@ -99,19 +114,26 @@ static MAS_Value call_mas_function(MAS_Interpreter* interp, LocalEnvironment* en
     }
     
     LocalEnvironment* local_env = (LocalEnvironment*)MEM_malloc(sizeof(LocalEnvironment));
+    local_env->variable = NULL;
+    local_env->global_variable = NULL;
     for (i = 0, p_pos = params; i < arg_count; ++i, p_pos = p_pos->next) {
         MAS_add_local_variable(local_env, p_pos->name, &args[i]);
     }
     
     StatementResult r = mas_execute_statementlist(interp, local_env, block->stmt_list);
-    
+    /*
     for (i = 0; i < arg_count; ++i) {
         release_if_string(&args[i]);
     }
     MEM_free(local_env);
+     */
+    dispose_local_environment(interp, local_env);
+    
     MEM_free(args);
     
-    return r.u.return_value;
+    v.type = MAS_NULL_VALUE;
+    return v;
+//    return r.u.return_value;
 }
 
 static MAS_Value mas_eval_function_call_expression(MAS_Interpreter* interp, 
@@ -632,10 +654,10 @@ MAS_Value mas_eval_logical_and_or_expression(MAS_Interpreter* interp,
 
 MAS_Value mas_eval_assign_expression(MAS_Interpreter* interp,
         LocalEnvironment* env, Expression* expr) {
+    
     MAS_Value value;
     char* identifier = expr->u.assign_expression.variable;
     MAS_Value r_value = mas_eval_expression(interp, env, expr->u.assign_expression.operand);
-    
     Variable* val = MAS_search_local_variable(env, identifier);
     if (val) {
         MAS_Value p_value = val->value;
@@ -654,6 +676,7 @@ MAS_Value mas_eval_assign_expression(MAS_Interpreter* interp,
                 MAS_add_global_variable(interp, identifier, &r_value);
             }
             if (r_value.type == MAS_STRING_VALUE) {
+//                printf("invoke refer string in assign expression\n");
                 mas_refer_string(r_value.u.string_value);
             }            
         }

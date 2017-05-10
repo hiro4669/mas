@@ -27,10 +27,13 @@ MAS_String* mas_create_mas_string(MAS_Interpreter* interp, char* str) {
 
 void mas_refer_string(MAS_String* str) {
     ++str->ref_count;
+//    printf("refer string--> %d\n", str->ref_count);
 }
 
 void mas_release_string(MAS_String* str) {
+    
     --str->ref_count;
+//    printf("release string--> %d\n", str->ref_count);
     if (str->ref_count == 0) {
         if (!str->is_literal) {
             MEM_free(str->string);
