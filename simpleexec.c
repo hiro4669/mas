@@ -33,6 +33,11 @@ static StatementResult execute_while_statement(MAS_Interpreter* interp,
                     stmt->u.while_s.block->stmt_list);
             
             if (result.type == BREAK_STATEMENT_RESULT) { // break
+                result.type = NORMAL_STATEMENT_RESULT;
+                result.u.return_value.type = MAS_NULL_VALUE;
+                return result;
+            }
+            if (result.type == RETURN_STATEMENT_RESULT) {
                 return result;
             }
             
@@ -102,6 +107,20 @@ static StatementResult execute_continue_statement(MAS_Interpreter* interp,
     return result;
 }
 
+static StatementResult execute_return_statement(MAS_Interpreter* interp,
+        LocalEnvironment* env, Statement* stmt) {
+    StatementResult result;
+    Expression* expr;
+    result.u.return_value.type = MAS_NULL_VALUE;
+    
+    result.type = RETURN_STATEMENT_RESULT;
+    if ((expr = stmt->u.return_s.return_value)) {
+        MAS_Value v = mas_eval_expression(interp, env, expr);
+        result.u.return_value = v;
+    }        
+    return result;
+}
+
 static StatementResult mas_execute_statement(MAS_Interpreter* interp,
         LocalEnvironment* env, Statement* stmt) {
     StatementResult result;
@@ -126,6 +145,10 @@ static StatementResult mas_execute_statement(MAS_Interpreter* interp,
             result = execute_continue_statement(interp, env, stmt);
             break;
         }
+        case RETURN_STATEMENT: {
+            result = execute_return_statement(interp, env, stmt);
+            break;
+        }
         default: {
             fprintf(stderr, "undefined stmt type in mas_execute_statement %d\n", stmt->type);
             exit(1);
@@ -146,6 +169,7 @@ StatementResult mas_execute_statementlist(MAS_Interpreter* interp,
     for (pos = stmt_list; pos; pos = pos->next) {
         result = mas_execute_statement(interp, env, pos->statement);
         switch (result.type) {
+            case RETURN_STATEMENT_RESULT:
             case BREAK_STATEMENT_RESULT:
             case CONTINUE_STATEMENT_RESULT: {
                 return result;

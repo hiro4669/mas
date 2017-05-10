@@ -131,8 +131,12 @@ static MAS_Value call_mas_function(MAS_Interpreter* interp, LocalEnvironment* en
     
     MEM_free(args);
     
-    v.type = MAS_NULL_VALUE;
-    return v;
+    if (r.type == RETURN_STATEMENT_RESULT) {
+        return r.u.return_value;
+    } else {    
+        v.type = MAS_NULL_VALUE;
+        return v;
+    }
 //    return r.u.return_value;
 }
 
