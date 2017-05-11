@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "mas.h"
 
@@ -9,6 +10,76 @@
 static MAS_NativePointerInfo st_native_lib_info = {
     NATIVE_LIB_NAME
 };
+
+MAS_Value mas_nv_fgets(MAS_Interpreter* interp, int arg_count, MAS_Value* args) {
+    MAS_Value v;
+    FILE *fp;
+    char buf[LINE_BUF_SIZE];
+    char* ret_buf = NULL;
+    int ret_len = 0;
+    
+    if (arg_count < 1) {
+        mas_runtime_error(0, ARGUMENT_TOO_FEW_ERR,
+                MESSAGE_ARGUMENT_END);
+    }
+    if (arg_count > 1) {
+        mas_runtime_error(0, ARGUMENT_TOO_MANY_ERR,
+                MESSAGE_ARGUMENT_END);
+    }    
+    if (args[0].type != MAS_NATIVE_POINTER_VALUE) {
+        mas_runtime_error(0, FGETS_ARGUMENT_TYPE_ERR,
+                MESSAGE_ARGUMENT_END);
+    }
+    
+    fp = args[0].u.native_pointer.pointer;
+    
+    while(fgets(buf, LINE_BUF_SIZE, fp)) {
+        int new_len;
+        new_len = ret_len + strlen(buf);
+        ret_buf = MEM_realloc(ret_buf, new_len + 1);
+        if (ret_len == 0) {
+            strcpy(ret_buf, buf);
+        } else {
+            strcat(ret_buf, buf);            
+        }
+        
+        ret_len = new_len;
+        if(ret_buf[ret_len - 1] == '\n') {
+            break;
+        }        
+    }
+    if (ret_len > 0) {
+        v.type = MAS_STRING_VALUE;
+        v.u.string_value = mas_create_mas_string(interp, ret_buf);
+    } else {
+        v.type = MAS_NULL_VALUE;
+    }
+    return v;
+}
+
+MAS_Value mas_nv_fputs(MAS_Interpreter* interp, int arg_count, MAS_Value* args) {
+    MAS_Value v;
+    FILE* fp;
+    if (arg_count < 2) {
+        mas_runtime_error(0, ARGUMENT_TOO_FEW_ERR,
+                MESSAGE_ARGUMENT_END);
+    }
+    if (arg_count > 2) {
+        mas_runtime_error(0, ARGUMENT_TOO_MANY_ERR,
+                MESSAGE_ARGUMENT_END);
+    }    
+    if (args[0].type != MAS_STRING_VALUE || args[1].type != MAS_NATIVE_POINTER_VALUE) {
+        mas_runtime_error(0, FPUTS_ARGUMENT_TYPE_ERR,
+                MESSAGE_ARGUMENT_END);
+    }
+    char* str = args[0].u.string_value->string;
+    fp = args[1].u.native_pointer.pointer;
+    
+    fputs(str, fp);
+    
+    v.type = MAS_NULL_VALUE;
+    return v;
+}
 
 MAS_Value mas_nv_open(MAS_Interpreter* interp, int arg_count, MAS_Value* args) {
     MAS_Value v;

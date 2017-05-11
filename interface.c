@@ -11,6 +11,8 @@ static void add_native_functions() {
     MAS_add_native_function("print", mas_nv_print);
     MAS_add_native_function("fopen", mas_nv_open);
     MAS_add_native_function("fclose", mas_nv_close);
+    MAS_add_native_function("fputs", mas_nv_fputs);
+    MAS_add_native_function("fgets", mas_nv_fgets);
 }
 
 static void release_global_variables(MAS_Interpreter* interp) {

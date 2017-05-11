@@ -270,6 +270,8 @@ typedef struct LocalEnvironment_tag {
 } LocalEnvironment;
 
 
+#define LINE_BUF_SIZE (1024)
+
 /* Definition of Interpreter*/
 
 struct MAS_Interpreter_tag {
@@ -375,6 +377,8 @@ void mas_runtime_error(int line_number, RuntimeError id, ...);
 MAS_Value mas_nv_print(MAS_Interpreter* interp, int arg_count, MAS_Value* args);
 MAS_Value mas_nv_open(MAS_Interpreter* interp, int arg_count, MAS_Value* args);
 MAS_Value mas_nv_close(MAS_Interpreter* interp, int arg_count, MAS_Value* args);
+MAS_Value mas_nv_fputs(MAS_Interpreter* interp, int arg_count, MAS_Value* args);
+MAS_Value mas_nv_fgets(MAS_Interpreter* interp, int arg_count, MAS_Value* args);
 
 /* simpleexec.c */
 StatementResult mas_execute_statementlist(MAS_Interpreter* interp, 
