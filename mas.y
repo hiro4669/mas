@@ -125,14 +125,14 @@ statement_list          // this is matched only in block
 			| statement_list statement { $$ = mas_chain_statement_list($1, $2); }
 			;
 
-statement               : expression SEMICOLON { $$ = mas_create_expression_statement($1); } // OK
-			| global_statement    // OK                                                 // OK
-			| while_statement     // OK
-			| return_statement    // OK
-			| break_statement     // OK
-			| continue_statement  // OK
-			| for_statement // OK
-			| if_statement  // OK
+statement               : expression SEMICOLON { $$ = mas_create_expression_statement($1); } // OK exec OK
+			| global_statement    // OK                                          // OK  
+			| while_statement     // OK  exec OK
+			| return_statement    // OK  exec OK
+			| break_statement     // OK  exec OK
+			| continue_statement  // OK  exec OK
+			| for_statement       // OK  exec OK
+			| if_statement        // OK  exec OK
 			;
 global_statement
 			: GLOBAL_T identifier_list SEMICOLON {

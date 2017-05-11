@@ -40,8 +40,9 @@ static Variable* search_global_variable_from_env(MAS_Interpreter* interp, LocalE
     if (env == NULL) {
         return MAS_search_global_variable(interp, identifier);
     }
-    fprintf(stderr, "not implemented yet in search_global_variable_from_env");
-    exit(1);
+    return NULL;
+//    fprintf(stderr, "not implemented yet in search_global_variable_from_env");
+//    exit(1);
     
 }
 
@@ -658,7 +659,6 @@ MAS_Value mas_eval_logical_and_or_expression(MAS_Interpreter* interp,
 
 MAS_Value mas_eval_assign_expression(MAS_Interpreter* interp,
         LocalEnvironment* env, Expression* expr) {
-    
     MAS_Value value;
     char* identifier = expr->u.assign_expression.variable;
     MAS_Value r_value = mas_eval_expression(interp, env, expr->u.assign_expression.operand);
@@ -668,7 +668,7 @@ MAS_Value mas_eval_assign_expression(MAS_Interpreter* interp,
         val->value = r_value;
         release_if_string(&p_value);
     } else {
-        val = MAS_search_global_variable(interp, identifier);
+        val = search_global_variable_from_env(interp, env, identifier);
         if (val) {
             MAS_Value p_value = val->value;
             val->value = r_value;
