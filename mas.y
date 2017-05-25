@@ -68,7 +68,7 @@
 		logical_and_expression logical_or_expression
 		equality_expression relational_expression
 		additive_expression multiplicative_expression
-		unary_expression primary_expression
+		unary_expression primary_expression postfix_expression
                 expression_opt
 
 %type <argument_list> argument_list
@@ -158,13 +158,13 @@ expression              : logical_or_expression {
 //                          interp = mas_get_interpreter();
 //                          interp->expression = expr;    
                         } // OK
-                        | IDENTIFIER ASSIGN expression  { 
+                        | postfix_expression ASSIGN expression  { 
                            Expression* expr = mas_create_assignment_expression($1, $3);
   //                         MAS_Interpreter* interp;                            
 //                           interp = mas_get_interpreter();
 //                           interp->expression = expr;                            
                            $$ = expr; 
-                        } // OK
+                        } // OK --> change
 			;
 logical_or_expression
 			: logical_and_expression
@@ -228,13 +228,32 @@ multiplicative_expression
                         }
 			;
 unary_expression
-			: primary_expression                                                  // OK
+			: postfix_expression                                                  // OK -> change
 			| SUB unary_expression { $$ = mas_create_minus_expression($2); }      // OK
 			;
 argument_list
                         : expression  { $$ = mas_create_argument_list($1); }                  // OK
 			| argument_list COMMA expression { $$ = mas_chain_argument($1, $3); } // OK
 			;
+
+postfix_expression      : primary_expression
+                        | postfix_expression LB expression RB
+                        | postfix_expression DOT IDENTIFIER LP argument_list RP
+                        | postfix_expression DOT IDENTIFIER LP               RP
+                        | postfix_expression INCREMENT
+                        | postfix_expression DECREMENT
+                        ;
+
+array_literal           : LC expression_list RC
+                        | LC expression_list COMMA RC
+                        ;
+
+expression_list         : 
+                        | expression
+                        | expression_list COMMA expression
+                        ;
+
+
 primary_expression
 			: IDENTIFIER LP RP { $$ = mas_create_functioncall_expression($1, NULL); }  // OK  // exec half ok
 			| IDENTIFIER LP argument_list RP { $$ = mas_create_functioncall_expression($1, $3); } //OK // exec half ok
