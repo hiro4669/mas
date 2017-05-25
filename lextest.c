@@ -10,15 +10,16 @@ int main(void) {
     int t_type;
 
     mas_init_localinfo();
-    yyin = fopen("yacctest.ma", "r");
-//    yyin = fopen("rtest.ma", "r");
-    yyin = fopen("expr.ma", "r");    
+//    yyin = fopen("tests/yacctest.ma", "r");
+//    yyin = fopen("tests/rtest.ma", "r");
+//    yyin = fopen("tests/expr.ma", "r");    
+    yyin = fopen("tests/functest.ma", "r");    
     if (yyin == NULL) {
         fprintf(stderr, "cannot open file\n");
     }
-    //	for (i = 0; i < 3; ++i) {
-    while (1) {
-        t_type = yylex();
+
+    while (1) {        
+        t_type = yylex();   
         switch (t_type) {
             case FUNCTION: {
                 printf("FUNCTION: function\n");

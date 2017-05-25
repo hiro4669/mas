@@ -45,9 +45,46 @@ Variable* MAS_search_global_variable(MAS_Interpreter* interp, char* identifier) 
         if (!strcmp(identifier, pos->name)) { // find
             return pos;
         }
-    }
-    
+    }    
     return pos;
+}
+
+void mas_show_all_global_variable(MAS_Interpreter* interp) {
+    printf("--- show all global variable ---\n");
+    Variable* pos = NULL;
+    for (pos = interp->variable; pos; pos = pos->next) {
+        switch(pos->value.type) {
+            case MAS_BOOLEAN_VALUE: {
+                printf("val(boolean) = %s(%d)\n", pos->name, pos->value.u.boolean_value);
+                break;
+            }
+            case MAS_INT_VALUE: {
+                printf("val(int)     = %s(%d)\n", pos->name, pos->value.u.int_value);
+                break;
+            }
+            case MAS_DOUBLE_VALUE: {
+                printf("val(double)  = %s(%f)\n", pos->name, pos->value.u.double_value);                
+                break;
+            }
+            case MAS_STRING_VALUE: {
+                printf("val(string)  = %s(%p)\n", pos->name, pos->value.u.string_value->string);
+                break;
+            }
+            case MAS_NATIVE_POINTER_VALUE: {
+                printf("val(pointer) = %s(%p)\n", pos->name, pos->value.u.native_pointer.pointer);
+                break;
+            }
+            case MAS_NULL_VALUE: {
+                printf("val(null) = %s(null)\n", pos->name);
+                break;
+            }
+            default: {
+                fprintf(stderr, "no such mas type");                
+                break;
+            }       
+        }
+
+    }    
 }
 
 void MAS_add_global_variable(MAS_Interpreter* interp, char* identifier, MAS_Value *v) {

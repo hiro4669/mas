@@ -38,7 +38,7 @@ Expression* mas_create_binary_expression(ExpressionType type,
 }
 
 Expression* mas_create_int_expression(int i) {
-    Expression* iexpr= mas_alloc_expression(INT_EXPRESION);
+    Expression* iexpr= mas_alloc_expression(INT_EXPRESION);        
     iexpr->u.int_value = i;
     return iexpr;
 }
@@ -198,7 +198,8 @@ FunctionDefinition* mas_chain_function_definition(FunctionDefinition* flist, Fun
     if (flist == NULL) {
         return newf;
     }
-    fprintf(stderr, "flist is not null\n");
+//    printf("aflist is not null\n");
+
     FunctionDefinition* pos;
     for (pos = flist; pos->next; pos = pos->next);
     pos->next = newf;

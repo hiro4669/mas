@@ -168,7 +168,11 @@ static StatementResult mas_execute_statement(MAS_Interpreter* interp,
     StatementResult result;
     switch (stmt->type) {
         case EXPRESSION_STATEMENT: {
+//            printf("\n------------> before exec expression_statement\n");
+//            mas_show_all_global_variable(interp);
             result = execute_expression_statement(interp, env, stmt);
+//            printf("------------> after exec expression_statement\n");
+//            mas_show_all_global_variable(interp);
             break;
         }
         case WHILE_STATEMENT: {

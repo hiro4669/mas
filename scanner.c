@@ -111,6 +111,19 @@ retry:
                 c = read();
                 if (c != '.' && isdigit(c)) {
                     error();
+                } else if (c == '.') { // double
+                    addtext(c);
+                    while (isdigit(c = read())) {
+                        addtext(c);
+                    }
+                    pushback(c);
+                    double d_value;
+                    //                sscanf((char*)yytext, "%lf", &yylval.double_value);
+                    sscanf((char*)yytext, "%lf", &d_value);
+                    Expression* expr = mas_create_double_expression(d_value);
+                    yylval.expression = expr;
+                    return DOUBLE_LITERAL;    
+                    
                 } else {
                     pushback(c);
                     int i_value;
@@ -120,18 +133,8 @@ retry:
 //                    printf("int value = %d\n", yylval.int_value);
                     return INT_LITERAL;
                     
-                }
-                addtext(c);
-                while(isdigit(c = read())) {
-                    addtext(c);
-                }
-                pushback(c);
-                double d_value;
-//                sscanf((char*)yytext, "%lf", &yylval.double_value);
-                sscanf((char*)yytext, "%lf", &d_value);
-                Expression* expr = mas_create_double_expression(d_value);
-                yylval.expression = expr;
-                return DOUBLE_LITERAL;                
+                }                
+                
             } else { // int
                 while(isdigit(c = read())) {
                     addtext(c);

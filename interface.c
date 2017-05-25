@@ -38,7 +38,6 @@ MAS_Interpreter* mas_create_interpreter() {
     mas_interpreter->stmt_list = NULL;
     mas_interpreter->func_list = NULL;
 
-    
     add_native_functions();
     return mas_interpreter;
 }

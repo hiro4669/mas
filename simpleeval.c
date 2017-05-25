@@ -42,8 +42,7 @@ static Variable* search_global_variable_from_env(MAS_Interpreter* interp, LocalE
     }
     return NULL;
 //    fprintf(stderr, "not implemented yet in search_global_variable_from_env");
-//    exit(1);
-    
+//    exit(1);    
 }
 
 static MAS_Value call_native_function(MAS_Interpreter* interp, LocalEnvironment* env,
@@ -317,10 +316,11 @@ MAS_Value mas_eval_multiplicative_expression(MAS_Interpreter* interp,
 
 MAS_Value mas_eval_addtive_expression(MAS_Interpreter* interp,
         LocalEnvironment* env, Expression* expr) {
+
     MAS_Value value;
     MAS_Value l_value = mas_eval_expression(interp, env, expr->u.binary_expression.left);
     MAS_Value r_value = mas_eval_expression(interp, env, expr->u.binary_expression.right);
-    
+
     switch (expr->type) {
         case ADD_EXPRESSION: {
             
@@ -339,6 +339,7 @@ MAS_Value mas_eval_addtive_expression(MAS_Interpreter* interp,
                     }
                     case MAS_STRING_VALUE: {
                         MAS_String* n_str = chain_mas_string(interp, l_value.u.string_value, r_value.u.string_value);
+//                        printf("string plus string2\n");
                         value.u.string_value = n_str;
                         return value;        // return immediately
                     }
@@ -567,6 +568,7 @@ MAS_Value mas_eval_equality_expression(MAS_Interpreter* interp,
     MAS_Value r_value = mas_eval_expression(interp, env, expr->u.binary_expression.right);
     
     value.type = MAS_BOOLEAN_VALUE;
+    
     switch(expr->type) {
         case EQ_EXPRESSION: {
             if (l_value.type == MAS_INT_VALUE && r_value.type == MAS_INT_VALUE) {
@@ -577,13 +579,37 @@ MAS_Value mas_eval_equality_expression(MAS_Interpreter* interp,
                 value.u.boolean_value = (l_value.u.double_value == r_value.u.int_value) ? MAS_TRUE : MAS_FALSE;
             } else if (l_value.type == MAS_DOUBLE_VALUE && r_value.type == MAS_DOUBLE_VALUE) {
                 value.u.boolean_value = (l_value.u.double_value == r_value.u.double_value) ? MAS_TRUE : MAS_FALSE;                
-            } else if (l_value.type == MAS_STRING_VALUE && r_value.type == MAS_STRING_VALUE) {
-                value.u.boolean_value = (strcmp(l_value.u.string_value->string, r_value.u.string_value->string) == 0) ?
-                    MAS_TRUE : MAS_FALSE;
-                mas_release_string(l_value.u.string_value);
-                mas_release_string(r_value.u.string_value);  
+//            } else if (l_value.type == MAS_STRING_VALUE && r_value.type == MAS_STRING_VALUE) {
+//                value.u.boolean_value = (strcmp(l_value.u.string_value->string, r_value.u.string_value->string) == 0) ?
+//                    MAS_TRUE : MAS_FALSE;
+//                mas_release_string(l_value.u.string_value);
+//                mas_release_string(r_value.u.string_value);  
+            } else if (l_value.type == MAS_STRING_VALUE) {
+                switch (r_value.type) {
+                    case MAS_STRING_VALUE: {
+                        value.u.boolean_value = (strcmp(l_value.u.string_value->string, r_value.u.string_value->string) == 0) ?
+                            MAS_TRUE : MAS_FALSE;
+                        mas_release_string(l_value.u.string_value);
+                        mas_release_string(r_value.u.string_value);  
+                        break;
+                    }
+                    case MAS_NULL_VALUE: {
+                        value.u.boolean_value = MAS_FALSE;
+                        mas_release_string(l_value.u.string_value);
+                        break;
+                    }
+                    default: {
+                        mas_runtime_error(expr->line_number,
+                                BAD_OPERAND_TYPE_ERR,
+                                STRING_MESSAGE_ARGUMENT, "operator", "!=",
+                                MESSAGE_ARGUMENT_END);
+                    }
+                }
+                
             } else if (l_value.type == MAS_NULL_VALUE && r_value.type == MAS_NULL_VALUE) {
                 value.u.boolean_value = MAS_TRUE;
+            } else if (l_value.type == MAS_BOOLEAN_VALUE && r_value.type == MAS_BOOLEAN_VALUE) {
+                value.u.boolean_value = (l_value.u.boolean_value == r_value.u.boolean_value);
             } else {
                 mas_runtime_error(expr->line_number,
                         BAD_OPERAND_TYPE_ERR,
@@ -601,13 +627,36 @@ MAS_Value mas_eval_equality_expression(MAS_Interpreter* interp,
                 value.u.boolean_value = (l_value.u.double_value != r_value.u.int_value) ? MAS_TRUE : MAS_FALSE;
             } else if (l_value.type == MAS_DOUBLE_VALUE && r_value.type == MAS_DOUBLE_VALUE) {
                 value.u.boolean_value = (l_value.u.double_value != r_value.u.double_value) ? MAS_TRUE : MAS_FALSE;                
-            } else if (l_value.type == MAS_STRING_VALUE && r_value.type == MAS_STRING_VALUE) {
-                value.u.boolean_value = (strcmp(l_value.u.string_value->string, r_value.u.string_value->string) != 0) ?
-                    MAS_TRUE : MAS_FALSE;
-                mas_release_string(l_value.u.string_value);
-                mas_release_string(r_value.u.string_value);  
+//            } else if (l_value.type == MAS_STRING_VALUE && r_value.type == MAS_STRING_VALUE) {
+//                value.u.boolean_value = (strcmp(l_value.u.string_value->string, r_value.u.string_value->string) != 0) ?
+//                    MAS_TRUE : MAS_FALSE;
+//                mas_release_string(l_value.u.string_value);
+//                mas_release_string(r_value.u.string_value);
+            } else if (l_value.type == MAS_STRING_VALUE) {
+                switch (r_value.type) {
+                    case MAS_STRING_VALUE: {
+                        value.u.boolean_value = (strcmp(l_value.u.string_value->string, r_value.u.string_value->string) != 0) ?
+                            MAS_TRUE : MAS_FALSE;
+                        mas_release_string(l_value.u.string_value);
+                        mas_release_string(r_value.u.string_value);
+                        break;
+                    }
+                    case MAS_NULL_VALUE: {
+                        value.u.boolean_value = MAS_TRUE;
+                        mas_release_string(l_value.u.string_value);
+                        break;
+                    }
+                    default: {
+                        mas_runtime_error(expr->line_number,
+                                BAD_OPERAND_TYPE_ERR,
+                                STRING_MESSAGE_ARGUMENT, "operator", "!=",
+                                MESSAGE_ARGUMENT_END);
+                    }
+                }
             } else if (l_value.type == MAS_NULL_VALUE && r_value.type == MAS_NULL_VALUE) {
                 value.u.boolean_value = MAS_FALSE;
+            } else if (l_value.type == MAS_BOOLEAN_VALUE && r_value.type == MAS_BOOLEAN_VALUE) {
+                value.u.boolean_value = (l_value.u.boolean_value != r_value.u.boolean_value);
             } else {
                 mas_runtime_error(expr->line_number,
                         BAD_OPERAND_TYPE_ERR,
@@ -672,18 +721,18 @@ MAS_Value mas_eval_assign_expression(MAS_Interpreter* interp,
         if (val) {
             MAS_Value p_value = val->value;
             val->value = r_value;
-            release_if_string(&p_value);           
+            release_if_string(&p_value);                           
         } else {
             if (env) {
                 MAS_add_local_variable(env, identifier, &r_value);
             } else {
                 MAS_add_global_variable(interp, identifier, &r_value);
             }
-            if (r_value.type == MAS_STRING_VALUE) {
-//                printf("invoke refer string in assign expression\n");
-                mas_refer_string(r_value.u.string_value);
-            }            
         }
+        
+        if (r_value.type == MAS_STRING_VALUE) { // refer string
+            mas_refer_string(r_value.u.string_value);
+        }                  
     }        
     return r_value;
 }
