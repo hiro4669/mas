@@ -91,6 +91,12 @@ int yylex() {
 //    fprintf(stderr, "yylex\n");
 retry:
     switch(c = read()) {
+        case '#': {
+            while ((c = read()) != '\n');
+            mas_get_localinfo()->line_number++;
+            goto retry;
+                
+        }
         case ' ':
         case '\t': { // skip space
             goto retry;
