@@ -13,7 +13,8 @@ int main(void) {
 //    yyin = fopen("tests/yacctest.ma", "r");
 //    yyin = fopen("tests/rtest.ma", "r");
 //    yyin = fopen("tests/expr.ma", "r");    
-    yyin = fopen("tests/functest.ma", "r");    
+//    yyin = fopen("tests/functest.ma", "r");    
+    yyin = fopen("tests/v2test.ma", "r");    
     if (yyin == NULL) {
         fprintf(stderr, "cannot open file\n");
     }
@@ -81,6 +82,14 @@ int main(void) {
                 printf("RP: )\n");
                 break;
             }
+            case LB: {
+                printf("LB: [\n");
+                break;
+            }
+            case RB: {
+                printf("RB: ]\n");
+                break;
+            }
             case LC: {
                 printf("LC: {\n");
                 break;
@@ -95,6 +104,18 @@ int main(void) {
             }
             case COMMA: {
                 printf("COMMA: comma\n");
+                break;
+            }
+            case INCREMENT: {
+                printf("INCREMENT: ++\n");
+                break;
+            }
+            case DECREMENT: {
+                printf("DECREMENT: --\n");
+                break;
+            }
+            case DOT: {
+                printf("DOT: .\n");
                 break;
             }
             case LOGICAL_AND: {

@@ -41,8 +41,13 @@ void addchar(char c) {
 <INITIAL>")"           return RP;
 <INITIAL>"{"           return LC;
 <INITIAL>"}"           return RC;
+<INITIAL>"["           return LB;
+<INITIAL>"]"           return RB;
+<INITIAL>"."           return DOT;
 <INITIAL>";"           return SEMICOLON;
 <INITIAL>","           return COMMA;
+<INITIAL>"++"          return INCREMENT;
+<INITIAL>"--"          return DECREMENT;
 <INITIAL>"&&"          return LOGICAL_AND;
 <INITIAL>"||"          return LOGICAL_OR;
 <INITIAL>"="           return ASSIGN;

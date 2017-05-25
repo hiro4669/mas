@@ -53,6 +53,11 @@
 %token MUL
 %token DIV
 %token MOD
+%token LB
+%token RB
+%token INCREMENT
+%token DECREMENT
+%token DOT
 
 %token <identifier>   IDENTIFIER
 %token <expression>   INT_LITERAL
