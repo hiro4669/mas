@@ -252,15 +252,41 @@ retry:
                 return LT;
             }
         }
-        case '+': {
+        case '.': {
             addtext(c);
-            return ADD;
+            return DOT;
+        }
+        case '[': {
+            addtext(c);
+            return LB;
+        }
+        case ']': {
+            addtext(c);
+            return RB;
+        }
+        case '+': {            
+            addtext(c);
+            c = read();
+            if (c  == '+') {
+                addtext(c);
+                return INCREMENT;
+            } else {
+                pushback(c);
+                return ADD;
+            }
         }
         case '-': {
             addtext(c);
-            return SUB;
+            c = read();
+            if (c == '-') {
+                addtext(c);
+                return DECREMENT;
+            } else {
+                pushback(c);
+                return SUB;
+            }
         }
-        case '*': {
+        case '*': {            
             addtext(c);
             return MUL;
         }
