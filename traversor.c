@@ -65,6 +65,7 @@ static void traverse_expr_children(Expression* expr, Visitor* visitor) {
             break;
         }
         case ASSIGN_EXPRESSION: {
+            traverse_expr(expr->u.assign_expression.variable, visitor);
             traverse_expr(expr->u.assign_expression.operand, visitor);
             break;
         }

@@ -265,13 +265,7 @@ static void leave_logical_or_expression(Expression* expr) {
 
 static void enter_assignment_expression(Expression* expr) {
     print_depth();
-    
-    if (expr->u.assign_expression.variable->type == IDENTIFIER_EXPRESSION) {
-        fprintf(stderr, "enter assignment expr : %s\n", expr->u.assign_expression.variable->u.identifier);
-    } else {
-        fprintf(stderr, "enter assignment expr : NOT IDENTIFIER, fix it soon\n");
-    }
-//    fprintf(stderr, "enter assignment expr : %s\n", expr->u.assign_expression.variable);
+    fprintf(stderr, "enter assignment expr : \n");
     increment();
 }
 static void leave_assignment_expression(Expression* expr) {
