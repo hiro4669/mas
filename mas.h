@@ -116,6 +116,26 @@ typedef struct {
     ArgumentList *argument;
 } FunctionCallExpression;
 
+typedef struct ExpressionList_tag {
+    Expression                *expression;
+    struct ExpressionList_tag *next;
+} ExpressionList;
+
+typedef struct {
+    Expression  *array;
+    Expression  *index;
+} IndexExpression;
+
+typedef struct {
+    Expression *expression;
+    char       *identifier;
+    ArgumentList *argument;
+} MethodCallExpression;
+
+typedef struct {
+    Expression *operand;    
+} IncDecExpression;
+
 struct Expression_tag {
     ExpressionType type;    
     int line_number;
@@ -129,6 +149,10 @@ struct Expression_tag {
         BinaryExpression       binary_expression; 
         Expression             *minus_expression;
         FunctionCallExpression function_call_expression;
+        IndexExpression        index_expression;
+        MethodCallExpression   method_call_expression;
+        IncDecExpression       inc_dec_expression;
+        ExpressionList         *array_literal;        
     } u;    
 };
 
@@ -269,13 +293,6 @@ typedef struct LocalEnvironment_tag {
     Variable* variable;
     GlobalVariableRef* global_variable;
 } LocalEnvironment;
-
-
-typedef struct ExpressionList_tag {
-    Expression                *expression;
-    struct ExpressionList_tag *next;
-} ExpressionList;
-
 
 #define LINE_BUF_SIZE (1024)
 
