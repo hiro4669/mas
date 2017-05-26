@@ -87,13 +87,13 @@
 
 %%
 translation_unit 
-                        : definision_or_statement { printf("accept\n"); }
-			| translation_unit definision_or_statement { printf("double accept\n"); }
+                        : definision_or_statement { /*printf("accept\n");*/ }
+			| translation_unit definision_or_statement { /*printf("double accept\n");*/ }
 			;
 
 definision_or_statement 
                         : statement {
-                            printf("definision or statement\n"); 
+                            //printf("definision or statement\n"); 
                             MAS_Interpreter* interp;
                             StatementList* stmt_list = NULL;
                             interp = mas_get_interpreter();

@@ -1,12 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "mas.h"
 #include "./memory/MEM.h"
 
+typedef enum {
+    PARSE = 1,
+    AST,
+    RUN,
+    EXEC_TYPE_PLUS_1            
+} Exec_Type;
+
 
 int main(int argc, char* argv[]) {
     
+    Exec_Type eType = RUN;
+    int i;
     char* fname;
     MAS_Interpreter* interp;
     FILE* fp;
@@ -15,30 +25,48 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "specify soruce file\n");
         exit(1);
     }
-    switch (argc) {
-        case 2:
-            fname = argv[1];
-            break;
-        case 3:
-            mode = 1;
-            fname = argv[2];
-            break;
-        default: {
+    /*
+     * -p: parse
+     * -a: parse, create ast and traverse
+     */
+    for (i = 1; i < (argc-1); ++i) {
+        if (!strcmp(argv[i], "-p")) {
+            eType = PARSE;
+        } else if (!strcmp(argv[i], "-a")) {
+            eType = AST;
+        } else {
             fprintf(stderr, "option error\n");
             exit(1);
         }
     }
     
-    
+    fname = argv[argc-1];
+           
+    printf("type = %d\n", eType);
+    printf("name = %s\n", fname);
+        
     fp = fopen(fname, "r");
     interp = mas_create_interpreter();
-    MAS_compile(interp, fp);    
-    mas_traverse_test(); // just test
-    
-    if (mode) exit(1);
-    //    mas_execute_statementlist(interp, NULL, interp->stmt_list);
-    //    printf("exec addr = %p\n", interp->execution_storage);
-    MAS_interpret(interp);
+            
+    switch (eType) {
+        case PARSE: {
+            MAS_compile(interp, fp);
+            break;
+        }
+        case AST: {
+            MAS_compile(interp, fp);
+            mas_traverse_test(); // just test
+            break;
+        }
+        case RUN: {
+            MAS_compile(interp, fp);
+            MAS_interpret(interp);
+            break;
+        }
+        default: {
+            break;
+        }
+    }   
     mas_delete_interpreter();
     MEM_dump_memory();
     
