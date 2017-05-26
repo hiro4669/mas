@@ -85,7 +85,8 @@ Expression* mas_create_minus_expression(Expression* operand) {
     return expr;
 }
 
-Expression* mas_create_assignment_expression(char* identifier, Expression* operand) {
+//Expression* mas_create_assignment_expression(char* identifier, Expression* operand) {
+Expression* mas_create_assignment_expression(Expression* identifier, Expression* operand) {    
     Expression* expr = mas_alloc_expression(ASSIGN_EXPRESSION);
     expr->u.assign_expression.variable = identifier;
     expr->u.assign_expression.operand = operand;

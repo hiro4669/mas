@@ -10,6 +10,7 @@
      */
     char *identifier;
     Expression*     expression;
+    ExpressionList* expression_list;
     ArgumentList*   argument_list;
     Statement*      statement;
     IdentifierList* identifier_list;
@@ -69,9 +70,11 @@
 		equality_expression relational_expression
 		additive_expression multiplicative_expression
 		unary_expression primary_expression postfix_expression
-                expression_opt
+                expression_opt array_literal
 
 %type <argument_list> argument_list
+
+%type <expression_list> expression_list
 
 %type <statement> statement global_statement break_statement 
                 continue_statement return_statement
@@ -244,13 +247,13 @@ postfix_expression      : primary_expression
                         | postfix_expression DECREMENT
                         ;
 
-array_literal           : LC expression_list RC
-                        | LC expression_list COMMA RC
+array_literal           : LC expression_list RC       {$$ = NULL;}
+                        | LC expression_list COMMA RC {$$ = NULL;}
                         ;
 
-expression_list         : 
-                        | expression
-                        | expression_list COMMA expression
+expression_list         : {$$ = NULL;} 
+                        | expression {$$ = NULL;}
+                        | expression_list COMMA expression {$$ = NULL;}
                         ;
 
 
@@ -265,6 +268,7 @@ primary_expression
 			| TRUE_T           { $$ = mas_create_boolean_expression(MAS_TRUE); }  //OK // exec ok
 			| FALSE_T          { $$ = mas_create_boolean_expression(MAS_FALSE); } //OK // exec ok
 			| NULL_T           { $$ = mas_create_null_expression(); }  //OK  // exec ok
+                        | array_literal
 			;
 
 while_statement

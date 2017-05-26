@@ -709,7 +709,18 @@ MAS_Value mas_eval_logical_and_or_expression(MAS_Interpreter* interp,
 MAS_Value mas_eval_assign_expression(MAS_Interpreter* interp,
         LocalEnvironment* env, Expression* expr) {
     MAS_Value value;
-    char* identifier = expr->u.assign_expression.variable;
+    
+    char* identifier = NULL;
+    if (expr->u.assign_expression.variable->type == IDENTIFIER_EXPRESSION) {
+        identifier = expr->u.assign_expression.variable->u.identifier;
+    } else {
+        fprintf(stderr, "cannot assign values to non-identifier");
+        exit(1);
+    }
+    
+    
+//    char* identifier = expr->u.assign_expression.variable;
+    
     MAS_Value r_value = mas_eval_expression(interp, env, expr->u.assign_expression.operand);
     Variable* val = MAS_search_local_variable(env, identifier);
     if (val) {
