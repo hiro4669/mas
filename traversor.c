@@ -60,6 +60,20 @@ static void traverse_expr_children(Expression* expr, Visitor* visitor) {
 
             break;
         }
+        case METHOD_CALL_EXPRESSION: {
+            print_depth();
+            fprintf(stderr, "; target\n");
+            traverse_expr(expr->u.method_call_expression.expression, visitor);
+            print_depth();
+            fprintf(stderr, "; method = %s\n", expr->u.method_call_expression.identifier);
+            print_depth();
+            fprintf(stderr, "; args\n");
+            ArgumentList* arg_list = NULL;
+            for (arg_list = expr->u.method_call_expression.argument; arg_list; arg_list = arg_list->next) {
+                traverse_expr(arg_list->expression, visitor);                
+            }
+            break;
+        }
         case MINUS_EXPRESSION: {
             traverse_expr(expr->u.minus_expression, visitor);
             break;
@@ -67,6 +81,20 @@ static void traverse_expr_children(Expression* expr, Visitor* visitor) {
         case ASSIGN_EXPRESSION: {
             traverse_expr(expr->u.assign_expression.variable, visitor);
             traverse_expr(expr->u.assign_expression.operand, visitor);
+            break;
+        }
+        case INDEX_EXPRESSION: {
+            print_depth();
+            fprintf(stderr, "; array\n");
+            traverse_expr(expr->u.index_expression.array, visitor);
+            print_depth();
+            fprintf(stderr, "; index\n");
+            traverse_expr(expr->u.index_expression.index, visitor);
+            break;
+        }
+        case INCREMENT_EXPRESSION:
+        case DECREMENT_EXPRESSION: {
+            traverse_expr(expr->u.inc_dec_expression.operand, visitor);
             break;
         }
         default: {

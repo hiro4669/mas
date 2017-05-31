@@ -14,7 +14,7 @@ static void decrement() {
     depth--;
 }
 
-static void print_depth() {
+void print_depth() {
     int i = 0;
     for(i = 0; i < depth; i++) {
         fprintf(stderr, "    ");
@@ -274,6 +274,50 @@ static void leave_assignment_expression(Expression* expr) {
     fprintf(stderr, "leave assignment expr\n");  
 }
 
+static void enter_index_expression(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter index expr : \n");
+    increment();
+}
+static void leave_index_expression(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave index expr\n");  
+}
+
+static void enter_increment_expression(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter increment expr : \n");
+    increment();
+}
+static void leave_increment_expression(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave increment expr : \n");
+}
+
+static void enter_decrement_expression(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter decrement expr : \n");
+    increment();
+}
+static void leave_decrement_expression(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave decrement expr : \n");
+}
+
+static void enter_methodcall_expression(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter methodcall expr : \n");
+    increment();
+}
+static void leave_methodcall_expression(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave methodcall expr : \n");
+}
+
 /*  Statement */
 
 static void enter_expression_statement(Statement* stmt) {
@@ -432,6 +476,10 @@ Visitor* create_visitor() {
     enter_list[LOGICAL_AND_EXPRESSION]   = enter_logical_and_expression;
     enter_list[LOGICAL_OR_EXPRESSION]    = enter_logical_or_expression;    
     enter_list[ASSIGN_EXPRESSION]        = enter_assignment_expression;
+    enter_list[INDEX_EXPRESSION]         = enter_index_expression;
+    enter_list[INCREMENT_EXPRESSION]     = enter_increment_expression;
+    enter_list[DECREMENT_EXPRESSION]     = enter_decrement_expression;
+    enter_list[METHOD_CALL_EXPRESSION]   = enter_methodcall_expression;
         
     leave_list[MUL_EXPRESSION]           = leave_mulexpr;
     leave_list[DIV_EXPRESSION]           = leave_divexpr;
@@ -455,7 +503,10 @@ Visitor* create_visitor() {
     leave_list[LOGICAL_AND_EXPRESSION]   = leave_logical_and_expression;
     leave_list[LOGICAL_OR_EXPRESSION]    = leave_logical_or_expression;
     leave_list[ASSIGN_EXPRESSION]        = leave_assignment_expression;
-    
+    leave_list[INDEX_EXPRESSION]         = leave_index_expression;
+    leave_list[INCREMENT_EXPRESSION]     = leave_increment_expression;
+    leave_list[DECREMENT_EXPRESSION]     = leave_decrement_expression;
+    leave_list[METHOD_CALL_EXPRESSION]   = leave_methodcall_expression;
     
     /* Statement */    
     enter_stmt_list[EXPRESSION_STATEMENT] = enter_expression_statement;

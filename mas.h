@@ -405,6 +405,7 @@ void mas_add_previous(int letter);
 
 /* visitor.c*/
 Visitor* create_visitor();
+void print_depth();
 
 /* traversor.c */
 void traverse_expr(Expression* expr, Visitor* visitor);
