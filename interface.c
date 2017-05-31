@@ -37,6 +37,9 @@ MAS_Interpreter* mas_create_interpreter() {
     mas_interpreter->stmt = NULL;
     mas_interpreter->stmt_list = NULL;
     mas_interpreter->func_list = NULL;
+    mas_interpreter->stack.stack = (MAS_Value*)MEM_malloc(sizeof(MAS_Value) * STACK_ALLOC_SIZE);
+    mas_interpreter->stack.stack_alloc_size = STACK_ALLOC_SIZE;
+    mas_interpreter->stack.stack_pointer = 0;
 
     add_native_functions();
     return mas_interpreter;
@@ -56,6 +59,7 @@ void mas_delete_interpreter() {
     if (mas_interpreter->execution_storage) {
         MEM_dispose(mas_interpreter->execution_storage);
     }    
+    MEM_free(mas_interpreter->stack.stack);
     MEM_dispose(mas_interpreter->ast_storage);
 
 }

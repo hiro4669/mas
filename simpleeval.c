@@ -719,7 +719,7 @@ MAS_Value mas_eval_assign_expression(MAS_Interpreter* interp,
     }
     
     
-//    char* identifier = expr->u.assign_expression.variable;
+//    char* identifier = expr->u.assign_expression.variable; // ver.1
     
     MAS_Value r_value = mas_eval_expression(interp, env, expr->u.assign_expression.operand);
     Variable* val = MAS_search_local_variable(env, identifier);

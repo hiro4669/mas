@@ -12,7 +12,6 @@
 #include "MAS_dev.h"
 #include "./memory/MEM.h"
 
-
 typedef struct LocalInfo_tag LocalInfo;
 typedef struct Expression_tag Expression;
 typedef struct Visitor_tag Visitor;
@@ -295,6 +294,14 @@ typedef struct LocalEnvironment_tag {
 } LocalEnvironment;
 
 #define LINE_BUF_SIZE (1024)
+#define STACK_ALLOC_SIZE (3)
+
+
+typedef struct {
+    int stack_alloc_size;
+    int stack_pointer;
+    MAS_Value *stack;    
+} Stack;
 
 /* Definition of Interpreter*/
 
@@ -307,6 +314,7 @@ struct MAS_Interpreter_tag {
     Statement  *stmt;       // temporary
     StatementList *stmt_list;
     FunctionDefinition *func_list;
+    Stack stack;    
 };
 
 /* scanner.c */
@@ -419,6 +427,13 @@ MAS_String* mas_literal_to_mas_string(MAS_Interpreter* interp, char* str);
 void mas_refer_string(MAS_String* str);
 void mas_release_string(MAS_String* str);
 MAS_String* mas_create_mas_string(MAS_Interpreter* interp, char* str);
+
+
+/* for ver2 */
+/* eval.c */
+void push_value(MAS_Interpreter *interp, MAS_Value *value);
+MAS_Value pop_value(MAS_Interpreter* interp);
+MAS_Value* peek_stack(MAS_Interpreter* interp, int index);
 
 
 #endif /* MAS_H */
