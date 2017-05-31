@@ -67,7 +67,8 @@ void mas_show_all_global_variable(MAS_Interpreter* interp) {
                 break;
             }
             case MAS_STRING_VALUE: {
-                printf("val(string)  = %s(%p)\n", pos->name, pos->value.u.string_value->string);
+                printf("val(string)  = %s(%p)\n", pos->name, pos->value.u.object_value->u.string.string);
+//                printf("val(string)  = %s(%p)\n", pos->name, pos->value.u.string_value->string);                
                 break;
             }
             case MAS_NATIVE_POINTER_VALUE: {

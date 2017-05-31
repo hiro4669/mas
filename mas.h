@@ -298,6 +298,30 @@ typedef struct LocalEnvironment_tag {
     GlobalVariableRef* global_variable;
 } LocalEnvironment;
 
+struct MAS_Array_tag {
+    int       size;
+    int       alloc_size;
+    MAS_Value *array;
+};
+
+typedef enum {
+    ARRAY_OBJECT = 1,
+    STRING_OBJECT,
+    OBJECT_TYPE_COUNT_PLUS_1
+} ObjectType;
+
+struct MAS_Object_tag {
+    ObjectType type;
+    unsigned int marked:1;
+    union {
+        MAS_String string;
+        MAS_Array  array;
+    }u;
+    struct MAS_Object_tag *next;
+    struct MAS_Object_tag *prev;
+};
+
+
 #define LINE_BUF_SIZE (1024)
 #define STACK_ALLOC_SIZE (3)
 
