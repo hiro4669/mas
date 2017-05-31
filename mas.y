@@ -69,8 +69,8 @@
 		logical_and_expression logical_or_expression
 		equality_expression relational_expression
 		additive_expression multiplicative_expression
-		unary_expression primary_expression postfix_expression
-                expression_opt array_literal
+		unary_expression primary_expression 
+                expression_opt array_literal postfix_expression
 
 %type <argument_list> argument_list
 
@@ -240,11 +240,11 @@ argument_list
 			;
 
 postfix_expression      : primary_expression
-                        | postfix_expression LB expression RB
-                        | postfix_expression DOT IDENTIFIER LP argument_list RP
-                        | postfix_expression DOT IDENTIFIER LP               RP
-                        | postfix_expression INCREMENT
-                        | postfix_expression DECREMENT
+                        | postfix_expression LB expression RB {$$ = mas_create_index_expression($1, $3);}
+                        | postfix_expression DOT IDENTIFIER LP argument_list RP {$$ = mas_create_methodcall_expression($1, $3, $5);}
+                        | postfix_expression DOT IDENTIFIER LP               RP {$$ = mas_create_methodcall_expression($1, $3, NULL);}
+                        | postfix_expression INCREMENT {$$ = mas_create_incdec_expression($1, INCREMENT_EXPRESSION);}
+                        | postfix_expression DECREMENT {$$ = mas_create_incdec_expression($1, DECREMENT_EXPRESSION);}
                         ;
 
 array_literal           : LC expression_list RC       {$$ = NULL;}

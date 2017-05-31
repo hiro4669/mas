@@ -84,8 +84,13 @@ typedef enum {
     LOGICAL_AND_EXPRESSION,
     LOGICAL_OR_EXPRESSION,
     MINUS_EXPRESSION,
-    FUNCTION_CALL_EXPRESSION,
+    FUNCTION_CALL_EXPRESSION,                        
     NULL_EXPRESSION,
+    METHOD_CALL_EXPRESSION,
+    ARRAY_EXPRESSION,
+    INDEX_EXPRESSION,
+    INCREMENT_EXPRESSION,
+    DECREMENT_EXPRESSION,
     EXPRESSION_TYPE_COUNT_PLUS_1
 } ExpressionType;
 
@@ -357,6 +362,9 @@ Expression* mas_create_functioncall_expression(char* identifier, ArgumentList* a
 Expression* mas_create_minus_expression(Expression* operand);
 //Expression* mas_create_assignment_expression(char* identifier, Expression* operand);
 Expression* mas_create_assignment_expression(Expression* identifier, Expression* operand);
+Expression* mas_create_index_expression(Expression* array, Expression* index);
+Expression* mas_create_incdec_expression(Expression* operand, ExpressionType type);
+Expression* mas_create_methodcall_expression(Expression* expression, char* identifier, ArgumentList* argument);
 
 ArgumentList* mas_create_argument_list(Expression* expr);
 ArgumentList* mas_chain_argument(ArgumentList* argument, Expression* expr);

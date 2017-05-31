@@ -93,6 +93,27 @@ Expression* mas_create_assignment_expression(Expression* identifier, Expression*
     return expr;
 }
 
+Expression* mas_create_index_expression(Expression* array, Expression* index) {
+    Expression* expr = mas_alloc_expression(INDEX_EXPRESSION);
+    expr->u.index_expression.array = array;
+    expr->u.index_expression.index = index;
+    return expr;
+}
+
+Expression* mas_create_incdec_expression(Expression* operand, ExpressionType type) {
+    Expression* expr = mas_alloc_expression(type);
+    expr->u.inc_dec_expression.operand = operand;
+    return expr;
+}
+
+Expression* mas_create_methodcall_expression(Expression* expression, char* identifier, ArgumentList* argument) {
+    Expression* expr = mas_alloc_expression(METHOD_CALL_EXPRESSION);
+    expr->u.method_call_expression.expression = expression;
+    expr->u.method_call_expression.identifier = identifier;
+    expr->u.method_call_expression.argument   = argument;
+    return expr;
+}
+
 ArgumentList* mas_create_argument_list(Expression* expr) {
     ArgumentList* arglist = ast_malloc(sizeof(ArgumentList));
     arglist->expression = expr;
