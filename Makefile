@@ -7,11 +7,12 @@ MAKE = /usr/bin/make
 #OBJS = y.tab.o scanner.o lextest.o keyword.o
 #OBJS = y.tab.o scanner.o keyword.o yacctest.o
 COMMON = y.tab.o keyword.o util.o interface.o ast.o string.o visitor.o traversor.o \
-         error.o error_message.o native.o string_pool.o
+         error.o error_message.o native.o 
 #RUN = simpleeval.o simpleexec.o
 RUN = eval.o exec.o
+HEAP = string_pool.o heap.o
 MEMORY = ./memory/memory.o ./memory/storage.o
-OBJS = $(COMMON) $(MEMORY) $(RUN) scanner.o
+OBJS = $(COMMON) $(MEMORY) $(RUN) $(HEAP) scanner.o
 YTEST = yacctest.o
 EXEC = main.o
 LTEST = lextest.o

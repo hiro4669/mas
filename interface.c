@@ -40,6 +40,9 @@ MAS_Interpreter* mas_create_interpreter() {
     mas_interpreter->stack.stack = (MAS_Value*)MEM_malloc(sizeof(MAS_Value) * STACK_ALLOC_SIZE);
     mas_interpreter->stack.stack_alloc_size = STACK_ALLOC_SIZE;
     mas_interpreter->stack.stack_pointer = 0;
+    mas_interpreter->heap.current_heap_size = 0;
+    mas_interpreter->heap.current_threshold = 30; // should be changed
+    mas_interpreter->heap.header = NULL;
 
     add_native_functions();
     return mas_interpreter;

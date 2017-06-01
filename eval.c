@@ -29,3 +29,30 @@ MAS_Value* peek_stack(MAS_Interpreter* interp, int index) {
     }
     return &interp->stack.stack[pos];
 }
+
+
+static void mas_eval_string_expression(MAS_Interpreter* interp, LocalEnvironment* env, 
+        Expression* expr) {
+    MAS_Value val;
+    val.type = MAS_STRING_VALUE;
+    val.u.object_value = mas_literal_to_mas_ostring(interp, expr->u.string_value);
+    push_value(interp, &val);
+    
+}
+
+void mas_eval_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    
+
+    switch (expr->type) {
+        case STRING_EXPRESSION: {
+            fprintf(stderr, "string expr\n");
+            mas_eval_string_expression(interp, env, expr);
+            break;
+        }
+        default: {
+            fprintf(stderr, "undefined expression type in mas_eval_expression %d\n", expr->type);
+            exit(1);
+        }
+    }      
+}

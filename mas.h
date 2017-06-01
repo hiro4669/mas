@@ -332,6 +332,12 @@ typedef struct {
     MAS_Value *stack;    
 } Stack;
 
+typedef struct {
+    int current_heap_size;
+    int current_threshold;
+    MAS_Object* header;
+} Heap;
+
 /* Definition of Interpreter*/
 
 struct MAS_Interpreter_tag {
@@ -344,6 +350,7 @@ struct MAS_Interpreter_tag {
     StatementList *stmt_list;
     FunctionDefinition *func_list;
     Stack stack;    
+    Heap  heap;
 };
 
 /* scanner.c */
@@ -452,8 +459,8 @@ StatementResult mas_execute_statementlist(MAS_Interpreter* interp,
         LocalEnvironment* env, StatementList* stmt_list);
 
 /* simpleeval.c */
-MAS_Value mas_eval_expression(MAS_Interpreter* interp, LocalEnvironment* env, 
-        Expression* expr);
+//MAS_Value mas_eval_expression(MAS_Interpreter* interp, LocalEnvironment* env, 
+//        Expression* expr);
 
 /* string_pool.c */
 MAS_String* mas_literal_to_mas_string(MAS_Interpreter* interp, char* str);
@@ -467,7 +474,15 @@ MAS_String* mas_create_mas_string(MAS_Interpreter* interp, char* str);
 void push_value(MAS_Interpreter *interp, MAS_Value *value);
 MAS_Value pop_value(MAS_Interpreter* interp);
 MAS_Value* peek_stack(MAS_Interpreter* interp, int index);
+void mas_eval_expression(MAS_Interpreter* interp, LocalEnvironment* env, Expression* expr);
 
+/* exec.c */
+StatementResult mas_execute_statementlist(MAS_Interpreter* interp, 
+        LocalEnvironment* env, StatementList* stmt_list);
+
+/* heap.c */
+MAS_Object* mas_literal_to_mas_ostring(MAS_Interpreter* interp, char* str);
+void mas_run_gc(MAS_Interpreter* interp);
 
 #endif /* MAS_H */
 
