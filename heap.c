@@ -37,14 +37,14 @@ static void mas_run_mark(MAS_Interpreter* interp) { // this implementation is te
     
 }
 
-static void mas_delete_object(MAS_Object* obj) {
-    fprintf(stderr, "delete object\n");
+static void mas_delete_object(MAS_Interpreter* interp, MAS_Object* obj) {
     if (obj->type == STRING_OBJECT) {
         if (!obj->u.string.is_literal) {
             MEM_free(obj->u.string.string);            
         } 
     }
     MEM_free(obj);
+    interp->heap.current_heap_size -= sizeof(MAS_Object);
 }
 
 static MAS_Object* mas_unchain(MAS_Interpreter* interp, MAS_Object* target) {
@@ -71,7 +71,7 @@ static void mas_run_sweep(MAS_Interpreter* interp) {
             rm_obj = pos;
             mas_unchain(interp, rm_obj);
             pos = pos->next;            
-            mas_delete_object(rm_obj);            
+            mas_delete_object(interp, rm_obj);            
         } else {
             pos = pos->next;
         }
@@ -82,8 +82,12 @@ static void mas_run_sweep(MAS_Interpreter* interp) {
 }
 
 void mas_run_gc(MAS_Interpreter* interp) {
+    fprintf(stderr, "start gc\n");
     mas_run_mark(interp);
     mas_run_sweep(interp);
+    
+    fprintf(stderr, "after heap size = %d\n", interp->heap.current_heap_size);
+    fprintf(stderr, "sizefo masvalue = %d\n", (int)sizeof(MAS_Object));
 }
 
 
