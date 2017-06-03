@@ -26,6 +26,7 @@ MAS_Object* mas_literal_to_mas_ostring(MAS_Interpreter* interp, char* str) {
 }
 
 static void mas_run_mark(MAS_Interpreter* interp) { // this implementation is temporary
+    /*
     MAS_Object* pos = NULL;
     int i;
     for (i = 0, pos = interp->heap.header; pos; pos = pos->next, ++i) {
@@ -34,6 +35,7 @@ static void mas_run_mark(MAS_Interpreter* interp) { // this implementation is te
             pos->marked = MAS_TRUE;
         }
     }
+    */
     
 }
 
@@ -87,7 +89,7 @@ void mas_run_gc(MAS_Interpreter* interp) {
     mas_run_sweep(interp);
     
     fprintf(stderr, "after heap size = %d\n", interp->heap.current_heap_size);
-    fprintf(stderr, "sizefo masvalue = %d\n", (int)sizeof(MAS_Object));
+//    fprintf(stderr, "sizefo masvalue = %d\n", (int)sizeof(MAS_Object));
 }
 
 

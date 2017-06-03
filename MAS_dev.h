@@ -34,7 +34,8 @@ typedef enum {
     MAS_STRING_VALUE,
     MAS_NATIVE_POINTER_VALUE,
     MAS_NULL_VALUE,
-    MAS_ARRAY_VALUE            
+    MAS_ARRAY_VALUE,
+    MAS_VALUE_TYPE_PLUS_1            
 } MAS_ValueType;
 
 typedef struct {

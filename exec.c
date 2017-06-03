@@ -17,12 +17,12 @@ static void stacktest(MAS_Interpreter* interp) {
     
     
     MAS_Value v;
-    for (int i = 0; i < 0; ++i) {
+    for (int i = 0; i < 4; ++i) {
         v = pop_value(interp);
         fprintf(stderr, "type = %d\n", v.type);
     }
     
-    fprintf(stderr, "type = %d\n", peek_stack(interp, 1)->type);
+    fprintf(stderr, "sp= %d, type = %d\n", interp->stack.stack_pointer, peek_stack(interp, 0)->type);
 }
 
 static StatementResult execute_expression_statement(MAS_Interpreter* interp,
@@ -31,8 +31,6 @@ static StatementResult execute_expression_statement(MAS_Interpreter* interp,
     result.type = NORMAL_STATEMENT_RESULT;
     mas_eval_expression(interp, env, stmt->u.expression_s);
     MAS_Value val = pop_value(interp);
-    fprintf(stderr, "val type = %d\n", val.type);
-    fprintf(stderr, "value    = %s\n", val.u.object_value->u.string.string);
     return result;
 }
 

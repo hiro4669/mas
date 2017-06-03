@@ -144,7 +144,7 @@ MAS_Value mas_nv_print(MAS_Interpreter* interp, int arg_count, MAS_Value* args) 
     }
     switch (args[0].type) {
         case MAS_STRING_VALUE: {
-            printf("%s", args[0].u.string_value->string);
+            printf("%s", args[0].u.object_value->u.string.string);
             break;
         }
         case MAS_INT_VALUE: {
@@ -178,6 +178,7 @@ MAS_Value mas_nv_print(MAS_Interpreter* interp, int arg_count, MAS_Value* args) 
             break;
         }
     }    
+    
     return v;
 }
 
