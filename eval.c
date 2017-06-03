@@ -101,8 +101,23 @@ static void mas_eval_int_expression(MAS_Interpreter* interp,
     MAS_Value v;
     v.type = MAS_INT_VALUE;
     v.u.int_value = expr->u.int_value;
+    push_value(interp, &v);   
+}
+
+static void mas_eval_double_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value v;
+    v.type = MAS_DOUBLE_VALUE;
+    v.u.double_value = expr->u.double_value;
     push_value(interp, &v);
-    
+}
+
+static void mas_eval_boolean_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value v;
+    v.type = MAS_BOOLEAN_VALUE;
+    v.u.boolean_value = expr->u.boolean_value;
+    push_value(interp, &v);
 }
 
 void mas_eval_expression(MAS_Interpreter* interp,
@@ -110,8 +125,16 @@ void mas_eval_expression(MAS_Interpreter* interp,
     
 
     switch (expr->type) {
+        case BOOLEAN_EXPRESSION: {
+            mas_eval_boolean_expression(interp, env, expr);
+            break;
+        }
         case INT_EXPRESSION: {            
             mas_eval_int_expression(interp, env, expr);
+            break;
+        }
+        case DOUBLE_EXPRESSION: {
+            mas_eval_double_expression(interp, env, expr);
             break;
         }
         case STRING_EXPRESSION: {
