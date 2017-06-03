@@ -38,7 +38,7 @@ Expression* mas_create_binary_expression(ExpressionType type,
 }
 
 Expression* mas_create_int_expression(int i) {
-    Expression* iexpr= mas_alloc_expression(INT_EXPRESION);        
+    Expression* iexpr= mas_alloc_expression(INT_EXPRESSION);        
     iexpr->u.int_value = i;
     return iexpr;
 }

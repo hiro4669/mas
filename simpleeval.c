@@ -791,7 +791,7 @@ MAS_Value mas_eval_expression(MAS_Interpreter* interp,
             value = mas_eval_string_expression(interp, env, expr);
             break;
         }
-        case INT_EXPRESION: {
+        case INT_EXPRESSION: {
             value = mas_eval_int_expression(interp, env, expr);
             break;
         }

@@ -44,7 +44,7 @@ static void traverse_expr_children(Expression* expr, Visitor* visitor) {
             }
             break;
         }
-        case INT_EXPRESION:
+        case INT_EXPRESSION:
         case DOUBLE_EXPRESSION: 
         case STRING_EXPRESSION:
         case IDENTIFIER_EXPRESSION:

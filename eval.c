@@ -93,10 +93,15 @@ static void mas_eval_function_call_expression(MAS_Interpreter* interp,
             exit(1);
             break;
         }
-    }
-            
-            
-    
+    }                         
+}
+
+static void mas_eval_int_expression(MAS_Interpreter* interp, 
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value v;
+    v.type = MAS_INT_VALUE;
+    v.u.int_value = expr->u.int_value;
+    push_value(interp, &v);
     
 }
 
@@ -105,6 +110,10 @@ void mas_eval_expression(MAS_Interpreter* interp,
     
 
     switch (expr->type) {
+        case INT_EXPRESSION: {            
+            mas_eval_int_expression(interp, env, expr);
+            break;
+        }
         case STRING_EXPRESSION: {
             mas_eval_string_expression(interp, env, expr);
             break;

@@ -459,7 +459,7 @@ Visitor* create_visitor() {
     enter_list[MOD_EXPRESSION]           = enter_modexpr;
     enter_list[ADD_EXPRESSION]           = enter_addexpr;
     enter_list[SUB_EXPRESSION]           = enter_subepr;
-    enter_list[INT_EXPRESION]            = enter_intexpr;
+    enter_list[INT_EXPRESSION]            = enter_intexpr;
     enter_list[DOUBLE_EXPRESSION]        = enter_doubleexpr;
     enter_list[STRING_EXPRESSION]        = enter_stringexpr;
     enter_list[NULL_EXPRESSION]          = enter_nullexpr;
@@ -486,7 +486,7 @@ Visitor* create_visitor() {
     leave_list[MOD_EXPRESSION]           = leave_modexpr;
     leave_list[ADD_EXPRESSION]           = leave_addexpr;
     leave_list[SUB_EXPRESSION]           = leave_subexpr;
-    leave_list[INT_EXPRESION]            = leave_intexpr;
+    leave_list[INT_EXPRESSION]            = leave_intexpr;
     leave_list[DOUBLE_EXPRESSION]        = leave_doubleexpr;
     leave_list[STRING_EXPRESSION]        = leave_stringexpr;
     leave_list[NULL_EXPRESSION]          = leave_nullexpr;

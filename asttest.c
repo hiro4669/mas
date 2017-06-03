@@ -18,7 +18,7 @@ static void show(Expression* expr) {
             show(expr->u.binary_expression.left);
             show(expr->u.binary_expression.right);
             break;
-        case INT_EXPRESION:
+        case INT_EXPRESSION:
             fprintf(stderr, "int:%d\n", expr->u.int_value);
             break;
         case DOUBLE_EXPRESSION:
