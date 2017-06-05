@@ -180,6 +180,27 @@ static void mas_eval_assignment_expression(MAS_Interpreter* interp,
     mas_show_all_global_variable(interp);    
 }
 
+static void mas_eval_identifier_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value val;
+    char* identifier = expr->u.identifier;
+    Variable* v = MAS_search_local_variable(env, identifier);
+    if (v) {
+        push_value(interp, &v->value);
+    } else {
+        v = search_global_variable_from_env(interp, env, identifier);
+        if (v == NULL) {
+            mas_runtime_error(expr->line_number,
+                        VARIABLE_NOT_FOUND_ERR,
+                        STRING_MESSAGE_ARGUMENT, "name", identifier,
+                        MESSAGE_ARGUMENT_END);
+        }
+        push_value(interp, &v->value);
+    }    
+}
+
+
+
 void mas_eval_expression(MAS_Interpreter* interp,
         LocalEnvironment* env, Expression* expr) {
     
@@ -199,6 +220,10 @@ void mas_eval_expression(MAS_Interpreter* interp,
         }
         case STRING_EXPRESSION: {
             mas_eval_string_expression(interp, env, expr);
+            break;
+        }
+        case IDENTIFIER_EXPRESSION: {
+            mas_eval_identifier_expression(interp, env, expr);
             break;
         }
         case ASSIGN_EXPRESSION: {

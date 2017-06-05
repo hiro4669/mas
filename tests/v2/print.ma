@@ -1,1 +1,3 @@
-a = "abc";
+a = "abc\n";
+a;
+print(a);

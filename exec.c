@@ -31,6 +31,7 @@ static StatementResult execute_expression_statement(MAS_Interpreter* interp,
     result.type = NORMAL_STATEMENT_RESULT;
     mas_eval_expression(interp, env, stmt->u.expression_s);
     MAS_Value val = pop_value(interp);
+    result.u.return_value = val;
     return result;
 }
 
