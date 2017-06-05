@@ -25,6 +25,15 @@ MAS_Object* mas_literal_to_mas_ostring(MAS_Interpreter* interp, char* str) {
     return s_obj;
 }
 
+MAS_Object* mas_create_array_literal(MAS_Interpreter* interp, int size) {
+    MAS_Object* obj;
+    obj = alloc_mas_object(interp, ARRAY_OBJECT);
+    obj->u.array.alloc_size = size;
+    obj->u.array.size = size;
+    obj->u.array.array = (MAS_Value*)MEM_malloc(sizeof(MAS_Value) * size);
+    return obj;
+}
+
 static void mas_run_mark(MAS_Interpreter* interp) { // this implementation is temporary
     
     Variable* pos;
@@ -60,7 +69,10 @@ static void mas_delete_object(MAS_Interpreter* interp, MAS_Object* obj) {
         if (!obj->u.string.is_literal) {
             MEM_free(obj->u.string.string);            
         } 
+    } else if (obj->type == ARRAY_OBJECT) {
+        MEM_free(obj->u.array.array);
     }
+    
     MEM_free(obj);
     interp->heap.current_heap_size -= sizeof(MAS_Object);
 }

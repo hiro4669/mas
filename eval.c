@@ -199,6 +199,29 @@ static void mas_eval_identifier_expression(MAS_Interpreter* interp,
     }    
 }
 
+static void mas_eval_array_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value val;
+    val.type = MAS_ARRAY_VALUE;
+    ExpressionList* expr_list;
+    int i, count;
+    for (count = 0, expr_list = expr->u.array_literal; expr_list; expr_list = expr_list->next, ++count) {
+        mas_eval_expression(interp, env, expr_list->expression);
+    }
+    
+    val.u.object_value = mas_create_array_literal(interp, count);
+    for (count -= 1; count >= 0; --count) {
+        val.u.object_value->u.array.array[count] = pop_value(interp);
+    }
+    
+    for (count = 0; count < 3; ++count) {
+        fprintf(stderr, "value = %d\n", val.u.object_value->u.array.array[count].u.int_value);
+    }
+    
+    push_value(interp, &val);
+    
+}
+
 
 
 void mas_eval_expression(MAS_Interpreter* interp,
@@ -233,6 +256,10 @@ void mas_eval_expression(MAS_Interpreter* interp,
         case FUNCTION_CALL_EXPRESSION: {
             fprintf(stderr, "function call\n");
             mas_eval_function_call_expression(interp, env, expr);
+            break;
+        }
+        case ARRAY_EXPRESSION: {
+            mas_eval_array_expression(interp, env, expr);
             break;
         }
         default: {
