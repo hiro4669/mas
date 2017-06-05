@@ -45,6 +45,7 @@ typedef enum {
     GLOBAL_VARIABLE_NOT_FOUND_ERR,
     GLOBAL_STATEMENT_IN_TOPLEVEL_ERR,
     BAD_OPERATOR_FOR_STRING_ERR,
+    BAD_LEFT_VALUE_ERR,
     RUNTIME_ERROR_COUNT_PLUS_1
 } RuntimeError;
 
@@ -371,6 +372,8 @@ void MAS_add_global_variable(MAS_Interpreter* interp, char* identifier, MAS_Valu
 Variable* MAS_search_local_variable(LocalEnvironment* env, char* identifier);
 void MAS_add_local_variable(LocalEnvironment* env, char* identifier, MAS_Value *v);
 void mas_show_all_global_variable(MAS_Interpreter* interp); // for debug
+Variable* mas_add_local_variable(LocalEnvironment* env, char* identifier); // for v2
+Variable* mas_add_global_variable(MAS_Interpreter* interp, char* identifier);
 
 /* interface.c */
 MAS_Interpreter* mas_create_interpreter();

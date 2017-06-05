@@ -67,7 +67,6 @@ int main(int argc, char* argv[]) {
             break;
         }
     }   
-    mas_run_gc(interp); // run garbage collection
     mas_delete_interpreter();
     MEM_dump_memory();
     

@@ -112,12 +112,72 @@ static void mas_eval_double_expression(MAS_Interpreter* interp,
     push_value(interp, &v);
 }
 
+
 static void mas_eval_boolean_expression(MAS_Interpreter* interp,
         LocalEnvironment* env, Expression* expr) {
     MAS_Value v;
     v.type = MAS_BOOLEAN_VALUE;
     v.u.boolean_value = expr->u.boolean_value;
     push_value(interp, &v);
+}
+
+static Variable* search_global_variable_from_env(MAS_Interpreter* interp, 
+        LocalEnvironment* env, char* identifier) {
+    if (env == NULL) {
+        return MAS_search_global_variable(interp, identifier);
+    }
+    return NULL;
+}
+static MAS_Value* lookup_identifier_address(MAS_Interpreter* interp, 
+        LocalEnvironment* env, char* identifier) {
+    fprintf(stderr, "identifier = %s\n", identifier);
+    
+    Variable* val = MAS_search_local_variable(env, identifier);
+    if (val) { // find in local variable
+        return &val->value;
+    } else {
+        if (env) {
+            val = mas_add_local_variable(env, identifier);
+        } else {
+            val = mas_add_global_variable(interp, identifier);
+        }
+    }
+    
+    if (!val) {
+        fprintf(stderr, "cannot allocate variable in lookup identifier address\n");
+    }
+    return &val->value;
+}
+
+static MAS_Value* get_lvalue(MAS_Interpreter* interp, 
+        LocalEnvironment* env, Expression* l_expr) {
+    MAS_Value* l_valp = NULL;
+    switch (l_expr->type) {
+        case IDENTIFIER_EXPRESSION: {
+            l_valp = lookup_identifier_address(interp, env, l_expr->u.identifier);
+            break;
+        }
+        default: {
+            mas_runtime_error(l_expr->line_number,
+                    BAD_LEFT_VALUE_ERR,
+                    MESSAGE_ARGUMENT_END);
+            break;
+        }
+    }
+    
+    return l_valp;
+}
+
+static void mas_eval_assignment_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    fprintf(stderr, "assignment expr\n");        
+    MAS_Value* l_valp;    
+    Expression* l_expr = expr->u.assign_expression.variable;
+    Expression* r_expr = expr->u.assign_expression.operand;
+    l_valp = get_lvalue(interp, env, l_expr);
+    mas_eval_expression(interp, env, r_expr);
+    *l_valp = *peek_stack(interp, 0);    
+    mas_show_all_global_variable(interp);    
 }
 
 void mas_eval_expression(MAS_Interpreter* interp,
@@ -139,6 +199,10 @@ void mas_eval_expression(MAS_Interpreter* interp,
         }
         case STRING_EXPRESSION: {
             mas_eval_string_expression(interp, env, expr);
+            break;
+        }
+        case ASSIGN_EXPRESSION: {
+            mas_eval_assignment_expression(interp, env, expr);
             break;
         }
         case FUNCTION_CALL_EXPRESSION: {

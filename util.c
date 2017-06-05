@@ -118,3 +118,23 @@ void MAS_add_local_variable(LocalEnvironment* env, char* identifier, MAS_Value *
     env->variable = nv;
     nv->value = *v;    
 }
+
+Variable* mas_add_local_variable(LocalEnvironment* env, char* identifier) {
+    Variable *nv = (Variable*)MEM_malloc(sizeof(Variable));
+    nv->name = identifier;
+    nv->next = env->variable;
+    env->variable = nv;
+    nv->value.type = MAS_NULL_VALUE;    
+    return nv;
+}
+
+Variable* mas_add_global_variable(MAS_Interpreter* interp, char* identifier) {
+    Variable* nv = (Variable*)execute_malloc(sizeof(Variable));
+    nv->name = (char*)execute_malloc(strlen(identifier) + 1);
+    strcpy(nv->name, identifier);
+    nv->next = interp->variable;
+    interp->variable = nv;
+    nv->value.type = MAS_NULL_VALUE;
+    return nv;
+    
+}

@@ -26,6 +26,22 @@ MAS_Object* mas_literal_to_mas_ostring(MAS_Interpreter* interp, char* str) {
 }
 
 static void mas_run_mark(MAS_Interpreter* interp) { // this implementation is temporary
+    
+    Variable* pos;
+    for (pos = interp->variable; pos; pos = pos->next) {
+        switch (pos->value.type) {
+            case MAS_STRING_VALUE:
+            case MAS_ARRAY_VALUE: {
+                fprintf(stderr, "mark\n");
+                pos->value.u.object_value->marked = MAS_TRUE;
+                break;
+            }                
+            default: {
+                break;
+            }
+        }
+    }
+    
     /*
     MAS_Object* pos = NULL;
     int i;
@@ -75,6 +91,7 @@ static void mas_run_sweep(MAS_Interpreter* interp) {
             pos = pos->next;            
             mas_delete_object(interp, rm_obj);            
         } else {
+            pos->marked = MAS_FALSE;
             pos = pos->next;
         }
     }

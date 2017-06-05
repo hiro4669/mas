@@ -29,5 +29,6 @@ MessageFormat mas_runtime_error_message_format[] = {
     {"グローバル変数$(name)は存在しません。"},
     {"global文は関数外では使えません。"},
     {"文字列に対し演算子$(operator)は適用できません。"},
+    {"変数と配列要素にしか代入できません。"},
     {"dummy"},
 };

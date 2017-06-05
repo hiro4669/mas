@@ -16,14 +16,30 @@ static void add_native_functions() {
 }
 
 static void release_global_variables(MAS_Interpreter* interp) {
+    interp->variable = NULL;
+    /*
     Variable* val;
-    val = interp->variable;
+    for (val = interp->variable; val; val = val->next) {
+        switch (val->value.type) {
+            case MAS_STRING_VALUE:
+            case MAS_ARRAY_VALUE: {
+                val->value.u.object_value->marked = MAS_FALSE;
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+     */
+    /*
     while(val) {
         if (val->value.type == MAS_STRING_VALUE) {
             mas_release_string(val->value.u.string_value);
         }
         val = val->next;        
-    }    
+    } 
+    */   
 }
 
 MAS_Interpreter* mas_create_interpreter() {
@@ -58,11 +74,13 @@ void mas_delete_interpreter() {
     mas_delete_localinfo();
     if (mas_interpreter == NULL) return;    
     
-    release_global_variables(mas_interpreter);
+    release_global_variables(mas_interpreter);    
+    mas_run_gc(mas_interpreter); // run garbage collection      
     
     if (mas_interpreter->execution_storage) {
         MEM_dispose(mas_interpreter->execution_storage);
     }    
+
     MEM_free(mas_interpreter->stack.stack);
     MEM_dispose(mas_interpreter->ast_storage);
 
