@@ -97,6 +97,13 @@ static void traverse_expr_children(Expression* expr, Visitor* visitor) {
             traverse_expr(expr->u.inc_dec_expression.operand, visitor);
             break;
         }
+        case ARRAY_EXPRESSION: {
+            ExpressionList* expr_list = NULL;
+            for (expr_list = expr->u.array_literal; expr_list; expr_list = expr_list->next) {
+                traverse_expr(expr_list->expression, visitor);
+            }
+            break;
+        }
         default: {
             fprintf(stderr, "not decided ExpressionType in traverser.c %d\n", expr->type);
             exit(1);

@@ -426,7 +426,9 @@ Elsif* mas_chain_elsif(Elsif* e_list, Elsif* elsif);
 ParameterList* mas_create_parameter(char* name);
 ParameterList* mas_chain_parameter(ParameterList *plist, char* name);
 
-
+ExpressionList* mas_create_expression_list(Expression* expr);
+ExpressionList* mas_chain_expression_list(ExpressionList* expr_list, Expression* expr);
+Expression* mas_create_array_expression(ExpressionList* expr_list);
 
 /* string.c */
 void mas_open_string_literal(void);

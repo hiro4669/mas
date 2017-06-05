@@ -247,13 +247,13 @@ postfix_expression      : primary_expression
                         | postfix_expression DECREMENT {$$ = mas_create_incdec_expression($1, DECREMENT_EXPRESSION);}
                         ;
 
-array_literal           : LC expression_list RC       {$$ = NULL;}
-                        | LC expression_list COMMA RC {$$ = NULL;}
+array_literal           : LC expression_list RC       {$$ = mas_create_array_expression($2); }
+                        | LC expression_list COMMA RC {$$ = mas_create_array_expression($2); }
                         ;
 
 expression_list         : {$$ = NULL;} 
-                        | expression {$$ = NULL;}
-                        | expression_list COMMA expression {$$ = NULL;}
+                        | expression { $$ = mas_create_expression_list($1); }
+                        | expression_list COMMA expression {$$ = mas_chain_expression_list($1, $3); }
                         ;
 
 

@@ -318,6 +318,17 @@ static void leave_methodcall_expression(Expression* expr) {
     fprintf(stderr, "leave methodcall expr : \n");
 }
 
+static void enter_array_expression(Expression* expr) {
+    print_depth();
+    fprintf(stderr, "enter array expr : \n");
+    increment();
+}
+static void leave_array_expression(Expression* expr) {
+    decrement();
+    print_depth();
+    fprintf(stderr, "leave array expr : \n");
+}
+
 /*  Statement */
 
 static void enter_expression_statement(Statement* stmt) {
@@ -432,6 +443,7 @@ static void leave_native_func(FunctionDefinition* func) {
     fprintf(stderr, "leave native func\n");
 }
 
+
 Visitor* create_visitor() {
     visit_expr* enter_list;
     visit_expr* leave_list;
@@ -480,6 +492,7 @@ Visitor* create_visitor() {
     enter_list[INCREMENT_EXPRESSION]     = enter_increment_expression;
     enter_list[DECREMENT_EXPRESSION]     = enter_decrement_expression;
     enter_list[METHOD_CALL_EXPRESSION]   = enter_methodcall_expression;
+    enter_list[ARRAY_EXPRESSION]         = enter_array_expression;
         
     leave_list[MUL_EXPRESSION]           = leave_mulexpr;
     leave_list[DIV_EXPRESSION]           = leave_divexpr;
@@ -507,6 +520,7 @@ Visitor* create_visitor() {
     leave_list[INCREMENT_EXPRESSION]     = leave_increment_expression;
     leave_list[DECREMENT_EXPRESSION]     = leave_decrement_expression;
     leave_list[METHOD_CALL_EXPRESSION]   = leave_methodcall_expression;
+    leave_list[ARRAY_EXPRESSION]         = leave_array_expression;
     
     /* Statement */    
     enter_stmt_list[EXPRESSION_STATEMENT] = enter_expression_statement;

@@ -128,6 +128,27 @@ ArgumentList* mas_chain_argument(ArgumentList* argument, Expression* expr) {
     return argument;
 }
 
+ExpressionList* mas_create_expression_list(Expression* expr) {
+    ExpressionList* expr_list = (ExpressionList*)ast_malloc(sizeof(ExpressionList));
+    expr_list->expression = expr;
+    expr_list->next = NULL;
+    return expr_list;
+}
+
+ExpressionList* mas_chain_expression_list(ExpressionList* expr_list, Expression* expr) {
+    ExpressionList* pos;
+    for (pos = expr_list; pos->next; pos = pos->next);
+    pos->next = mas_create_expression_list(expr);
+    return expr_list;
+}
+
+Expression* mas_create_array_expression(ExpressionList* expr_list) {
+    Expression* expr = mas_alloc_expression(ARRAY_EXPRESSION);
+    expr->u.array_literal = expr_list;
+    return expr;
+}
+
+
 /*  begin For statement */
 Statement* mas_create_expression_statement(Expression* expr) {
     Statement* stmt = mas_alloc_statement(EXPRESSION_STATEMENT);
