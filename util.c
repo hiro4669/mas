@@ -79,8 +79,12 @@ void mas_show_all_global_variable(MAS_Interpreter* interp) {
                 printf("val(null) = %s(null)\n", pos->name);
                 break;
             }
+            case MAS_ARRAY_VALUE: {
+                printf("val(array) = %s\n", pos->name);
+                break;
+            }
             default: {
-                fprintf(stderr, "no such mas type");                
+                fprintf(stderr, "no such mas type\n");                
                 break;
             }       
         }

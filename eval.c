@@ -130,7 +130,7 @@ static Variable* search_global_variable_from_env(MAS_Interpreter* interp,
 }
 static MAS_Value* lookup_identifier_address(MAS_Interpreter* interp, 
         LocalEnvironment* env, char* identifier) {
-    fprintf(stderr, "identifier = %s\n", identifier);
+//    fprintf(stderr, "identifier = %s\n", identifier);
     
     Variable* val = MAS_search_local_variable(env, identifier);
     if (val) { // find in local variable
@@ -170,19 +170,19 @@ static MAS_Value* get_lvalue(MAS_Interpreter* interp,
 
 static void mas_eval_assignment_expression(MAS_Interpreter* interp,
         LocalEnvironment* env, Expression* expr) {
-    fprintf(stderr, "assignment expr\n");        
+//    fprintf(stderr, "assignment expr\n");        
     MAS_Value* l_valp;    
     Expression* l_expr = expr->u.assign_expression.variable;
     Expression* r_expr = expr->u.assign_expression.operand;
     l_valp = get_lvalue(interp, env, l_expr);
     mas_eval_expression(interp, env, r_expr);
     *l_valp = *peek_stack(interp, 0);    
-    mas_show_all_global_variable(interp);    
+
+//    mas_show_all_global_variable(interp);    
 }
 
 static void mas_eval_identifier_expression(MAS_Interpreter* interp,
         LocalEnvironment* env, Expression* expr) {
-    MAS_Value val;
     char* identifier = expr->u.identifier;
     Variable* v = MAS_search_local_variable(env, identifier);
     if (v) {
@@ -214,12 +214,37 @@ static void mas_eval_array_expression(MAS_Interpreter* interp,
         val.u.object_value->u.array.array[count] = pop_value(interp);
     }
     
+    /*
     for (count = 0; count < 3; ++count) {
         fprintf(stderr, "value = %d\n", val.u.object_value->u.array.array[count].u.int_value);
     }
+    */
     
-    push_value(interp, &val);
+    push_value(interp, &val);    
+}
+
+static void mas_eval_index_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
     
+    Expression* arg_expr = expr->u.index_expression.array;
+    Expression* i_expr   = expr->u.index_expression.index;
+    mas_eval_expression(interp, env, arg_expr);
+    mas_eval_expression(interp, env, i_expr);
+    MAS_Value iv = pop_value(interp);
+    MAS_Value av = pop_value(interp);
+    
+    if (av.type != MAS_ARRAY_VALUE) {
+        mas_runtime_error(expr->line_number,
+                        BAD_INDEX_VALUE_ERR,
+                        MESSAGE_ARGUMENT_END);
+    }
+    if (iv.type != MAS_INT_VALUE) {
+        mas_runtime_error(expr->line_number,
+                        BAD_INDEX_TYPE_ERR,
+                        MESSAGE_ARGUMENT_END);
+    }
+    MAS_Value v = av.u.object_value->u.array.array[iv.u.int_value];
+    push_value(interp, &v);
 }
 
 
@@ -260,6 +285,10 @@ void mas_eval_expression(MAS_Interpreter* interp,
         }
         case ARRAY_EXPRESSION: {
             mas_eval_array_expression(interp, env, expr);
+            break;
+        }
+        case INDEX_EXPRESSION: {
+            mas_eval_index_expression(interp, env, expr);
             break;
         }
         default: {
