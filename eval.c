@@ -275,6 +275,28 @@ static void mas_eval_incdec_expression(MAS_Interpreter* interp,
 }
 
 
+static void binary_int(MAS_Interpreter* interp, 
+        LocalEnvironment* env, Expression* expr) {
+    
+}
+
+static void mas_binary_expression(MAS_Interpreter* interp, 
+        LocalEnvironment* env, Expression* expr) {
+    mas_eval_expression(interp, env, expr->u.binary_expression.left);
+    mas_eval_expression(interp, env, expr->u.binary_expression.right);
+    MAS_Value* l_valp = peek_stack(interp, 1);
+    MAS_Value* r_valp = peek_stack(interp, 0);
+    
+    if (l_valp->type == MAS_INT_VALUE && r_valp->type == MAS_INT_VALUE) {
+        binary_int(interp, env, expr);
+    }
+    
+
+
+    
+}
+
+
 
 void mas_eval_expression(MAS_Interpreter* interp,
         LocalEnvironment* env, Expression* expr) {
