@@ -1,6 +1,12 @@
-a = {1, 2, 3};
-print(a[1]);
-a[1] = 5;
-print(a[1]);
-#i++;
+#a = {1, 2, 3};
+#print(a[1]);
+#a[1] = 5;
+#print(a[1]);
+#print("\n");
+i = 1;
+#print(i);
+#print("\n");
+i--;
+print(i);
+print("\n");
 #a[10].hoge();

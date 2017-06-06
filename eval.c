@@ -36,9 +36,7 @@ void shrink_stack(MAS_Interpreter* interp, int s_size) {
 
 
 static void mas_eval_string_expression(MAS_Interpreter* interp, LocalEnvironment* env, 
-        Expression* expr) {
-    
-    fprintf(stderr, "call eval_string expression\n");
+        Expression* expr) {  
     MAS_Value val;
     val.type = MAS_STRING_VALUE;
     val.u.object_value = mas_literal_to_mas_ostring(interp, expr->u.string_value);
@@ -48,7 +46,6 @@ static void mas_eval_string_expression(MAS_Interpreter* interp, LocalEnvironment
 
 static void call_native_function(MAS_Interpreter* interp, LocalEnvironment* env,
         Expression* expr, MAS_NativeFunctionProc proc) {
-    fprintf(stderr, "call native function\n");
     MAS_Value v;
     ArgumentList* arg_list = NULL;    
     int arg_count, i;
@@ -130,16 +127,19 @@ static Variable* search_global_variable_from_env(MAS_Interpreter* interp,
 }
 static MAS_Value* lookup_identifier_address(MAS_Interpreter* interp, 
         LocalEnvironment* env, char* identifier) {
-//    fprintf(stderr, "identifier = %s\n", identifier);
-    
     Variable* val = MAS_search_local_variable(env, identifier);
     if (val) { // find in local variable
         return &val->value;
     } else {
-        if (env) {
-            val = mas_add_local_variable(env, identifier);
-        } else {
-            val = mas_add_global_variable(interp, identifier);
+        val = search_global_variable_from_env(interp, env, identifier);
+        if (val) {
+            return &val->value;
+        } else {                
+            if (env) {
+                val = mas_add_local_variable(env, identifier);
+            } else {
+                val = mas_add_global_variable(interp, identifier);
+            }
         }
     }
     
@@ -204,7 +204,7 @@ static void mas_eval_assignment_expression(MAS_Interpreter* interp,
     mas_eval_expression(interp, env, r_expr);
     *l_valp = *peek_stack(interp, 0);    
 
-//    mas_show_all_global_variable(interp);    
+    mas_show_all_global_variable(interp);    
 }
 
 static void mas_eval_identifier_expression(MAS_Interpreter* interp,
@@ -250,30 +250,28 @@ static void mas_eval_array_expression(MAS_Interpreter* interp,
 }
 
 static void mas_eval_index_expression(MAS_Interpreter* interp,
-        LocalEnvironment* env, Expression* expr) {
-    
-    /*
-    Expression* arg_expr = expr->u.index_expression.array;
-    Expression* i_expr   = expr->u.index_expression.index;
-    mas_eval_expression(interp, env, arg_expr);
-    mas_eval_expression(interp, env, i_expr);
-    MAS_Value iv = pop_value(interp);
-    MAS_Value av = pop_value(interp);
-    
-    if (av.type != MAS_ARRAY_VALUE) {
-        mas_runtime_error(expr->line_number,
-                        BAD_INDEX_VALUE_ERR,
-                        MESSAGE_ARGUMENT_END);
-    }
-    if (iv.type != MAS_INT_VALUE) {
-        mas_runtime_error(expr->line_number,
-                        BAD_INDEX_TYPE_ERR,
-                        MESSAGE_ARGUMENT_END);
-    }
-    MAS_Value v = av.u.object_value->u.array.array[iv.u.int_value];
-    */
+        LocalEnvironment* env, Expression* expr) {    
     MAS_Value v = *lookup_index_address(interp, env, expr);
     push_value(interp, &v);
+}
+
+static void mas_eval_incdec_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value* valp;
+    MAS_Value val;
+    valp = get_lvalue(interp, env, expr->u.inc_dec_expression.operand);
+    if (valp->type != MAS_INT_VALUE) {
+        fprintf(stderr, "inc/dec should be applied to int\n");
+        exit(1);
+    }
+    if (expr->type == INCREMENT_EXPRESSION) {
+        valp->u.int_value++;
+    } else if (expr->type == DECREMENT_EXPRESSION) {
+        valp->u.int_value--;
+    }
+    val = *valp;
+    push_value(interp, &val);
+    
 }
 
 
@@ -308,7 +306,6 @@ void mas_eval_expression(MAS_Interpreter* interp,
             break;
         }
         case FUNCTION_CALL_EXPRESSION: {
-            fprintf(stderr, "function call\n");
             mas_eval_function_call_expression(interp, env, expr);
             break;
         }
@@ -318,6 +315,11 @@ void mas_eval_expression(MAS_Interpreter* interp,
         }
         case INDEX_EXPRESSION: {
             mas_eval_index_expression(interp, env, expr);
+            break;
+        }
+        case INCREMENT_EXPRESSION: 
+        case DECREMENT_EXPRESSION: {
+            mas_eval_incdec_expression(interp, env, expr);
             break;
         }
         default: {
