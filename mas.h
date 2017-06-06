@@ -376,6 +376,7 @@ void MAS_add_local_variable(LocalEnvironment* env, char* identifier, MAS_Value *
 void mas_show_all_global_variable(MAS_Interpreter* interp); // for debug
 Variable* mas_add_local_variable(LocalEnvironment* env, char* identifier); // for v2
 Variable* mas_add_global_variable(MAS_Interpreter* interp, char* identifier);
+char* mas_get_operator_string(ExpressionType type);
 
 /* interface.c */
 MAS_Interpreter* mas_create_interpreter();

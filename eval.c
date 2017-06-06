@@ -274,10 +274,47 @@ static void mas_eval_incdec_expression(MAS_Interpreter* interp,
     
 }
 
+static void binary_double(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr, double l, double r) {
+    MAS_Value v;
+    v.type = MAS_DOUBLE_VALUE;
+    switch (expr->type) {
+        case ADD_EXPRESSION: {
+            v.u.double_value = l + r;
+            break;
+        }
+        default: {
+            mas_runtime_error(expr->line_number,
+                    BAD_OPERAND_TYPE_ERR,
+                    STRING_MESSAGE_ARGUMENT, "operator", mas_get_operator_string(expr->type),
+                    MESSAGE_ARGUMENT_END);
+        }
+    }
+    pop_value(interp);
+    pop_value(interp);
+    push_value(interp, &v);    
+}
 
 static void binary_int(MAS_Interpreter* interp, 
-        LocalEnvironment* env, Expression* expr) {
+        LocalEnvironment* env, Expression* expr, int l, int r) {
+    MAS_Value v;
+    v.type = MAS_INT_VALUE;
+    switch (expr->type) {
+        case ADD_EXPRESSION: {
+            v.u.int_value = l + r;
+            break;
+        }
+        default: {
+            mas_runtime_error(expr->line_number,
+                    BAD_OPERAND_TYPE_ERR,
+                    STRING_MESSAGE_ARGUMENT, "operator", mas_get_operator_string(expr->type),
+                    MESSAGE_ARGUMENT_END);
+        }
+    }
     
+    pop_value(interp);
+    pop_value(interp);
+    push_value(interp, &v);    
 }
 
 static void mas_binary_expression(MAS_Interpreter* interp, 
@@ -287,8 +324,19 @@ static void mas_binary_expression(MAS_Interpreter* interp,
     MAS_Value* l_valp = peek_stack(interp, 1);
     MAS_Value* r_valp = peek_stack(interp, 0);
     
-    if (l_valp->type == MAS_INT_VALUE && r_valp->type == MAS_INT_VALUE) {
-        binary_int(interp, env, expr);
+    if (l_valp->type == MAS_INT_VALUE && r_valp->type == MAS_INT_VALUE) { // int int
+        binary_int(interp, env, expr, l_valp->u.int_value, r_valp->u.int_value);
+    } else if (l_valp->type == MAS_INT_VALUE && r_valp->type == MAS_DOUBLE_VALUE) { // int double
+        binary_double(interp, env, expr, l_valp->u.int_value, r_valp->u.double_value);
+    } else if (l_valp->type == MAS_DOUBLE_VALUE && r_valp->type == MAS_INT_VALUE) {
+        binary_double(interp, env, expr, l_valp->u.double_value, r_valp->u.int_value);
+    } else if (l_valp->type == MAS_DOUBLE_VALUE && r_valp->type == MAS_DOUBLE_VALUE) {
+        binary_double(interp, env, expr, l_valp->u.double_value, r_valp->u.double_value);
+    } else {
+        mas_runtime_error(expr->line_number,
+                BAD_OPERAND_TYPE_ERR,
+                STRING_MESSAGE_ARGUMENT, "operator", mas_get_operator_string(expr->type),
+                MESSAGE_ARGUMENT_END);
     }
     
 
@@ -342,6 +390,10 @@ void mas_eval_expression(MAS_Interpreter* interp,
         case INCREMENT_EXPRESSION: 
         case DECREMENT_EXPRESSION: {
             mas_eval_incdec_expression(interp, env, expr);
+            break;
+        }
+        case ADD_EXPRESSION: {
+            mas_binary_expression(interp, env, expr);
             break;
         }
         default: {

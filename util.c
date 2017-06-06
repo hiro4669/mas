@@ -1,5 +1,6 @@
 
 #include <string.h>
+#include <stdlib.h>
 #include "info.h"
 //#include "./memory/MEM.h"
 
@@ -141,4 +142,27 @@ Variable* mas_add_global_variable(MAS_Interpreter* interp, char* identifier) {
     nv->value.type = MAS_NULL_VALUE;
     return nv;
     
+}
+
+char* mas_get_operator_string(ExpressionType type) {
+    switch(type) {
+        case ASSIGN_EXPRESSION:      return "=";
+        case ADD_EXPRESSION:         return "+";
+        case SUB_EXPRESSION:         return "-";
+        case MUL_EXPRESSION:         return "*";
+        case DIV_EXPRESSION:         return "/";
+        case MOD_EXPRESSION:         return "%";
+        case EQ_EXPRESSION:          return "==";
+        case NE_EXPRESSION:          return "!=";
+        case GT_EXPRESSION:          return ">";
+        case GE_EXPRESSION:          return "=>";
+        case LT_EXPRESSION:          return "<";
+        case LE_EXPRESSION:          return "<=";
+        case LOGICAL_AND_EXPRESSION: return "&&";
+        case LOGICAL_OR_EXPRESSION:  return "||";
+        default: {
+            fprintf(stderr, "bad expression for operator %d\n", type);
+            exit(1);
+        }
+    }
 }
