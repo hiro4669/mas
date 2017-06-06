@@ -149,12 +149,38 @@ static MAS_Value* lookup_identifier_address(MAS_Interpreter* interp,
     return &val->value;
 }
 
+static MAS_Value* lookup_index_address(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    Expression* arg_expr = expr->u.index_expression.array;
+    Expression* i_expr   = expr->u.index_expression.index;
+    mas_eval_expression(interp, env, arg_expr);
+    mas_eval_expression(interp, env, i_expr);
+    MAS_Value iv = pop_value(interp);
+    MAS_Value av = pop_value(interp);
+
+    if (av.type != MAS_ARRAY_VALUE) {
+        mas_runtime_error(expr->line_number,
+                        BAD_INDEX_VALUE_ERR,
+                        MESSAGE_ARGUMENT_END);
+    }
+    if (iv.type != MAS_INT_VALUE) {
+        mas_runtime_error(expr->line_number,
+                        BAD_INDEX_TYPE_ERR,
+                        MESSAGE_ARGUMENT_END);
+    }    
+    return &av.u.object_value->u.array.array[iv.u.int_value];
+}
+
 static MAS_Value* get_lvalue(MAS_Interpreter* interp, 
         LocalEnvironment* env, Expression* l_expr) {
     MAS_Value* l_valp = NULL;
     switch (l_expr->type) {
         case IDENTIFIER_EXPRESSION: {
             l_valp = lookup_identifier_address(interp, env, l_expr->u.identifier);
+            break;
+        }
+        case INDEX_EXPRESSION: {
+            l_valp = lookup_index_address(interp, env, l_expr);
             break;
         }
         default: {
@@ -226,6 +252,7 @@ static void mas_eval_array_expression(MAS_Interpreter* interp,
 static void mas_eval_index_expression(MAS_Interpreter* interp,
         LocalEnvironment* env, Expression* expr) {
     
+    /*
     Expression* arg_expr = expr->u.index_expression.array;
     Expression* i_expr   = expr->u.index_expression.index;
     mas_eval_expression(interp, env, arg_expr);
@@ -244,6 +271,8 @@ static void mas_eval_index_expression(MAS_Interpreter* interp,
                         MESSAGE_ARGUMENT_END);
     }
     MAS_Value v = av.u.object_value->u.array.array[iv.u.int_value];
+    */
+    MAS_Value v = *lookup_index_address(interp, env, expr);
     push_value(interp, &v);
 }
 
