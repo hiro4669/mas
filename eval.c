@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "mas.h"
 
 
@@ -291,6 +292,22 @@ static void binary_double(MAS_Interpreter* interp,
             v.u.double_value = l + r;
             break;
         }
+        case SUB_EXPRESSION: {
+            v.u.double_value = l - r;
+            break;
+        }
+        case MUL_EXPRESSION: {
+            v.u.double_value = l * r;
+            break;
+        }
+        case DIV_EXPRESSION: {
+            v.u.double_value = l / r;
+            break;
+        }
+        case MOD_EXPRESSION: {
+            v.u.double_value = fmod(l, r);
+            break;
+        }
         default: {
             mas_runtime_error(expr->line_number,
                     BAD_OPERAND_TYPE_ERR,
@@ -311,6 +328,23 @@ static void binary_int(MAS_Interpreter* interp,
         case ADD_EXPRESSION: {
             v.u.int_value = l + r;
             break;
+        }
+        case SUB_EXPRESSION: {
+            v.u.int_value = l - r;
+            break;
+        }
+        case MUL_EXPRESSION: {
+            v.u.int_value = l * r;
+            break;
+        }        
+        case DIV_EXPRESSION: {
+            v.u.int_value = l / r;
+            break;
+        }
+        case MOD_EXPRESSION: {
+            v.u.int_value = l % r;
+            break;
+            
         }
         default: {
             mas_runtime_error(expr->line_number,
@@ -491,7 +525,11 @@ void mas_eval_expression(MAS_Interpreter* interp,
             mas_eval_incdec_expression(interp, env, expr);
             break;
         }
-        case ADD_EXPRESSION: {
+        case ADD_EXPRESSION: 
+        case SUB_EXPRESSION: 
+        case MUL_EXPRESSION: 
+        case DIV_EXPRESSION: 
+        case MOD_EXPRESSION: {
             mas_binary_expression(interp, env, expr);
             break;
         }
