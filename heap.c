@@ -25,6 +25,14 @@ MAS_Object* mas_literal_to_mas_ostring(MAS_Interpreter* interp, char* str) {
     return s_obj;
 }
 
+MAS_Object* mas_create_mas_ostring(MAS_Interpreter* interp, char* str) {
+    MAS_Object* s_obj = alloc_mas_object(interp, STRING_OBJECT);
+    s_obj->u.string.is_literal = MAS_FALSE;
+    s_obj->u.string.ref_count = 1; // initialize;
+    s_obj->u.string.string = str;
+    return s_obj;
+}
+
 MAS_Object* mas_create_array_literal(MAS_Interpreter* interp, int size) {
     MAS_Object* obj;
     obj = alloc_mas_object(interp, ARRAY_OBJECT);
@@ -98,6 +106,12 @@ static void mas_run_sweep(MAS_Interpreter* interp) {
     MAS_Object* rm_obj;
     while(pos) {
         if (!pos->marked) {
+            fprintf(stderr, "---> sweep ");
+            if (pos->type == STRING_OBJECT) {
+                fprintf(stderr, "%s\n", pos->u.string.string);
+            } else {
+                fprintf(stderr, "\n");
+            }
             rm_obj = pos;
             mas_unchain(interp, rm_obj);
             pos = pos->next;            

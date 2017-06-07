@@ -490,6 +490,7 @@ StatementResult mas_execute_statementlist(MAS_Interpreter* interp,
 
 /* heap.c */
 MAS_Object* mas_literal_to_mas_ostring(MAS_Interpreter* interp, char* str);
+MAS_Object* mas_create_mas_ostring(MAS_Interpreter* interp, char* str);
 MAS_Object* mas_create_array_literal(MAS_Interpreter* interp, int size);
 void mas_run_gc(MAS_Interpreter* interp);
 

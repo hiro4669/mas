@@ -64,7 +64,9 @@ StatementResult mas_execute_statementlist(MAS_Interpreter *interp,
     
     StatementList* pos;
     for (pos = stmt_list; pos; pos = pos->next) {
+//        fprintf(stderr, "\nexec statement\n");
         result = mas_execute_statement(interp, env, pos->statement);
+//        mas_run_gc(interp);
         
     }           
     return result;    

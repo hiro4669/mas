@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "mas.h"
 
 
@@ -118,6 +119,13 @@ static void mas_eval_boolean_expression(MAS_Interpreter* interp,
     push_value(interp, &v);
 }
 
+static void mas_eval_null_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value v;
+    v.type = MAS_NULL_VALUE;
+    push_value(interp, &v);
+}
+
 static Variable* search_global_variable_from_env(MAS_Interpreter* interp, 
         LocalEnvironment* env, char* identifier) {
     if (env == NULL) {
@@ -204,7 +212,7 @@ static void mas_eval_assignment_expression(MAS_Interpreter* interp,
     mas_eval_expression(interp, env, r_expr);
     *l_valp = *peek_stack(interp, 0);    
 
-    mas_show_all_global_variable(interp);    
+//    mas_show_all_global_variable(interp);    
 }
 
 static void mas_eval_identifier_expression(MAS_Interpreter* interp,
@@ -317,12 +325,103 @@ static void binary_int(MAS_Interpreter* interp,
     push_value(interp, &v);    
 }
 
+static void mas_binary_string(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr, MAS_Object* l_str, MAS_Object* r_str) {
+    int n_len, l_len, r_len;
+    char* buf;
+    MAS_Value v;
+    n_len = (l_len = strlen(l_str->u.string.string)) + (r_len = strlen(r_str->u.string.string));
+    buf = (char*)MEM_malloc(n_len + 1);
+    strncpy(buf, l_str->u.string.string, l_len);
+    strncpy(&buf[l_len], r_str->u.string.string, r_len+1);
+    MAS_Object* n_obj = mas_create_mas_ostring(interp, buf);
+    v.type = MAS_STRING_VALUE;
+    v.u.object_value = n_obj;
+    
+    pop_value(interp);
+    pop_value(interp);
+    push_value(interp, &v);        
+}
+
 static void mas_binary_expression(MAS_Interpreter* interp, 
         LocalEnvironment* env, Expression* expr) {
     mas_eval_expression(interp, env, expr->u.binary_expression.left);
     mas_eval_expression(interp, env, expr->u.binary_expression.right);
     MAS_Value* l_valp = peek_stack(interp, 1);
     MAS_Value* r_valp = peek_stack(interp, 0);
+
+    char buf[1024];    
+    if (l_valp->type == MAS_STRING_VALUE) {
+        switch (r_valp->type) {
+            case MAS_STRING_VALUE: {
+                mas_binary_string(interp, env, expr, l_valp->u.object_value, r_valp->u.object_value);
+                return;
+                
+            }
+            case MAS_INT_VALUE: {
+                sprintf(buf, "%d", r_valp->u.int_value);
+                break;
+            }
+            case MAS_DOUBLE_VALUE: {
+                sprintf(buf, "%f", r_valp->u.double_value);
+                break;
+            }
+            case MAS_BOOLEAN_VALUE: {
+                (r_valp->u.boolean_value == MAS_FALSE) ?  
+                            strncpy(buf, "false", 6) : strncpy(buf, "true", 5);
+                break;
+            }
+            case MAS_NULL_VALUE: {
+                strncpy(buf, "null", 5);
+                break;
+            }
+            default: {
+                mas_runtime_error(expr->line_number,
+                BAD_OPERAND_TYPE_ERR,
+                STRING_MESSAGE_ARGUMENT, "operator", mas_get_operator_string(expr->type),
+                MESSAGE_ARGUMENT_END);
+            }
+        }
+        
+        char* str = (char*)MEM_malloc(strlen(buf) + 1);
+        strncpy(str, buf, strlen(buf) + 1);
+        MAS_Object* r_obj = mas_create_mas_ostring(interp, str);
+        mas_binary_string(interp, env, expr, l_valp->u.object_value, r_obj);
+        return;        
+    }
+    
+    if (r_valp->type == MAS_STRING_VALUE) {
+        switch(l_valp->type) {
+            case MAS_INT_VALUE: {
+                sprintf(buf, "%d", l_valp->u.int_value);
+                break;
+            }
+            case MAS_DOUBLE_VALUE: {
+                sprintf(buf, "%f", l_valp->u.double_value);
+                break;
+            }
+            case MAS_BOOLEAN_VALUE: {
+                (l_valp->u.boolean_value == MAS_FALSE) ?  
+                    strncpy(buf, "false", 6) : strncpy(buf, "true", 5);
+                break;
+            }
+            case MAS_NULL_VALUE: {
+                strncpy(buf, "null", 5);
+                break;
+            }
+            default: {
+                mas_runtime_error(expr->line_number,
+                BAD_OPERAND_TYPE_ERR,
+                STRING_MESSAGE_ARGUMENT, "operator", mas_get_operator_string(expr->type),
+                MESSAGE_ARGUMENT_END);
+            }
+        }
+        char* str = (char*)MEM_malloc(strlen(buf) + 1);
+        strncpy(str, buf, strlen(buf) + 1);
+        MAS_Object* l_obj = mas_create_mas_ostring(interp, str);
+        mas_binary_string(interp, env, expr, l_obj, r_valp->u.object_value);
+        return;        
+    }    
     
     if (l_valp->type == MAS_INT_VALUE && r_valp->type == MAS_INT_VALUE) { // int int
         binary_int(interp, env, expr, l_valp->u.int_value, r_valp->u.int_value);
@@ -338,10 +437,6 @@ static void mas_binary_expression(MAS_Interpreter* interp,
                 STRING_MESSAGE_ARGUMENT, "operator", mas_get_operator_string(expr->type),
                 MESSAGE_ARGUMENT_END);
     }
-    
-
-
-    
 }
 
 
@@ -361,6 +456,10 @@ void mas_eval_expression(MAS_Interpreter* interp,
         }
         case DOUBLE_EXPRESSION: {
             mas_eval_double_expression(interp, env, expr);
+            break;
+        }
+        case NULL_EXPRESSION: {
+            mas_eval_null_expression(interp, env, expr);
             break;
         }
         case STRING_EXPRESSION: {
