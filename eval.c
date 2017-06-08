@@ -430,6 +430,19 @@ static void mas_binary_string(MAS_Interpreter* interp,
             MAS_Object* n_obj = mas_create_mas_ostring(interp, buf);
             v.type = MAS_STRING_VALUE;
             v.u.object_value = n_obj;
+            break;
+        }
+        case EQ_EXPRESSION: {
+            v.type = MAS_BOOLEAN_VALUE;
+            v.u.boolean_value = 
+                    (strcmp(l_str->u.string.string, r_str->u.string.string) == 0) ? MAS_TRUE : MAS_FALSE;
+            break;
+        }
+        case NE_EXPRESSION: {
+            v.type = MAS_BOOLEAN_VALUE;
+            v.u.boolean_value = 
+                    (strcmp(l_str->u.string.string, r_str->u.string.string) != 0) ? MAS_TRUE : MAS_FALSE;
+            break;
         }
         default: {
             break;
@@ -566,6 +579,8 @@ static void mas_binary_string_boolean(MAS_Interpreter* interp,
 
 static void mas_binary_string_null(MAS_Interpreter* interp,
         LocalEnvironment* env, Expression* expr, MAS_Object* str, S_Dir d) {
+    MAS_Value v;
+    v.type = MAS_BOOLEAN_VALUE;
     switch (expr->type) {
         case ADD_EXPRESSION: {
             char buf[1024];
@@ -588,13 +603,24 @@ static void mas_binary_string_null(MAS_Interpreter* interp,
                 }
             }
         }
+        case EQ_EXPRESSION: {
+            v.u.boolean_value = MAS_FALSE;
+            break;
+        }
+        case NE_EXPRESSION: {
+            v.u.boolean_value = MAS_TRUE;
+            break;
+        }
         default: {
             mas_runtime_error(expr->line_number,
                     BAD_OPERAND_TYPE_ERR,
                     STRING_MESSAGE_ARGUMENT, "operator", mas_get_operator_string(expr->type),
                     MESSAGE_ARGUMENT_END);
         }
-    }    
+    }
+    pop_value(interp);
+    pop_value(interp);
+    push_value(interp, &v);
 }
 
 
