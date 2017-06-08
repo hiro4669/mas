@@ -452,94 +452,185 @@ static void mas_binary_string(MAS_Interpreter* interp,
     push_value(interp, &v);        
 }
 
+typedef enum {
+    L_STR = 1,
+    R_STR,
+    S_DIR_PLUS_1            
+} S_Dir;
+
+static void mas_binary_string_int(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr, MAS_Object* str, int val, S_Dir d) {
+    
+    switch (expr->type) {
+        case ADD_EXPRESSION: {
+            char buf[1024];
+            sprintf(buf, "%d", val);
+            char* add_str = (char*)MEM_malloc(strlen(buf) + 1);
+            strncpy(add_str, buf, strlen(buf) + 1);
+            MAS_Object* add_obj = mas_create_mas_ostring(interp, add_str);
+            switch (d) {
+                case L_STR: {
+                    mas_binary_string(interp, env, expr, str, add_obj);
+                    return;
+                }
+                case R_STR: {
+                    mas_binary_string(interp, env, expr, add_obj, str);
+                    return;
+                }
+                default: {
+                    fprintf(stderr, "No Such S_Dir\n");
+                    exit(1);
+                }
+            }
+            break;
+        }
+        default: {
+            mas_runtime_error(expr->line_number,
+                    BAD_OPERAND_TYPE_ERR,
+                    STRING_MESSAGE_ARGUMENT, "operator", mas_get_operator_string(expr->type),
+                    MESSAGE_ARGUMENT_END);
+        }
+    }
+}
+
+static void mas_binary_string_double(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr, MAS_Object* str, double val, S_Dir d) {    
+    switch (expr->type) {
+        case ADD_EXPRESSION: {
+            char buf[1024];
+            sprintf(buf, "%f", val);
+            char* add_str = (char*)MEM_malloc(strlen(buf) + 1);
+            strncpy(add_str, buf, strlen(buf) + 1);
+            MAS_Object* add_obj = mas_create_mas_ostring(interp, add_str);
+            switch (d) {
+                case L_STR: {
+                    mas_binary_string(interp, env, expr, str, add_obj);
+                    return;
+                }
+                case R_STR: {
+                    mas_binary_string(interp, env, expr, add_obj, str);
+                    return;
+                }
+                default: {
+                    fprintf(stderr, "No Such S_Dir\n");
+                    exit(1);
+                }
+            }
+            break;
+        }
+        default: {
+            mas_runtime_error(expr->line_number,
+                    BAD_OPERAND_TYPE_ERR,
+                    STRING_MESSAGE_ARGUMENT, "operator", mas_get_operator_string(expr->type),
+                    MESSAGE_ARGUMENT_END);
+        }
+    }
+}
+
+static void mas_binary_string_boolean(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr, MAS_Object* str, MAS_Boolean val, S_Dir d) {  
+    switch(expr->type) {
+        case ADD_EXPRESSION: {
+             char buf[1024];
+            (val == MAS_FALSE) ?  
+                strncpy(buf, "false", 6) : strncpy(buf, "true", 5);
+            char* add_str = (char*)MEM_malloc(strlen(buf) + 1);
+            strncpy(add_str, buf, strlen(buf) + 1);
+            MAS_Object* add_obj = mas_create_mas_ostring(interp, add_str);
+            switch (d) {
+                case L_STR: {
+                    mas_binary_string(interp, env, expr, str, add_obj);
+                    return;
+                }
+                case R_STR: {
+                    mas_binary_string(interp, env, expr, add_obj, str);
+                    return;
+                }
+                default: {
+                    fprintf(stderr, "No Such S_Dir\n");
+                    exit(1);
+                }
+            }
+            break;
+            
+        }
+        default: {
+            mas_runtime_error(expr->line_number,
+                    BAD_OPERAND_TYPE_ERR,
+                    STRING_MESSAGE_ARGUMENT, "operator", mas_get_operator_string(expr->type),
+                    MESSAGE_ARGUMENT_END);
+        }
+    }
+    
+}
+
+static void mas_binary_string_null(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr, MAS_Object* str, S_Dir d) {
+    switch (expr->type) {
+        case ADD_EXPRESSION: {
+            char buf[1024];
+            strncpy(buf, "null", 5);
+            char* add_str = (char*)MEM_malloc(strlen(buf) + 1);
+            strncpy(add_str, buf, strlen(buf) + 1);
+            MAS_Object* add_obj = mas_create_mas_ostring(interp, add_str);
+            switch (d) {
+                case L_STR: {
+                    mas_binary_string(interp, env, expr, str, add_obj);
+                    return;
+                }
+                case R_STR: {
+                    mas_binary_string(interp, env, expr, add_obj, str);
+                    return;
+                }
+                default: {
+                    fprintf(stderr, "No Such S_Dir\n");
+                    exit(1);
+                }
+            }
+        }
+        default: {
+            mas_runtime_error(expr->line_number,
+                    BAD_OPERAND_TYPE_ERR,
+                    STRING_MESSAGE_ARGUMENT, "operator", mas_get_operator_string(expr->type),
+                    MESSAGE_ARGUMENT_END);
+        }
+    }    
+}
+
+
 static void mas_binary_expression(MAS_Interpreter* interp, 
         LocalEnvironment* env, Expression* expr) {
     mas_eval_expression(interp, env, expr->u.binary_expression.left);
     mas_eval_expression(interp, env, expr->u.binary_expression.right);
     MAS_Value* l_valp = peek_stack(interp, 1);
     MAS_Value* r_valp = peek_stack(interp, 0);
-
-    char buf[1024];    
-    if (l_valp->type == MAS_STRING_VALUE) {
-        switch (r_valp->type) {
-            case MAS_STRING_VALUE: {
-                mas_binary_string(interp, env, expr, l_valp->u.object_value, r_valp->u.object_value);
-                return;
-                
-            }
-            case MAS_INT_VALUE: {
-                sprintf(buf, "%d", r_valp->u.int_value);
-                break;
-            }
-            case MAS_DOUBLE_VALUE: {
-                sprintf(buf, "%f", r_valp->u.double_value);
-                break;
-            }
-            case MAS_BOOLEAN_VALUE: {
-                (r_valp->u.boolean_value == MAS_FALSE) ?  
-                            strncpy(buf, "false", 6) : strncpy(buf, "true", 5);
-                break;
-            }
-            case MAS_NULL_VALUE: {
-                strncpy(buf, "null", 5);
-                break;
-            }
-            default: {
-                mas_runtime_error(expr->line_number,
-                BAD_OPERAND_TYPE_ERR,
-                STRING_MESSAGE_ARGUMENT, "operator", mas_get_operator_string(expr->type),
-                MESSAGE_ARGUMENT_END);
-            }
-        }
-        
-        char* str = (char*)MEM_malloc(strlen(buf) + 1);
-        strncpy(str, buf, strlen(buf) + 1);
-        MAS_Object* r_obj = mas_create_mas_ostring(interp, str);
-        mas_binary_string(interp, env, expr, l_valp->u.object_value, r_obj);
-        return;        
-    }
-    
-    if (r_valp->type == MAS_STRING_VALUE) {
-        switch(l_valp->type) {
-            case MAS_INT_VALUE: {
-                sprintf(buf, "%d", l_valp->u.int_value);
-                break;
-            }
-            case MAS_DOUBLE_VALUE: {
-                sprintf(buf, "%f", l_valp->u.double_value);
-                break;
-            }
-            case MAS_BOOLEAN_VALUE: {
-                (l_valp->u.boolean_value == MAS_FALSE) ?  
-                    strncpy(buf, "false", 6) : strncpy(buf, "true", 5);
-                break;
-            }
-            case MAS_NULL_VALUE: {
-                strncpy(buf, "null", 5);
-                break;
-            }
-            default: {
-                mas_runtime_error(expr->line_number,
-                BAD_OPERAND_TYPE_ERR,
-                STRING_MESSAGE_ARGUMENT, "operator", mas_get_operator_string(expr->type),
-                MESSAGE_ARGUMENT_END);
-            }
-        }
-        char* str = (char*)MEM_malloc(strlen(buf) + 1);
-        strncpy(str, buf, strlen(buf) + 1);
-        MAS_Object* l_obj = mas_create_mas_ostring(interp, str);
-        mas_binary_string(interp, env, expr, l_obj, r_valp->u.object_value);
-        return;        
-    }    
     
     if (l_valp->type == MAS_INT_VALUE && r_valp->type == MAS_INT_VALUE) { // int int
         binary_int(interp, env, expr, l_valp->u.int_value, r_valp->u.int_value);
     } else if (l_valp->type == MAS_INT_VALUE && r_valp->type == MAS_DOUBLE_VALUE) { // int double
         binary_double(interp, env, expr, l_valp->u.int_value, r_valp->u.double_value);
-    } else if (l_valp->type == MAS_DOUBLE_VALUE && r_valp->type == MAS_INT_VALUE) {
+    } else if (l_valp->type == MAS_DOUBLE_VALUE && r_valp->type == MAS_INT_VALUE) { // double int
         binary_double(interp, env, expr, l_valp->u.double_value, r_valp->u.int_value);
-    } else if (l_valp->type == MAS_DOUBLE_VALUE && r_valp->type == MAS_DOUBLE_VALUE) {
+    } else if (l_valp->type == MAS_DOUBLE_VALUE && r_valp->type == MAS_DOUBLE_VALUE) { // double double
         binary_double(interp, env, expr, l_valp->u.double_value, r_valp->u.double_value);
+    } else if (l_valp->type == MAS_STRING_VALUE && r_valp->type == MAS_STRING_VALUE) { // string string
+        mas_binary_string(interp, env, expr, l_valp->u.object_value, r_valp->u.object_value);
+    } else if (l_valp->type == MAS_STRING_VALUE && r_valp->type == MAS_INT_VALUE) { // string int
+        mas_binary_string_int(interp, env, expr, l_valp->u.object_value, r_valp->u.int_value, L_STR);
+    } else if (l_valp->type == MAS_INT_VALUE && r_valp->type == MAS_STRING_VALUE) { // int string
+        mas_binary_string_int(interp, env, expr, r_valp->u.object_value, l_valp->u.int_value, R_STR);
+    } else if (l_valp->type == MAS_STRING_VALUE && r_valp->type == MAS_DOUBLE_VALUE) { // string double
+        mas_binary_string_double(interp, env, expr, l_valp->u.object_value, r_valp->u.double_value, L_STR);
+    } else if (l_valp->type == MAS_DOUBLE_VALUE && r_valp->type == MAS_STRING_VALUE) { // double string
+        mas_binary_string_double(interp, env, expr, r_valp->u.object_value, l_valp->u.double_value, R_STR);
+    } else if (l_valp->type == MAS_STRING_VALUE && r_valp->type == MAS_BOOLEAN_VALUE) { // string boolean
+        mas_binary_string_boolean(interp, env, expr, l_valp->u.object_value, r_valp->u.boolean_value, L_STR);
+    } else if (l_valp->type == MAS_BOOLEAN_VALUE && r_valp->type == MAS_STRING_VALUE) { // boolean string
+        mas_binary_string_boolean(interp, env, expr, r_valp->u.object_value, l_valp->u.boolean_value, R_STR);
+    } else if (l_valp->type == MAS_STRING_VALUE && r_valp->type == MAS_NULL_VALUE) {
+        mas_binary_string_null(interp, env, expr, l_valp->u.object_value, L_STR);
+    } else if (l_valp->type == MAS_NULL_VALUE && r_valp->type == MAS_STRING_VALUE) {
+        mas_binary_string_null(interp, env, expr, r_valp->u.object_value, R_STR);
     } else {
         mas_runtime_error(expr->line_number,
                 BAD_OPERAND_TYPE_ERR,
