@@ -36,6 +36,27 @@ void shrink_stack(MAS_Interpreter* interp, int s_size) {
     interp->stack.stack_pointer -= s_size;
 }
 
+static LocalEnvironment* create_environment(MAS_Interpreter* interp) {
+    LocalEnvironment* new_env = (LocalEnvironment*)MEM_malloc(sizeof(LocalEnvironment));
+    new_env->variable = NULL;
+    new_env->global_variable = NULL;    
+    new_env->next = interp->top;
+    interp->top = new_env;
+    return new_env;
+}
+
+static void dispose_environment(MAS_Interpreter* interp, LocalEnvironment* env) {
+    Variable *pos, *next;
+    interp->top = env->next;
+    pos = env->variable;
+    while(pos) {
+        next = pos->next;
+        MEM_free(pos);
+        pos = next;
+    }
+    MEM_free(env);    
+}
+
 
 static void mas_eval_string_expression(MAS_Interpreter* interp, LocalEnvironment* env, 
         Expression* expr) {  
@@ -64,7 +85,6 @@ static void call_native_function(MAS_Interpreter* interp, LocalEnvironment* env,
 
 static void call_mas_function(MAS_Interpreter* interp, LocalEnvironment* env,
         Expression* expr, ParameterList* params, Block* block) {
-    fprintf(stderr, "execute mas function\n");
     MAS_Value v;
     ParameterList* p_pos;
     ArgumentList*  a_pos;
@@ -83,7 +103,25 @@ static void call_mas_function(MAS_Interpreter* interp, LocalEnvironment* env,
                 MESSAGE_ARGUMENT_END);
     }
     
-    exit(1);
+    LocalEnvironment* new_env = create_environment(interp);
+    Variable* var_p;
+    for (i = 0, p_pos = params, a_pos = expr->u.function_call_expression.argument;
+            i < arg_count; ++i, p_pos = p_pos->next, a_pos = a_pos->next) {
+        var_p = mas_add_local_variable(new_env, p_pos->name);
+        mas_eval_expression(interp, env, a_pos->expression);
+        var_p->value = pop_value(interp);
+    }
+//    mas_show_all_local_variable(new_env);
+    StatementResult r = mas_execute_statementlist(interp, new_env, block->stmt_list);
+    dispose_environment(interp, new_env);
+    
+    if (r.type == RETURN_STATEMENT_RESULT) {
+        v = r.u.return_value;
+    } else {
+        v.type = MAS_NULL_VALUE;
+    }
+    
+    push_value(interp, &v);
 }
 
 static void mas_eval_function_call_expression(MAS_Interpreter* interp,

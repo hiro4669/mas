@@ -299,6 +299,7 @@ typedef struct GlobalVariableRef_tag {
 typedef struct LocalEnvironment_tag {
     Variable* variable;
     GlobalVariableRef* global_variable;
+    struct LocalEnvironment_tag *next;
 } LocalEnvironment;
 
 struct MAS_Array_tag {
@@ -352,6 +353,7 @@ struct MAS_Interpreter_tag {
     Statement  *stmt;       // temporary
     StatementList *stmt_list;
     FunctionDefinition *func_list;
+    LocalEnvironment* top;
     Stack stack;    
     Heap  heap;
 };
@@ -374,6 +376,7 @@ void MAS_add_global_variable(MAS_Interpreter* interp, char* identifier, MAS_Valu
 Variable* MAS_search_local_variable(LocalEnvironment* env, char* identifier);
 void MAS_add_local_variable(LocalEnvironment* env, char* identifier, MAS_Value *v);
 void mas_show_all_global_variable(MAS_Interpreter* interp); // for debug
+void mas_show_all_local_variable(LocalEnvironment* env);    // for debug
 Variable* mas_add_local_variable(LocalEnvironment* env, char* identifier); // for v2
 Variable* mas_add_global_variable(MAS_Interpreter* interp, char* identifier);
 char* mas_get_operator_string(ExpressionType type);

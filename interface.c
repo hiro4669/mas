@@ -60,6 +60,7 @@ MAS_Interpreter* mas_create_interpreter() {
     mas_interpreter->heap.current_heap_size = 0;
     mas_interpreter->heap.current_threshold = 30; // should be changed
     mas_interpreter->heap.header = NULL;
+    mas_interpreter->top = NULL;
 
     add_native_functions();
     return mas_interpreter;

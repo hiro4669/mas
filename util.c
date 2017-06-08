@@ -50,6 +50,54 @@ Variable* MAS_search_global_variable(MAS_Interpreter* interp, char* identifier) 
     return pos;
 }
 
+
+static void show_value(Variable* valp) {
+    switch (valp->value.type) {
+        case MAS_BOOLEAN_VALUE: {
+                printf("val(boolean) = %s(%d)\n", valp->name, valp->value.u.boolean_value);
+                break;
+            }
+            case MAS_INT_VALUE: {
+                printf("val(int)     = %s(%d)\n", valp->name, valp->value.u.int_value);
+                break;
+            }
+            case MAS_DOUBLE_VALUE: {
+                printf("val(double)  = %s(%f)\n", valp->name, valp->value.u.double_value);                
+                break;
+            }
+            case MAS_STRING_VALUE: {
+                printf("val(string)  = %s(%p)\n", valp->name, valp->value.u.object_value->u.string.string);
+                break;
+            }
+            case MAS_NATIVE_POINTER_VALUE: {
+                printf("val(pointer) = %s(%p)\n", valp->name, valp->value.u.native_pointer.pointer);
+                break;
+            }
+            case MAS_NULL_VALUE: {
+                printf("val(null) = %s(null)\n", valp->name);
+                break;
+            }
+            case MAS_ARRAY_VALUE: {
+                printf("val(array) = %s\n", valp->name);
+                break;
+            }
+            default: {
+                fprintf(stderr, "no such mas type\n");                
+                break;
+            }       
+    }
+}
+
+void mas_show_all_local_variable(LocalEnvironment* env) {
+    printf("--- show all global variable ---\n");
+    Variable* pos = NULL;
+    for (pos = env->variable; pos; pos = pos->next) {
+        show_value(pos);
+    }
+    
+    
+}
+
 void mas_show_all_global_variable(MAS_Interpreter* interp) {
     printf("--- show all global variable ---\n");
     Variable* pos = NULL;
@@ -89,7 +137,6 @@ void mas_show_all_global_variable(MAS_Interpreter* interp) {
                 break;
             }       
         }
-
     }    
 }
 

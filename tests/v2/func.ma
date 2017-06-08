@@ -1,8 +1,8 @@
-function f1(x) {
+function f1(x, y) {
     print(x);
     print("\n");
 }
 
-f1(10);
+f1(10, 20);
 
 
