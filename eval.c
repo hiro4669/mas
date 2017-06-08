@@ -666,6 +666,48 @@ static void mas_binary_expression(MAS_Interpreter* interp,
 }
 
 
+static void mas_eval_logical_and_or_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value v;
+    v.type = MAS_BOOLEAN_VALUE;
+    mas_eval_expression(interp, env, expr->u.binary_expression.left);
+    mas_eval_expression(interp, env, expr->u.binary_expression.right);    
+    MAS_Value* l_valp = peek_stack(interp, 1);
+    MAS_Value* r_valp = peek_stack(interp, 0);
+    
+
+    if (l_valp->type == MAS_BOOLEAN_VALUE && r_valp->type == MAS_BOOLEAN_VALUE) {
+        switch (expr->type) {
+            case LOGICAL_AND_EXPRESSION: {
+                v.u.boolean_value = (l_valp->u.boolean_value && r_valp->u.boolean_value);
+                break;
+            }
+            case LOGICAL_OR_EXPRESSION: {
+                v.u.boolean_value = (l_valp->u.boolean_value || r_valp->u.boolean_value);
+                break;
+            }
+            default: {
+                mas_runtime_error(expr->line_number,
+                        BAD_OPERAND_TYPE_ERR,
+                        STRING_MESSAGE_ARGUMENT, "operator", mas_get_operator_string(expr->type),
+                        MESSAGE_ARGUMENT_END);
+                break;
+            }
+        }        
+    } else {
+        mas_runtime_error(expr->line_number,
+                        BAD_OPERAND_TYPE_ERR,
+                        STRING_MESSAGE_ARGUMENT, "operator", mas_get_operator_string(expr->type),
+                        MESSAGE_ARGUMENT_END);
+    }
+    
+    pop_value(interp);
+    pop_value(interp);
+    push_value(interp, &v);
+    
+}
+
+
 
 void mas_eval_expression(MAS_Interpreter* interp,
         LocalEnvironment* env, Expression* expr) {
@@ -729,6 +771,11 @@ void mas_eval_expression(MAS_Interpreter* interp,
         case LT_EXPRESSION: 
         case LE_EXPRESSION: {
             mas_binary_expression(interp, env, expr);
+            break;
+        }
+        case LOGICAL_OR_EXPRESSION:
+        case LOGICAL_AND_EXPRESSION: {
+            mas_eval_logical_and_or_expression(interp, env, expr);
             break;
         }
         default: {

@@ -5,4 +5,6 @@
 #print((1 < 1) + "\n");
 #print((1 <= 1) + "\n");
 #print("str1" == "str");
-print("str2" != null);
+#print("str2" != null);
+print(false && true);
+print(1 || false);
