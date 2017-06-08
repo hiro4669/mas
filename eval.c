@@ -59,17 +59,31 @@ static void call_native_function(MAS_Interpreter* interp, LocalEnvironment* env,
     MAS_Value* args = peek_stack(interp, arg_count-1);
     v = proc(interp, arg_count, args);
     shrink_stack(interp, arg_count);
-    push_value(interp, &v);
-    
-    /*
-    if (val) {
-        fprintf(stderr, "arg exists\n");
-        fprintf(stderr, "type = %d\n", val->type);
-        fprintf(stderr, "value = %s\n", val->u.object_value->u.string.string);
+    push_value(interp, &v);        
+}
+
+static void call_mas_function(MAS_Interpreter* interp, LocalEnvironment* env,
+        Expression* expr, ParameterList* params, Block* block) {
+    fprintf(stderr, "execute mas function\n");
+    MAS_Value v;
+    ParameterList* p_pos;
+    ArgumentList*  a_pos;
+    int arg_count, par_count, i;
+    for (par_count = 0, p_pos = params; p_pos; p_pos = p_pos->next, ++par_count);
+    for (arg_count = 0, a_pos = expr->u.function_call_expression.argument; 
+            a_pos; a_pos = a_pos->next, ++arg_count);
+
+    if (par_count < arg_count) {
+        mas_runtime_error(expr->line_number,
+                ARGUMENT_TOO_MANY_ERR,
+                MESSAGE_ARGUMENT_END);
+    } else if (par_count > arg_count) {
+        mas_runtime_error(expr->line_number,
+                ARGUMENT_TOO_FEW_ERR,
+                MESSAGE_ARGUMENT_END);
     }
-    */
     
-    
+    exit(1);
 }
 
 static void mas_eval_function_call_expression(MAS_Interpreter* interp,
@@ -85,6 +99,10 @@ static void mas_eval_function_call_expression(MAS_Interpreter* interp,
     switch(func->type) {
         case NATIVE_FUNCTION: {
             call_native_function(interp, env, expr, func->u.native_f.n_func);
+            break;
+        }
+        case MAS_FUNCTION: {
+            call_mas_function(interp, env, expr, func->u.mas_f.param, func->u.mas_f.block);
             break;
         }
         default: {
