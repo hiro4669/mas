@@ -290,24 +290,49 @@ static void binary_double(MAS_Interpreter* interp,
     switch (expr->type) {
         case ADD_EXPRESSION: {
             v.u.double_value = l + r;
-            break;
+            goto RET_DOUBLE;
         }
         case SUB_EXPRESSION: {
             v.u.double_value = l - r;
-            break;
+            goto RET_DOUBLE;
         }
         case MUL_EXPRESSION: {
             v.u.double_value = l * r;
-            break;
+            goto RET_DOUBLE;
         }
         case DIV_EXPRESSION: {
             v.u.double_value = l / r;
-            break;
+            goto RET_DOUBLE;                        
         }
         case MOD_EXPRESSION: {
             v.u.double_value = fmod(l, r);
-            break;
+            goto RET_DOUBLE;
         }
+        case EQ_EXPRESSION: {
+            v.u.boolean_value = (l == r) ? MAS_TRUE : MAS_FALSE;
+            goto RET_BOOL;
+        }
+        case NE_EXPRESSION: {
+            v.u.boolean_value = (l != r) ? MAS_TRUE : MAS_FALSE;
+            goto RET_BOOL;
+        }
+        case GT_EXPRESSION: {
+            v.u.boolean_value = (l > r) ? MAS_TRUE : MAS_FALSE;                    
+            goto RET_BOOL;
+        }
+        case GE_EXPRESSION: {
+            v.u.boolean_value = (l >= r) ? MAS_TRUE : MAS_FALSE;
+            goto RET_BOOL;
+        }
+        case LT_EXPRESSION: {
+            v.u.boolean_value = (l < r) ? MAS_TRUE : MAS_FALSE;
+            goto RET_BOOL;
+        }
+        case LE_EXPRESSION: {
+            v.u.boolean_value = (l <= r) ? MAS_TRUE : MAS_FALSE;
+            goto RET_BOOL;
+        }
+
         default: {
             mas_runtime_error(expr->line_number,
                     BAD_OPERAND_TYPE_ERR,
@@ -315,6 +340,11 @@ static void binary_double(MAS_Interpreter* interp,
                     MESSAGE_ARGUMENT_END);
         }
     }
+    
+    RET_BOOL:
+            v.type = MAS_BOOLEAN_VALUE;
+    RET_DOUBLE:  
+            
     pop_value(interp);
     pop_value(interp);
     push_value(interp, &v);    
@@ -323,28 +353,51 @@ static void binary_double(MAS_Interpreter* interp,
 static void binary_int(MAS_Interpreter* interp, 
         LocalEnvironment* env, Expression* expr, int l, int r) {
     MAS_Value v;
-    v.type = MAS_INT_VALUE;
+    v.type = MAS_INT_VALUE;    
     switch (expr->type) {
         case ADD_EXPRESSION: {
             v.u.int_value = l + r;
-            break;
+            goto RET_INT;
         }
         case SUB_EXPRESSION: {
             v.u.int_value = l - r;
-            break;
+            goto RET_INT;
         }
         case MUL_EXPRESSION: {
             v.u.int_value = l * r;
-            break;
+            goto RET_INT;
         }        
         case DIV_EXPRESSION: {
             v.u.int_value = l / r;
-            break;
+            goto RET_INT;
         }
         case MOD_EXPRESSION: {
             v.u.int_value = l % r;
-            break;
-            
+            goto RET_INT;
+        }
+        case EQ_EXPRESSION: {
+            v.u.boolean_value = (l == r) ? MAS_TRUE : MAS_FALSE;
+            goto RET_BOOL;
+        }
+        case NE_EXPRESSION: {
+            v.u.boolean_value = (l != r) ? MAS_TRUE : MAS_FALSE;
+            goto RET_BOOL;
+        }
+        case GT_EXPRESSION: {
+            v.u.boolean_value = (l > r) ? MAS_TRUE : MAS_FALSE;                    
+            goto RET_BOOL;
+        }
+        case GE_EXPRESSION: {
+            v.u.boolean_value = (l >= r) ? MAS_TRUE : MAS_FALSE;
+            goto RET_BOOL;
+        }
+        case LT_EXPRESSION: {
+            v.u.boolean_value = (l < r) ? MAS_TRUE : MAS_FALSE;
+            goto RET_BOOL;
+        }
+        case LE_EXPRESSION: {
+            v.u.boolean_value = (l <= r) ? MAS_TRUE : MAS_FALSE;
+            goto RET_BOOL;
         }
         default: {
             mas_runtime_error(expr->line_number,
@@ -354,6 +407,10 @@ static void binary_int(MAS_Interpreter* interp,
         }
     }
     
+    RET_BOOL:
+            v.type = MAS_BOOLEAN_VALUE;
+
+    RET_INT:    
     pop_value(interp);
     pop_value(interp);
     push_value(interp, &v);    
@@ -361,6 +418,24 @@ static void binary_int(MAS_Interpreter* interp,
 
 static void mas_binary_string(MAS_Interpreter* interp,
         LocalEnvironment* env, Expression* expr, MAS_Object* l_str, MAS_Object* r_str) {
+    MAS_Value v;    
+    switch (expr->type) {
+        case ADD_EXPRESSION: {
+            int n_len, l_len, r_len;
+            char* buf;
+            n_len = (l_len = strlen(l_str->u.string.string)) + (r_len = strlen(r_str->u.string.string));
+            buf = (char*)MEM_malloc(n_len + 1);
+            strncpy(buf, l_str->u.string.string, l_len);
+            strncpy(&buf[l_len], r_str->u.string.string, r_len+1);
+            MAS_Object* n_obj = mas_create_mas_ostring(interp, buf);
+            v.type = MAS_STRING_VALUE;
+            v.u.object_value = n_obj;
+        }
+        default: {
+            break;
+        }
+    }
+    /*
     int n_len, l_len, r_len;
     char* buf;
     MAS_Value v;
@@ -371,7 +446,7 @@ static void mas_binary_string(MAS_Interpreter* interp,
     MAS_Object* n_obj = mas_create_mas_ostring(interp, buf);
     v.type = MAS_STRING_VALUE;
     v.u.object_value = n_obj;
-    
+    */
     pop_value(interp);
     pop_value(interp);
     push_value(interp, &v);        
@@ -529,7 +604,13 @@ void mas_eval_expression(MAS_Interpreter* interp,
         case SUB_EXPRESSION: 
         case MUL_EXPRESSION: 
         case DIV_EXPRESSION: 
-        case MOD_EXPRESSION: {
+        case MOD_EXPRESSION:
+        case EQ_EXPRESSION: 
+        case NE_EXPRESSION: 
+        case GT_EXPRESSION: 
+        case GE_EXPRESSION:
+        case LT_EXPRESSION: 
+        case LE_EXPRESSION: {
             mas_binary_expression(interp, env, expr);
             break;
         }
