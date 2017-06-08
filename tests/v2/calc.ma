@@ -7,4 +7,4 @@
 #print("str1" == "str");
 #print("str2" != null);
 print(false && true);
-print(1 || false);
+print(-10);

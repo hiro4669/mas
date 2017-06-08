@@ -699,15 +699,44 @@ static void mas_eval_logical_and_or_expression(MAS_Interpreter* interp,
                         BAD_OPERAND_TYPE_ERR,
                         STRING_MESSAGE_ARGUMENT, "operator", mas_get_operator_string(expr->type),
                         MESSAGE_ARGUMENT_END);
-    }
-    
+    }    
     pop_value(interp);
     pop_value(interp);
-    push_value(interp, &v);
-    
+    push_value(interp, &v);    
 }
 
+static void mas_eval_minus_expression(MAS_Interpreter* interp,
+        LocalEnvironment* env, Expression* expr) {
+    MAS_Value v;
 
+    mas_eval_expression(interp, env, expr->u.minus_expression);
+    MAS_Value* valp = peek_stack(interp, 0);
+    
+    if (valp->type != MAS_INT_VALUE &&
+            valp->type != MAS_DOUBLE_VALUE) {
+        mas_runtime_error(expr->line_number,
+                MINUS_OPERAND_TYPE_ERR,
+                MESSAGE_ARGUMENT_END);
+    }
+
+    switch (valp->type) {
+        case MAS_INT_VALUE: {
+            v.u.int_value = - valp->u.int_value;
+            v.type = MAS_INT_VALUE;
+            break;
+        }
+        case MAS_DOUBLE_VALUE: {
+            v.u.double_value = - valp->u.double_value;
+            v.type = MAS_DOUBLE_VALUE;
+            break;
+        }
+        default: {
+            exit(1);
+        }        
+    }
+    pop_value(interp);
+    push_value(interp, &v);
+}
 
 void mas_eval_expression(MAS_Interpreter* interp,
         LocalEnvironment* env, Expression* expr) {
@@ -776,6 +805,10 @@ void mas_eval_expression(MAS_Interpreter* interp,
         case LOGICAL_OR_EXPRESSION:
         case LOGICAL_AND_EXPRESSION: {
             mas_eval_logical_and_or_expression(interp, env, expr);
+            break;
+        }
+        case MINUS_EXPRESSION: {
+            mas_eval_minus_expression(interp, env, expr);
             break;
         }
         default: {
