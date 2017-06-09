@@ -35,6 +35,36 @@ static StatementResult execute_expression_statement(MAS_Interpreter* interp,
     return result;
 }
 
+static StatementResult execute_while_statement(MAS_Interpreter* interp,
+        LocalEnvironment* env, Statement* stmt) {
+    StatementResult result;
+    Expression* condexpr = stmt->u.while_s.condexpr;
+    while(1) {    
+        MAS_Value cv = mas_eval_expression_with_ret(interp, env, condexpr);
+        if (cv.type != MAS_BOOLEAN_VALUE) {
+            mas_runtime_error(condexpr->line_number,
+                    NOT_BOOLEAN_OPERATOR_ERR, MESSAGE_ARGUMENT_END);
+        }
+        if (cv.u.boolean_value == MAS_TRUE) {
+            result = mas_execute_statementlist(interp, env, 
+                    stmt->u.while_s.block->stmt_list);
+            
+            if (result.type == BREAK_STATEMENT_RESULT) { // break
+                result.type = NORMAL_STATEMENT_RESULT;
+                result.u.return_value.type = MAS_NULL_VALUE;
+                return result;
+            }
+            if (result.type == RETURN_STATEMENT_RESULT) {
+                return result;
+            }
+            
+        } else {
+            break;
+        }
+    }
+    return result;
+}
+
 
 static StatementResult mas_execute_statement(MAS_Interpreter* interp,
         LocalEnvironment* env, Statement* stmt) {
@@ -46,8 +76,12 @@ static StatementResult mas_execute_statement(MAS_Interpreter* interp,
             result = execute_expression_statement(interp, env, stmt);
             break;
         }
+        case WHILE_STATEMENT: {
+            result = execute_while_statement(interp, env, stmt);
+            break;
+        }
         default: {
-            fprintf(stderr, "undefined stmt type in mas_execute_statement(eval.c) %d\n", stmt->type);
+            fprintf(stderr, "undefined stmt type in mas_execute_statement(exec.c) %d\n", stmt->type);
             exit(1);                    
         }
         

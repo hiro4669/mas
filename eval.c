@@ -787,6 +787,12 @@ static void mas_eval_minus_expression(MAS_Interpreter* interp,
     push_value(interp, &v);
 }
 
+MAS_Value mas_eval_expression_with_ret(MAS_Interpreter* interp, 
+        LocalEnvironment* env, Expression* expr) {
+    mas_eval_expression(interp, env, expr);
+    return pop_value(interp);
+}
+
 void mas_eval_expression(MAS_Interpreter* interp,
         LocalEnvironment* env, Expression* expr) {
     

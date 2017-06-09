@@ -490,6 +490,8 @@ void mas_eval_expression(MAS_Interpreter* interp, LocalEnvironment* env, Express
 /* exec.c */
 StatementResult mas_execute_statementlist(MAS_Interpreter* interp, 
         LocalEnvironment* env, StatementList* stmt_list);
+MAS_Value mas_eval_expression_with_ret(MAS_Interpreter* interp, 
+        LocalEnvironment* env, Expression* expr);
 
 /* heap.c */
 MAS_Object* mas_literal_to_mas_ostring(MAS_Interpreter* interp, char* str);
