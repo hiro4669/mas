@@ -65,6 +65,51 @@ static StatementResult execute_while_statement(MAS_Interpreter* interp,
     return result;
 }
 
+static uint8_t execute_elsif(MAS_Interpreter* interp, LocalEnvironment* env, Elsif* elsif, StatementResult* r) {
+    Elsif* pos;
+    for (pos = elsif; pos; pos = pos->next) {
+        MAS_Value cv = mas_eval_expression_with_ret(interp, env, pos->cexpr);
+        if (cv.type != MAS_BOOLEAN_VALUE) {
+            mas_runtime_error(pos->cexpr->line_number,
+                    NOT_BOOLEAN_OPERATOR_ERR, MESSAGE_ARGUMENT_END);
+        }
+        if (cv.u.boolean_value == MAS_TRUE) {
+            *r = mas_execute_statementlist(interp, env, pos->block->stmt_list);
+            return 1;
+        }
+    }
+                
+    return 0;
+}
+
+static StatementResult execute_if_statement(MAS_Interpreter* interp,
+        LocalEnvironment* env, Statement* stmt) {
+    StatementResult result;
+    Expression* condexpr = stmt->u.if_s.condexpr;
+    MAS_Value cv = mas_eval_expression_with_ret(interp, env, condexpr);
+    if (cv.type != MAS_BOOLEAN_VALUE) {
+        mas_runtime_error(condexpr->line_number,
+                NOT_BOOLEAN_OPERATOR_ERR, MESSAGE_ARGUMENT_END);
+    }
+    
+    if (cv.u.boolean_value == MAS_TRUE) {
+        result = mas_execute_statementlist(interp, env, stmt->u.if_s.thenblock->stmt_list);
+        return result;
+    } else {
+        Elsif* elsif = stmt->u.if_s.elsif;
+        if (elsif) {
+            if (execute_elsif(interp, env, elsif, &result)) {
+                return result;
+            }
+        } 
+        if (stmt->u.if_s.elseblock) {
+            result = mas_execute_statementlist(interp, env, stmt->u.if_s.elseblock->stmt_list);
+            return result;
+        }
+    }
+    return result;
+}
+
 
 static StatementResult mas_execute_statement(MAS_Interpreter* interp,
         LocalEnvironment* env, Statement* stmt) {
@@ -78,6 +123,10 @@ static StatementResult mas_execute_statement(MAS_Interpreter* interp,
         }
         case WHILE_STATEMENT: {
             result = execute_while_statement(interp, env, stmt);
+            break;
+        }
+        case IF_STATEMENT: {
+            result = execute_if_statement(interp, env, stmt);
             break;
         }
         default: {
