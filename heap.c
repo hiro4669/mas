@@ -49,7 +49,7 @@ static void mas_run_mark(MAS_Interpreter* interp) { // this implementation is te
         switch (pos->value.type) {
             case MAS_STRING_VALUE:
             case MAS_ARRAY_VALUE: {
-                fprintf(stderr, "mark\n");
+                fprintf(stderr, "mark in global\n");
                 pos->value.u.object_value->marked = MAS_TRUE;
                 break;
             }                
@@ -58,18 +58,40 @@ static void mas_run_mark(MAS_Interpreter* interp) { // this implementation is te
             }
         }
     }
-    
-    /*
-    MAS_Object* pos = NULL;
-    int i;
-    for (i = 0, pos = interp->heap.header; pos; pos = pos->next, ++i) {
-        if (i == 1) {
-            fprintf(stderr, "mark!\n");
-            pos->marked = MAS_TRUE;
+        
+    LocalEnvironment* pos_env;
+    for (pos_env = interp->top; pos_env; pos_env = pos_env->next) {
+        fprintf(stderr, ">>>----mark in an localenv start----<<<\n");
+        for (pos = pos_env->variable; pos; pos = pos->next) {
+            switch (pos->value.type) {
+                case MAS_STRING_VALUE:
+                case MAS_ARRAY_VALUE: {
+                    fprintf(stderr, "mark in localenv\n");
+                    pos->value.u.object_value->marked = MAS_TRUE;
+                    break;
+                }                
+                default: {
+                    break;
+                }
+            }
         }
+        fprintf(stderr, ">>>----mark in an localenv end ----<<<\n");
     }
-    */
     
+    int i;
+    for (i = 1; i <= interp->stack.stack_pointer; ++i) {
+        switch (interp->stack.stack[i].type) {
+            case MAS_STRING_VALUE: 
+            case MAS_ARRAY_VALUE: {
+                fprintf(stderr, "mark in stack\n");
+                interp->stack.stack[i].u.object_value->marked = MAS_TRUE;
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }        
 }
 
 static void mas_delete_object(MAS_Interpreter* interp, MAS_Object* obj) {
@@ -117,13 +139,16 @@ static void mas_run_sweep(MAS_Interpreter* interp) {
             pos = pos->next;            
             mas_delete_object(interp, rm_obj);            
         } else {
+            fprintf(stderr, "---> keep ");
+            if (pos->type == STRING_OBJECT) {
+                fprintf(stderr, "%s\n", pos->u.string.string);
+            } else {
+                fprintf(stderr, "\n");
+            }
             pos->marked = MAS_FALSE;
             pos = pos->next;
         }
-    }
-    if (interp->heap.header) {
-        fprintf(stderr, "keep %s\n", interp->heap.header->u.string.string);
-    }
+    }    
 }
 
 void mas_run_gc(MAS_Interpreter* interp) {

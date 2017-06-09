@@ -85,6 +85,7 @@ static void call_native_function(MAS_Interpreter* interp, LocalEnvironment* env,
 
 static void call_mas_function(MAS_Interpreter* interp, LocalEnvironment* env,
         Expression* expr, ParameterList* params, Block* block) {
+//    fprintf(stderr, "---  call_mas_function  ---\n");
     MAS_Value v;
     ParameterList* p_pos;
     ArgumentList*  a_pos;
@@ -111,6 +112,7 @@ static void call_mas_function(MAS_Interpreter* interp, LocalEnvironment* env,
         mas_eval_expression(interp, env, a_pos->expression);
         var_p->value = pop_value(interp);
     }
+//    mas_run_gc(interp); // for test
 //    mas_show_all_local_variable(new_env);
     StatementResult r = mas_execute_statementlist(interp, new_env, block->stmt_list);
     dispose_environment(interp, new_env);
@@ -503,22 +505,13 @@ static void mas_binary_string(MAS_Interpreter* interp,
         default: {
             break;
         }
-    }
-    /*
-    int n_len, l_len, r_len;
-    char* buf;
-    MAS_Value v;
-    n_len = (l_len = strlen(l_str->u.string.string)) + (r_len = strlen(r_str->u.string.string));
-    buf = (char*)MEM_malloc(n_len + 1);
-    strncpy(buf, l_str->u.string.string, l_len);
-    strncpy(&buf[l_len], r_str->u.string.string, r_len+1);
-    MAS_Object* n_obj = mas_create_mas_ostring(interp, buf);
-    v.type = MAS_STRING_VALUE;
-    v.u.object_value = n_obj;
-    */
+    }    
     pop_value(interp);
     pop_value(interp);
-    push_value(interp, &v);        
+    push_value(interp, &v);
+
+//    fprintf(stderr, "----------------->>>>> run gc in add\n");
+//    mas_run_gc(interp); // for testq
 }
 
 typedef enum {

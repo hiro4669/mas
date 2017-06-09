@@ -172,6 +172,7 @@ void MAS_add_local_variable(LocalEnvironment* env, char* identifier, MAS_Value *
 }
 
 Variable* mas_add_local_variable(LocalEnvironment* env, char* identifier) {
+//    fprintf(stderr, "add local : %s\n", identifier);
     Variable *nv = (Variable*)MEM_malloc(sizeof(Variable));
     nv->name = identifier;
     nv->next = env->variable;
