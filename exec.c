@@ -110,6 +110,33 @@ static StatementResult execute_if_statement(MAS_Interpreter* interp,
     return result;
 }
 
+static StatementResult execute_break_statement(MAS_Interpreter* interp,
+        LocalEnvironment* env, Statement* stmt) {
+    StatementResult result;
+    result.type = BREAK_STATEMENT_RESULT;
+    return result;
+}
+
+static StatementResult execute_continue_statement(MAS_Interpreter* interp,
+        LocalEnvironment* env, Statement* stmt) {
+    StatementResult result;
+    result.type = CONTINUE_STATEMENT_RESULT;
+    return result;
+}
+
+static StatementResult execute_return_statement(MAS_Interpreter* interp,
+        LocalEnvironment* env, Statement* stmt) {
+    StatementResult result;
+    Expression* expr;
+    result.u.return_value.type = MAS_NULL_VALUE;
+    
+    result.type = RETURN_STATEMENT_RESULT;
+    if ((expr = stmt->u.return_s.return_value)) {
+        MAS_Value v = mas_eval_expression_with_ret(interp, env, expr);
+        result.u.return_value = v;
+    }        
+    return result;
+}
 
 static StatementResult mas_execute_statement(MAS_Interpreter* interp,
         LocalEnvironment* env, Statement* stmt) {
@@ -127,6 +154,18 @@ static StatementResult mas_execute_statement(MAS_Interpreter* interp,
         }
         case IF_STATEMENT: {
             result = execute_if_statement(interp, env, stmt);
+            break;
+        }
+        case BREAK_STATEMENT: {
+            result = execute_break_statement(interp, env, stmt);
+            break;
+        }
+        case CONTINUE_STATEMENT: {
+            result = execute_continue_statement(interp, env, stmt);
+            break;
+        }
+        case RETURN_STATEMENT_RESULT: {
+            result = execute_return_statement(interp, env, stmt);
             break;
         }
         default: {
@@ -149,8 +188,17 @@ StatementResult mas_execute_statementlist(MAS_Interpreter *interp,
     for (pos = stmt_list; pos; pos = pos->next) {
 //        fprintf(stderr, "\nexec statement\n");
         result = mas_execute_statement(interp, env, pos->statement);
-//        mas_run_gc(interp);
-        
+        switch(result.type) {
+            case RETURN_STATEMENT_RESULT:
+            case BREAK_STATEMENT_RESULT:
+            case CONTINUE_STATEMENT_RESULT: {
+                return result;
+            }
+            default: {
+                break;
+            }
+        }
+//        mas_run_gc(interp);        
     }           
     return result;    
 }
