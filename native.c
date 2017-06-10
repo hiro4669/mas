@@ -50,7 +50,7 @@ MAS_Value mas_nv_fgets(MAS_Interpreter* interp, int arg_count, MAS_Value* args) 
     }
     if (ret_len > 0) {
         v.type = MAS_STRING_VALUE;
-        v.u.string_value = mas_create_mas_string(interp, ret_buf);
+        v.u.object_value = mas_create_mas_ostring(interp, ret_buf);
     } else {
         v.type = MAS_NULL_VALUE;
     }
@@ -72,7 +72,9 @@ MAS_Value mas_nv_fputs(MAS_Interpreter* interp, int arg_count, MAS_Value* args) 
         mas_runtime_error(0, FPUTS_ARGUMENT_TYPE_ERR,
                 MESSAGE_ARGUMENT_END);
     }
-    char* str = args[0].u.string_value->string;
+//    char* str = args[0].u.string_value->string;
+    char* str = args[0].u.object_value->u.string.string;
+    
     fp = args[1].u.native_pointer.pointer;
     
     fputs(str, fp);
@@ -94,9 +96,11 @@ MAS_Value mas_nv_open(MAS_Interpreter* interp, int arg_count, MAS_Value* args) {
     if (args[0].type != MAS_STRING_VALUE || args[1].type != MAS_STRING_VALUE) {
         mas_runtime_error(0, FOPEN_ARGUMENT_TYPE_ERR,
                 MESSAGE_ARGUMENT_END);
-    }
-    FILE* fp = fopen(args[0].u.string_value->string, 
-                     args[1].u.string_value->string);
+    }    
+  
+    FILE* fp = fopen(args[0].u.object_value->u.string.string,
+                     args[1].u.object_value->u.string.string);
+            
     if (fp == NULL) {
         exit(1);
         v.type = MAS_NULL_VALUE;
