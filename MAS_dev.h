@@ -2,10 +2,14 @@
 #ifndef _MAS_DEV_H_
 #define _MAS_DEV_H_
 
+#include "mas.h"
+
+
 typedef struct MAS_Interpreter_tag MAS_Interpreter;
 typedef struct MAS_String_tag MAS_String;
 typedef struct MAS_Array_tag  MAS_Array;
 typedef struct MAS_Object_tag MAS_Object;
+typedef struct LocalEnvironment_tag LocalEnvironment;
 
 typedef enum {
     MAS_FALSE = 0,
@@ -52,8 +56,11 @@ typedef struct {
 
 
 
-typedef MAS_Value (*MAS_NativeFunctionProc)(MAS_Interpreter* interp, int arg_count,
-        MAS_Value* args);
+//typedef MAS_Value (*MAS_NativeFunctionProc)(MAS_Interpreter* interp, int arg_count,
+//        MAS_Value* args);
+
+typedef MAS_Value (*MAS_NativeFunctionProc)(MAS_Interpreter* interp, LocalEnvironment* env, 
+        int arg_count, MAS_Value* args);
 
 /* interface.c */
 void MAS_add_native_function(char* name, MAS_NativeFunctionProc proc);

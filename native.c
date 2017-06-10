@@ -11,7 +11,8 @@ static MAS_NativePointerInfo st_native_lib_info = {
     NATIVE_LIB_NAME
 };
 
-MAS_Value mas_nv_fgets(MAS_Interpreter* interp, int arg_count, MAS_Value* args) {
+MAS_Value mas_nv_fgets(MAS_Interpreter* interp, LocalEnvironment* env, 
+        int arg_count, MAS_Value* args) {
     MAS_Value v;
     FILE *fp;
     char buf[LINE_BUF_SIZE];
@@ -57,7 +58,8 @@ MAS_Value mas_nv_fgets(MAS_Interpreter* interp, int arg_count, MAS_Value* args) 
     return v;
 }
 
-MAS_Value mas_nv_fputs(MAS_Interpreter* interp, int arg_count, MAS_Value* args) {
+MAS_Value mas_nv_fputs(MAS_Interpreter* interp, LocalEnvironment* env, 
+        int arg_count, MAS_Value* args) {
     MAS_Value v;
     FILE* fp;
     if (arg_count < 2) {
@@ -83,7 +85,8 @@ MAS_Value mas_nv_fputs(MAS_Interpreter* interp, int arg_count, MAS_Value* args) 
     return v;
 }
 
-MAS_Value mas_nv_open(MAS_Interpreter* interp, int arg_count, MAS_Value* args) {
+MAS_Value mas_nv_open(MAS_Interpreter* interp, LocalEnvironment* env, 
+        int arg_count, MAS_Value* args) {
     MAS_Value v;
     if (arg_count < 2) {
         mas_runtime_error(0, ARGUMENT_TOO_FEW_ERR,
@@ -114,7 +117,8 @@ MAS_Value mas_nv_open(MAS_Interpreter* interp, int arg_count, MAS_Value* args) {
     return v;
 }
 
-MAS_Value mas_nv_close(MAS_Interpreter* interp, int arg_count, MAS_Value* args) {
+MAS_Value mas_nv_close(MAS_Interpreter* interp, LocalEnvironment* env, 
+        int arg_count, MAS_Value* args) {
     MAS_Value v;
     if (arg_count < 1) {
         mas_runtime_error(0, ARGUMENT_TOO_FEW_ERR,
@@ -135,7 +139,8 @@ MAS_Value mas_nv_close(MAS_Interpreter* interp, int arg_count, MAS_Value* args) 
 }
 
 
-MAS_Value mas_nv_print(MAS_Interpreter* interp, int arg_count, MAS_Value* args) {
+MAS_Value mas_nv_print(MAS_Interpreter* interp, LocalEnvironment* env, 
+        int arg_count, MAS_Value* args) {
     MAS_Value v;
     v.type = MAS_NULL_VALUE;
     if (arg_count < 1) {

@@ -77,9 +77,13 @@ static void call_native_function(MAS_Interpreter* interp, LocalEnvironment* env,
         mas_eval_expression(interp, env, arg_list->expression);
     }
 
+    LocalEnvironment* new_env = create_environment(interp);
     MAS_Value* args = peek_stack(interp, arg_count-1);
-    v = proc(interp, arg_count, args);
+    v = proc(interp, new_env, arg_count, args);
     shrink_stack(interp, arg_count);
+    
+    dispose_environment(interp, new_env);
+    
     push_value(interp, &v);        
 }
 
