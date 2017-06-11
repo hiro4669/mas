@@ -41,12 +41,24 @@ static LocalEnvironment* create_environment(MAS_Interpreter* interp) {
     new_env->variable = NULL;
     new_env->global_variable = NULL;    
     new_env->next = interp->top;
+    new_env->ref_in_native = NULL;
     interp->top = new_env;
     return new_env;
 }
 
+static void dispose_ref_in_native(LocalEnvironment* env) {    
+    RefInNativeFunc* pos;
+    while ((pos = env->ref_in_native) != NULL) {
+        env->ref_in_native = pos->next;
+        MEM_free(pos);
+    }    
+}
+
 static void dispose_environment(MAS_Interpreter* interp, LocalEnvironment* env) {
     Variable *pos, *next;
+    
+    dispose_ref_in_native(env);
+
     interp->top = env->next;
     pos = env->variable;
     while(pos) {
@@ -82,6 +94,8 @@ static void call_native_function(MAS_Interpreter* interp, LocalEnvironment* env,
     v = proc(interp, new_env, arg_count, args);
     shrink_stack(interp, arg_count);
     
+//    fprintf(stderr, "call gc in native_function_call:\n");
+//    mas_run_gc(interp); // for test
     dispose_environment(interp, new_env);
     
     push_value(interp, &v);        
@@ -142,6 +156,7 @@ static void mas_eval_function_call_expression(MAS_Interpreter* interp,
     
     switch(func->type) {
         case NATIVE_FUNCTION: {
+//            fprintf(stderr, "native func name = %s\n", expr->u.function_call_expression.identifier);
             call_native_function(interp, env, expr, func->u.native_f.n_func);
             break;
         }

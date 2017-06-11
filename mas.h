@@ -296,10 +296,16 @@ typedef struct GlobalVariableRef_tag {
     struct GlobalVariableRef_tag *next;
 } GlobalVariableRef;
 
+typedef struct RefInNativeFunc_tag {
+    MAS_Object* object;
+    struct RefInNativeFunc_tag *next;
+} RefInNativeFunc;
+
 typedef struct LocalEnvironment_tag {
     Variable* variable;
     GlobalVariableRef* global_variable;
     struct LocalEnvironment_tag *next;
+    RefInNativeFunc* ref_in_native;
 } LocalEnvironment;
 
 struct MAS_Array_tag {

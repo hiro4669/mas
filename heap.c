@@ -60,6 +60,7 @@ static void mas_run_mark(MAS_Interpreter* interp) { // this implementation is te
     }
         
     LocalEnvironment* pos_env;
+    RefInNativeFunc* ref;
     for (pos_env = interp->top; pos_env; pos_env = pos_env->next) {
         fprintf(stderr, ">>>----mark in an localenv start----<<<\n");
         for (pos = pos_env->variable; pos; pos = pos->next) {
@@ -75,6 +76,13 @@ static void mas_run_mark(MAS_Interpreter* interp) { // this implementation is te
                 }
             }
         }
+        for (ref = pos_env->ref_in_native; ref; ref = ref->next) {
+            fprintf(stderr, "mark in ref_in_native\n");
+            fprintf(stderr, "object(%p)\n", ref->object);
+            ref->object->marked = MAS_TRUE;
+        }
+        
+        
         fprintf(stderr, ">>>----mark in an localenv end ----<<<\n");
     }
     

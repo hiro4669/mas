@@ -11,6 +11,15 @@ static MAS_NativePointerInfo st_native_lib_info = {
     NATIVE_LIB_NAME
 };
 
+static void add_ref_in_env(LocalEnvironment* env, MAS_Object* object) {
+//    fprintf(stderr, "add_ref_in_env called(%p)\n", object);
+    
+    RefInNativeFunc* ref = (RefInNativeFunc*)MEM_malloc(sizeof(RefInNativeFunc));
+    ref->next = env->ref_in_native;
+    env->ref_in_native = ref;
+    ref->object = object;
+}
+
 MAS_Value mas_nv_fgets(MAS_Interpreter* interp, LocalEnvironment* env, 
         int arg_count, MAS_Value* args) {
     MAS_Value v;
@@ -51,7 +60,9 @@ MAS_Value mas_nv_fgets(MAS_Interpreter* interp, LocalEnvironment* env,
     }
     if (ret_len > 0) {
         v.type = MAS_STRING_VALUE;
-        v.u.object_value = mas_create_mas_ostring(interp, ret_buf);
+        MAS_Object* new_obj = mas_create_mas_ostring(interp, ret_buf);
+        add_ref_in_env(env, new_obj);
+        v.u.object_value = new_obj;
     } else {
         v.type = MAS_NULL_VALUE;
     }
