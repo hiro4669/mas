@@ -290,6 +290,7 @@ static void mas_eval_assignment_expression(MAS_Interpreter* interp,
     mas_eval_expression(interp, env, r_expr);
     *l_valp = *peek_stack(interp, 0);    
 
+//    mas_run_gc(interp); // test
 //    mas_show_all_global_variable(interp);    
 }
 

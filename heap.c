@@ -1,4 +1,4 @@
-#include <stdio.h>
+    #include <stdio.h>
 
 #include "mas.h"
 
@@ -42,13 +42,33 @@ MAS_Object* mas_create_array_literal(MAS_Interpreter* interp, int size) {
     return obj;
 }
 
+static void mark_array_object(MAS_Interpreter* interp, MAS_Value* ary) {
+    int i;
+    MAS_Array* array;
+    for (array = &ary->u.object_value->u.array, i = 0; i < array->size; ++i) {
+        switch (array->array[i].type) {
+            case MAS_ARRAY_VALUE:
+            case MAS_STRING_VALUE: {
+                fprintf(stderr, "mark mark mark\n");                
+                array->array[i].u.object_value->marked = MAS_TRUE;
+                break;
+            }
+            default: {
+                break;
+            }
+        }        
+    }
+}
+
 static void mas_run_mark(MAS_Interpreter* interp) { // this implementation is temporary
     
     Variable* pos;
     for (pos = interp->variable; pos; pos = pos->next) {
         switch (pos->value.type) {
-            case MAS_STRING_VALUE:
             case MAS_ARRAY_VALUE: {
+                mark_array_object(interp, &pos->value);
+            }            
+            case MAS_STRING_VALUE: {
                 fprintf(stderr, "mark in global\n");
                 pos->value.u.object_value->marked = MAS_TRUE;
                 break;
