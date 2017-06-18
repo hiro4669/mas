@@ -48,8 +48,9 @@ static void mark_array_object(MAS_Interpreter* interp, MAS_Value* ary) {
     for (array = &ary->u.object_value->u.array, i = 0; i < array->size; ++i) {
         switch (array->array[i].type) {
             case MAS_ARRAY_VALUE:
+                mark_array_object(interp, &array->array[i]);
             case MAS_STRING_VALUE: {
-                fprintf(stderr, "mark mark mark\n");                
+//                fprintf(stderr, "mark mark mark\n");                
                 array->array[i].u.object_value->marked = MAS_TRUE;
                 break;
             }
