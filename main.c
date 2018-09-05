@@ -61,6 +61,7 @@ int main(int argc, char* argv[]) {
         case RUN: {
             MAS_compile(interp, fp);
             MAS_interpret(interp);
+            printf("interpreter end");
             break;
         }
         default: {

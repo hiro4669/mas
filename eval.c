@@ -646,8 +646,35 @@ static void mas_binary_string_boolean(MAS_Interpreter* interp,
     
 }
 
+static void mas_binary_null_null(MAS_Interpreter* interp, LocalEnvironment* env, Expression* expr) {
+    MAS_Value v;
+    v.type = MAS_BOOLEAN_VALUE;
+    
+    switch(expr->type) {
+        case EQ_EXPRESSION: {
+            v.u.boolean_value = MAS_TRUE;
+            break;
+        }
+        case NE_EXPRESSION: {
+            v.u.boolean_value = MAS_FALSE;
+            break;
+        }
+        default: {
+            mas_runtime_error(expr->line_number,
+                    BAD_OPERAND_TYPE_ERR,
+                    STRING_MESSAGE_ARGUMENT, "operator", mas_get_operator_string(expr->type),
+                    MESSAGE_ARGUMENT_END);
+        }
+    }
+    
+    pop_value(interp);
+    pop_value(interp);
+    push_value(interp, &v);
+}
+
 static void mas_binary_string_null(MAS_Interpreter* interp,
         LocalEnvironment* env, Expression* expr, MAS_Object* str, S_Dir d) {
+    
     MAS_Value v;
     v.type = MAS_BOOLEAN_VALUE;
     switch (expr->type) {
@@ -700,6 +727,11 @@ static void mas_binary_expression(MAS_Interpreter* interp,
     MAS_Value* l_valp = peek_stack(interp, 1);
     MAS_Value* r_valp = peek_stack(interp, 0);
     
+    
+//    printf("left  = %d\n", l_valp->type);
+//    printf("right = %d\n", r_valp->type);
+    
+    
     if (l_valp->type == MAS_INT_VALUE && r_valp->type == MAS_INT_VALUE) { // int int
         binary_int(interp, env, expr, l_valp->u.int_value, r_valp->u.int_value);
     } else if (l_valp->type == MAS_INT_VALUE && r_valp->type == MAS_DOUBLE_VALUE) { // int double
@@ -726,6 +758,8 @@ static void mas_binary_expression(MAS_Interpreter* interp,
         mas_binary_string_null(interp, env, expr, l_valp->u.object_value, L_STR);
     } else if (l_valp->type == MAS_NULL_VALUE && r_valp->type == MAS_STRING_VALUE) {
         mas_binary_string_null(interp, env, expr, r_valp->u.object_value, R_STR);
+    } else if (l_valp->type == MAS_NULL_VALUE && r_valp->type == MAS_NULL_VALUE) {
+        mas_binary_null_null(interp, env, expr);
     } else {
         mas_runtime_error(expr->line_number,
                 BAD_OPERAND_TYPE_ERR,
